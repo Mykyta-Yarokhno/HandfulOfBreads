@@ -37,13 +37,21 @@
                     Clicked="OnZoomChanged"/>
             <Button Text="-"
                     Clicked="OnZoomChanged"/>
+            <Button Text="="
+                        Clicked="OnEqualed"/>
+            <Button Text="C"
+                        Clicked="OnCenter"/>
         </VerticalStackLayout>
 
-        <ScrollView x:Name="CanvasScroll" Orientation="Both" Grid.Row="1" Grid.Column="1" HorizontalScrollBarVisibility="Never" VerticalScrollBarVisibility="Never">
-            <Grid x:Name="PixelCanvasContainer">
-                <Grid x:Name="PixelCanvas">
-                    
-                </Grid>
+        <ScrollView x:Name="CanvasScroll" 
+                    Orientation="Both" 
+                    Grid.Row="1" Grid.Column="1" 
+                    HorizontalScrollBarVisibility="Never" 
+                    VerticalScrollBarVisibility="Never"
+                    Loaded="OnCanvasScrollLoaded">
+            <Grid x:Name="PixelCanvas"
+                  Loaded="OnPixelCanvasLoaded">
+
             </Grid>
         </ScrollView>
     </Grid>

@@ -2,7 +2,8 @@
 {
     public partial class MainPage : ContentPage
     {
-        private double scale = 1.0;
+        private double scale = 0.0;
+        private double minScale = 0.5;
 
         public MainPage()
         {
@@ -29,16 +30,12 @@
         }
 
         private const int CellSize = 20;
-        private const int Rows = 60;
-        private const int Columns = 30;
+        private const int Rows = 40;
+        private const int Columns = 10;
         private Color currentColor = Colors.Black;
 
         private void CreatePixelCanvas()
         {
-            //PixelCanvas.RowDefinitions.Clear();
-            //PixelCanvas.ColumnDefinitions.Clear();
-            //PixelCanvas.Children.Clear();
-
             for (int i = 0; i < Rows; i++)
             {
                 PixelCanvas.RowDefinitions.Add(new RowDefinition { Height = new GridLength(CellSize) });
@@ -77,7 +74,6 @@
                     PixelCanvas.Children.Add(frame);
                 }
             }
-
         }
 
         private void OnCellTapped(object sender, EventArgs e)
@@ -95,16 +91,91 @@
             if (sender is not Button button)
                 return;
 
-            double minScale = Math.Min(CanvasScroll.Width / PixelCanvas.Width, CanvasScroll.Height / PixelCanvas.Height);
-
             if (button.Text == "+")
-                scale *= 1.1;
+                scale *= 1.1;  
             else if (button.Text == "-")
                 scale /= 1.1;
-
-            scale = Math.Max(minScale, Math.Min(scale, 3.0));
+            
+            scale = Math.Max(minScale, Math.Min(scale, 1.0));
 
             PixelCanvas.Scale = scale;
+        }
+
+        private void OnEqualed(object sender, EventArgs e)
+        {
+            if (sender is not Button button)
+                return;
+
+            scale = Math.Min(CanvasScroll.Width / PixelCanvas.Width, CanvasScroll.Height / PixelCanvas.Height);
+
+            PixelCanvas.Scale = scale;
+
+            CenterPixelCanvas();
+        }
+
+        private async void OnCanvasScrollLoaded(object sender, EventArgs e)
+        {
+            CanvasScroll.SizeChanged += OnCanvasScrollSizeChanged;
+        }
+
+        private void OnCanvasScrollSizeChanged(object sender, EventArgs e)
+        {
+            if (CanvasScroll.Width > 0)
+            {
+                SetPadding();
+                CanvasScroll.SizeChanged -= OnCanvasScrollSizeChanged;
+            }
+        }
+
+        private void SetPadding()
+        {
+
+            double leftRightPadding = CanvasScroll.Width * 0.5;
+
+            double upDownPadding = CanvasScroll.Height * 0.5;
+
+            PixelCanvas.Padding = new Thickness(leftRightPadding, upDownPadding, leftRightPadding, upDownPadding);
+        }
+
+        private async void OnPixelCanvasLoaded(object sender, EventArgs e)
+        {
+            PixelCanvas.SizeChanged += OnPixelCanvasChanged;
+        }
+
+        private async void OnPixelCanvasChanged(object sender, EventArgs e)
+        {
+            if (CanvasScroll.Width > 0)
+            {
+                SetScale();
+                
+                PixelCanvas.SizeChanged -= OnPixelCanvasChanged;
+
+                Dispatcher.Dispatch(() =>
+                {
+                    CenterPixelCanvas();
+                });
+            }
+        }
+
+        private void SetScale()
+        {
+            scale = minScale;
+            PixelCanvas.Scale = scale;
+        }
+
+        
+
+        private void OnCenter(object sender, EventArgs e)
+        {
+            CenterPixelCanvas();
+        }
+
+        private async void CenterPixelCanvas()
+        {
+
+            Dispatcher.Dispatch(() => CanvasScroll.ScrollToAsync(PixelCanvas, ScrollToPosition.Center, false));
+
+            //await CanvasScroll.ScrollToAsync(PixelCanvas, ScrollToPosition.Center, animated: false);
         }
     }
 }
