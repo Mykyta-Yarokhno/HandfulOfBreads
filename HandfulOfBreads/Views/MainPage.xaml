@@ -23,6 +23,8 @@
                 <Button Text="Picture" />
                 <Button Text="Undo" />
                 <Button Text="Pattern Properties" />
+                <Button Text="Test Page"
+                        Clicked="OnNavigateButtonClicked"/>
             </HorizontalStackLayout>
         </ScrollView>
 

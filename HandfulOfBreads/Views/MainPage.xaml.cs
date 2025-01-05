@@ -11,6 +11,12 @@
             CreatePixelCanvas();
         }
 
+        private async void OnNavigateButtonClicked(object sender, EventArgs e)
+        {
+            //await Navigation.PushAsync(new TestPage());
+            await Navigation.PushModalAsync(new TestPage());
+        }
+
         private bool _isPanelVisible = false;
 
         private async void OnToggleClicked(object sender, EventArgs e)
@@ -84,7 +90,7 @@
             }
         }
 
-        
+
 
         private void OnZoomChanged(object sender, EventArgs e)
         {
@@ -92,10 +98,10 @@
                 return;
 
             if (button.Text == "+")
-                scale *= 1.1;  
+                scale *= 1.1;
             else if (button.Text == "-")
                 scale /= 1.1;
-            
+
             scale = Math.Max(minScale, Math.Min(scale, 1.0));
 
             PixelCanvas.Scale = scale;
@@ -147,7 +153,7 @@
             if (CanvasScroll.Width > 0)
             {
                 SetScale();
-                
+
                 PixelCanvas.SizeChanged -= OnPixelCanvasChanged;
 
                 Dispatcher.Dispatch(() =>
@@ -163,7 +169,7 @@
             PixelCanvas.Scale = scale;
         }
 
-        
+
 
         private void OnCenter(object sender, EventArgs e)
         {
