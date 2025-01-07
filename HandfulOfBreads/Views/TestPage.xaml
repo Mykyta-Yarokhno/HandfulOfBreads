@@ -3,12 +3,9 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="HandfulOfBreads.Views.TestPage"
              Title="TestPage">
-    <Grid>
-        <GraphicsView x:Name="PixelGraphicsView"
-                      Drawable="{Binding Drawable}"
-                      HorizontalOptions="FillAndExpand"
-                      VerticalOptions="FillAndExpand"
-                      StartInteraction="OnStartInteraction"
-                      DragInteraction="OnDragInteraction" />
-    </Grid>
+
+    <GraphicsView x:Name="PixelGraphicsView"
+                          Drawable="{Binding Drawable}"
+                          StartInteraction="OnStartInteraction"
+                          DragInteraction="OnDragInteraction" />
 </ContentPage>

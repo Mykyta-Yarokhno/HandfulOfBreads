@@ -14,7 +14,8 @@
         private async void OnNavigateButtonClicked(object sender, EventArgs e)
         {
             //await Navigation.PushAsync(new TestPage());
-            await Navigation.PushModalAsync(new TestPage());
+            //await Navigation.PushModalAsync(new TestPage());
+            await Navigation.PushModalAsync(new TestPage2());
         }
 
         private bool _isPanelVisible = false;

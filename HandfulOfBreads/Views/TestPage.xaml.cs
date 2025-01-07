@@ -1,10 +1,9 @@
 using CommunityToolkit.Maui.Core;
-
 namespace HandfulOfBreads.Views;
 public partial class TestPage : ContentPage
 {
     private readonly PixelGridDrawable _drawable = new();
-    private const int PixelSize = 20; // Размер одной клетки
+    private const int PixelSize = 20;
     private bool _isDrawing;
 
     public TestPage()
@@ -13,7 +12,6 @@ public partial class TestPage : ContentPage
         Drawable = _drawable;
         BindingContext = this;
 
-        // Инициализируем сетку размером 32x32
         _drawable.InitializeGrid(32, 32, PixelSize);
     }
 
@@ -21,13 +19,13 @@ public partial class TestPage : ContentPage
 
     private void OnStartInteraction(object sender, TouchEventArgs e)
     {
-        _isDrawing = true;
-        HandleInteraction(e.Touches[0]);
+            _isDrawing = true;
+            HandleInteraction(e.Touches[0]);
     }
 
     private void OnDragInteraction(object sender, TouchEventArgs e)
     {
-        if (_isDrawing)
+        if (_isDrawing )
         {
             HandleInteraction(e.Touches[0]);
         }
@@ -36,10 +34,9 @@ public partial class TestPage : ContentPage
     private void HandleInteraction(PointF touchPoint)
     {
         _drawable.TogglePixel(touchPoint.X, touchPoint.Y);
-        PixelGraphicsView.Invalidate(); // Обновить отображение
+        PixelGraphicsView.Invalidate();
     }
 }
-
 public class PixelGridDrawable : IDrawable
 {
     private readonly List<List<bool>> _grid = new();
@@ -53,7 +50,6 @@ public class PixelGridDrawable : IDrawable
         _columns = columns;
         _pixelSize = pixelSize;
 
-        // Инициализация сетки (false — пиксель не закрашен)
         _grid.Clear();
         for (int i = 0; i < rows; i++)
         {
@@ -69,7 +65,7 @@ public class PixelGridDrawable : IDrawable
     public void Draw(ICanvas canvas, RectF dirtyRect)
     {
         canvas.FillColor = Colors.White;
-        canvas.FillRectangle(dirtyRect); // Очистка экрана
+        canvas.FillRectangle(dirtyRect);
 
         for (int row = 0; row < _rows; row++)
         {
@@ -78,14 +74,12 @@ public class PixelGridDrawable : IDrawable
                 float x = col * _pixelSize;
                 float y = row * _pixelSize;
 
-                // Закрашенный пиксель
                 if (_grid[row][col])
                 {
                     canvas.FillColor = Colors.Black;
                     canvas.FillRectangle(x, y, _pixelSize, _pixelSize);
                 }
 
-                // Границы пикселей
                 canvas.StrokeColor = Colors.Gray;
                 canvas.StrokeSize = 1;
                 canvas.DrawRectangle(x, y, _pixelSize, _pixelSize);
@@ -100,11 +94,10 @@ public class PixelGridDrawable : IDrawable
 
         if (row >= 0 && row < _rows && col >= 0 && col < _columns)
         {
-            if (!_grid[row][col]) // Меняем цвет только если пиксель черный
+            if (!_grid[row][col])
             {
                 _grid[row][col] = true;
             }
         }
-    }   
+    }
 }
-
