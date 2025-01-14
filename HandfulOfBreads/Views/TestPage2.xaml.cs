@@ -6,8 +6,9 @@ public partial class TestPage2 : ContentPage
     private const int PixelSize = 40;
     private bool _isDrawing;
     private bool _isDragging;
-    private Point _lastPosition;
-    private double _initialX, _initialY;
+    private Point _startPosition1, _startPosition2;
+
+    public IDrawable Drawable { get; }
 
     public TestPage2()
     {
@@ -19,13 +20,14 @@ public partial class TestPage2 : ContentPage
 
         PixelGraphicsView.WidthRequest = 15 * PixelSize;
         PixelGraphicsView.HeightRequest = 15 * PixelSize;
-    }
 
-    public IDrawable Drawable { get; }
+        PixelGraphicsViewContainer.WidthRequest = 15 * PixelSize * 2;
+        PixelGraphicsViewContainer.HeightRequest = 15 * PixelSize * 2;
+    }
 
     private void OnStartInteraction(object sender, TouchEventArgs e)
     {
-        if (e.Touches.Count() == 1) 
+        if (e.Touches.Count() == 1)
         {
             _isDrawing = true;
             HandleInteraction(e.Touches[0]);
@@ -33,9 +35,9 @@ public partial class TestPage2 : ContentPage
         else if (e.Touches.Count() == 2)
         {
             _isDragging = true;
-            _lastPosition = e.Touches[0];
-            _initialX = AbsoluteLayout.GetLayoutBounds(PixelGraphicsView).X;
-            _initialY = AbsoluteLayout.GetLayoutBounds(PixelGraphicsView).Y;
+
+            _startPosition1 = e.Touches[0];
+            _startPosition2 = e.Touches[1];
         }
     }
 
@@ -47,11 +49,14 @@ public partial class TestPage2 : ContentPage
         }
         else if (_isDragging && e.Touches.Count() == 2)
         {
-            var touchPoint = e.Touches[0];
-            double offsetX = touchPoint.X - _lastPosition.X;
-            double offsetY = touchPoint.Y - _lastPosition.Y;
+            var currentTouch1 = e.Touches[0];
+            var currentTouch2 = e.Touches[1];
 
-            AbsoluteLayout.SetLayoutBounds(PixelGraphicsView, new Rect(_initialX + offsetX, _initialY + offsetY, PixelGraphicsView.Width, PixelGraphicsView.Height));
+            double avgOffsetX = ((currentTouch1.X - _startPosition1.X) + (currentTouch2.X - _startPosition2.X)) / 2;
+            double avgOffsetY = ((currentTouch1.Y - _startPosition1.Y) + (currentTouch2.Y - _startPosition2.Y)) / 2;
+
+            PixelGraphicsView.TranslationX += avgOffsetX;
+            PixelGraphicsView.TranslationY += avgOffsetY;
         }
     }
 
@@ -65,5 +70,22 @@ public partial class TestPage2 : ContentPage
     {
         _isDragging = false;
         _isDrawing = false;
+    }
+
+    private bool _isPanelVisible = false;
+    private async void OnToggleClicked(object sender, EventArgs e)
+    {
+        if (_isPanelVisible)
+        {
+            await SidePanel.TranslateTo(-SidePanel.Width, 0, 250);
+            SidePanel.WidthRequest = 0;
+        }
+        else
+        {
+            SidePanel.WidthRequest = 50;
+            await SidePanel.TranslateTo(0, 0, 250);
+        }
+
+        _isPanelVisible = !_isPanelVisible;
     }
 }

@@ -1,16 +1,55 @@
-<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+﻿<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:local="clr-namespace:HandfulOfBreads.Views"
              x:Class="HandfulOfBreads.Views.TestPage2"
              Title="TestPage2">
+    <Grid>
+        <Grid BackgroundColor="OrangeRed"
+              x:Name="PixelGraphicsViewContainer">
+            <GraphicsView 
+                x:Name="PixelGraphicsView"
+                Drawable="{Binding Drawable}"
+                StartInteraction="OnStartInteraction"
+                DragInteraction="OnDragInteraction"/>
+        </Grid>
 
-    <AbsoluteLayout BackgroundColor="OrangeRed" >
-        <GraphicsView 
-            x:Name="PixelGraphicsView"
-            Drawable="{Binding Drawable}"
-            StartInteraction="OnStartInteraction"
-            DragInteraction="OnDragInteraction"
-            AbsoluteLayout.LayoutBounds="0,0,AutoSize,AutoSize"
-            AbsoluteLayout.LayoutFlags="None"/>
-    </AbsoluteLayout>
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="*" />
+            </Grid.RowDefinitions>
+
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+
+            <ScrollView Orientation="Horizontal" Grid.Row="0" Grid.ColumnSpan="2" BackgroundColor="LightGray" Padding="5" HorizontalScrollBarVisibility="Never">
+                <HorizontalStackLayout Spacing="10">
+                    <Button Text="☰" Clicked="OnToggleClicked"/>
+                    <Button Text="New"/>
+                    <Button Text="Save"/>
+                    <Button Text="Preview"/>
+                    <Button Text="Picture"/>
+                    <Button Text="Undo"/>
+                    <Button Text="Pattern Properties"/>
+                    <Button Text="Test Page"/>
+                </HorizontalStackLayout>
+            </ScrollView>
+
+            <VerticalStackLayout x:Name="SidePanel"
+                                 Grid.Row="1"
+                                 Grid.Column="0"
+                                 BackgroundColor="LightGray"
+                                 Padding="5"
+                                 Spacing="10"
+                                 WidthRequest="0">
+                <Button Text="+"/>
+                <Button Text="-"/>
+                <Button Text="="/>
+                <Button Text="C"/>
+            </VerticalStackLayout>
+
+        </Grid>
+    </Grid>
 </ContentPage>

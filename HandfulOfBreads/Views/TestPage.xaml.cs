@@ -13,6 +13,7 @@ public partial class TestPage : ContentPage
         BindingContext = this;
 
         _drawable.InitializeGrid(32, 32, PixelSize);
+
     }
 
     public IDrawable Drawable { get; }
