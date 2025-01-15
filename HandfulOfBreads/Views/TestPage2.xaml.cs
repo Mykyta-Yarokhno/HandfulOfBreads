@@ -7,6 +7,8 @@ public partial class TestPage2 : ContentPage
     private bool _isDrawing;
     private bool _isDragging;
     private Point _startPosition1, _startPosition2;
+    private double scale = 0.5;
+    private double minScale = 0.5;
 
     public IDrawable Drawable { get; }
 
@@ -21,8 +23,10 @@ public partial class TestPage2 : ContentPage
         PixelGraphicsView.WidthRequest = 15 * PixelSize;
         PixelGraphicsView.HeightRequest = 15 * PixelSize;
 
-        PixelGraphicsViewContainer.WidthRequest = 15 * PixelSize * 2;
-        PixelGraphicsViewContainer.HeightRequest = 15 * PixelSize * 2;
+        PixelGraphicsViewContainer.WidthRequest = 15 * PixelSize * 10;
+        PixelGraphicsViewContainer.HeightRequest = 15 * PixelSize * 10;
+
+        PixelGraphicsViewContainer.Scale = scale;
     }
 
     private void OnStartInteraction(object sender, TouchEventArgs e)
@@ -66,12 +70,6 @@ public partial class TestPage2 : ContentPage
         PixelGraphicsView.Invalidate();
     }
 
-    private void OnEndInteraction(object sender, TouchEventArgs e)
-    {
-        _isDragging = false;
-        _isDrawing = false;
-    }
-
     private bool _isPanelVisible = false;
     private async void OnToggleClicked(object sender, EventArgs e)
     {
@@ -87,5 +85,33 @@ public partial class TestPage2 : ContentPage
         }
 
         _isPanelVisible = !_isPanelVisible;
+    }
+
+    private void OnZoomChanged(object sender, EventArgs e)
+    {
+        if (sender is not Button button)
+            return;
+
+        if (button.Text == "+")
+            scale *= 1.1;
+        else if (button.Text == "-")
+            scale /= 1.1;
+
+        scale = Math.Max(minScale, Math.Min(scale, 1.0));
+
+        PixelGraphicsViewContainer.Scale = scale;
+    }
+
+    private void OnEqualed(object sender, EventArgs e)
+    {
+        if (sender is not Button button)
+            return;
+
+        PixelGraphicsViewContainer.Scale = minScale;
+    }
+
+    private void OnCenter(object sender, EventArgs e)
+    {
+        return;
     }
 }

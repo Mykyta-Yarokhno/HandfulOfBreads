@@ -1,188 +1,143 @@
-﻿namespace HandfulOfBreads.Views
+﻿namespace HandfulOfBreads.Views;
+
+public partial class MainPage : ContentPage
 {
-    public partial class MainPage : ContentPage
+    private readonly PixelGridDrawable _drawable = new();
+    private const int PixelSize = 40;
+    private bool _isDrawing;
+    private bool _isDragging;
+    private Point _startPosition1, _startPosition2;
+    private double scale;
+    private double minScale;
+
+    public IDrawable Drawable { get; }
+
+    public MainPage()
     {
-        private double scale = 0.0;
-        private double minScale = 0.5;
+        InitializeComponent();
+        Drawable = _drawable;
+        BindingContext = this;
 
-        public MainPage()
+        _drawable.InitializeGrid(15, 30, PixelSize);
+
+        PixelGraphicsView.WidthRequest = 30 * PixelSize;
+        PixelGraphicsView.HeightRequest = 15 * PixelSize;
+
+        PixelGraphicsViewContainer.WidthRequest = 30 * PixelSize * 10;
+        PixelGraphicsViewContainer.HeightRequest = 15 * PixelSize * 10;
+
+    }
+
+    protected override void OnSizeAllocated(double width, double height)
+    {
+        base.OnSizeAllocated(width, height);
+
+        minScale = Math.Min(width / PixelGraphicsView.Width, height / PixelGraphicsView.Height);
+
+        scale = minScale;
+
+        PixelGraphicsViewContainer.Scale = minScale;
+}
+
+private async void OnNavigateButtonClicked(object sender, EventArgs e)
+    {
+        await Navigation.PushModalAsync(new TestPage2());
+    }
+
+    private void OnStartInteraction(object sender, TouchEventArgs e)
+    {
+        if (e.Touches.Count() == 1)
         {
-            InitializeComponent();
-            CreatePixelCanvas();
+            _isDrawing = true;
+            HandleInteraction(e.Touches[0]);
         }
-
-        private async void OnNavigateButtonClicked(object sender, EventArgs e)
+        else if (e.Touches.Count() == 2)
         {
-            //await Navigation.PushAsync(new TestPage());
-            //await Navigation.PushModalAsync(new TestPage());
-            await Navigation.PushModalAsync(new TestPage2());
-        }
+            _isDragging = true;
 
-        private bool _isPanelVisible = false;
-
-        private async void OnToggleClicked(object sender, EventArgs e)
-        {
-            if (_isPanelVisible)
-            {
-                await SidePanel.TranslateTo(-SidePanel.Width, 0, 250);
-                SidePanel.WidthRequest = 0;
-            }
-            else
-            {
-                SidePanel.WidthRequest = 50;
-                await SidePanel.TranslateTo(0, 0, 250);
-            }
-
-            _isPanelVisible = !_isPanelVisible;
-        }
-
-        private const int CellSize = 20;
-        private const int Rows = 40;
-        private const int Columns = 10;
-        private Color currentColor = Colors.Black;
-
-        private void CreatePixelCanvas()
-        {
-            for (int i = 0; i < Rows; i++)
-            {
-                PixelCanvas.RowDefinitions.Add(new RowDefinition { Height = new GridLength(CellSize) });
-            }
-
-            for (int j = 0; j < Columns; j++)
-            {
-                PixelCanvas.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(CellSize) });
-            }
-
-            for (int i = 0; i < Rows; i++)
-            {
-                for (int j = 0; j < Columns; j++)
-                {
-                    var box = new BoxView
-                    {
-                        BackgroundColor = Colors.White
-                    };
-
-                    var frame = new Frame
-                    {
-                        Content = box,
-                        Padding = 0,
-                        Margin = 0.5,
-                        BorderColor = Colors.Gray,
-                        CornerRadius = 0
-                    };
-
-                    var tapGesture = new TapGestureRecognizer();
-                    tapGesture.Tapped += OnCellTapped;
-                    frame.GestureRecognizers.Add(tapGesture);
-
-                    Grid.SetRow(frame, i);
-                    Grid.SetColumn(frame, j);
-
-                    PixelCanvas.Children.Add(frame);
-                }
-            }
-        }
-
-        private void OnCellTapped(object sender, EventArgs e)
-        {
-            if (sender is Frame frame && frame.Content is BoxView box)
-            {
-                box.BackgroundColor = currentColor;
-            }
-        }
-
-
-
-        private void OnZoomChanged(object sender, EventArgs e)
-        {
-            if (sender is not Button button)
-                return;
-
-            if (button.Text == "+")
-                scale *= 1.1;
-            else if (button.Text == "-")
-                scale /= 1.1;
-
-            scale = Math.Max(minScale, Math.Min(scale, 1.0));
-
-            PixelCanvas.Scale = scale;
-        }
-
-        private void OnEqualed(object sender, EventArgs e)
-        {
-            if (sender is not Button button)
-                return;
-
-            scale = Math.Min(CanvasScroll.Width / PixelCanvas.Width, CanvasScroll.Height / PixelCanvas.Height);
-
-            PixelCanvas.Scale = scale;
-
-            CenterPixelCanvas();
-        }
-
-        private async void OnCanvasScrollLoaded(object sender, EventArgs e)
-        {
-            CanvasScroll.SizeChanged += OnCanvasScrollSizeChanged;
-        }
-
-        private void OnCanvasScrollSizeChanged(object sender, EventArgs e)
-        {
-            if (CanvasScroll.Width > 0)
-            {
-                SetPadding();
-                CanvasScroll.SizeChanged -= OnCanvasScrollSizeChanged;
-            }
-        }
-
-        private void SetPadding()
-        {
-
-            double leftRightPadding = CanvasScroll.Width * 0.5;
-
-            double upDownPadding = CanvasScroll.Height * 0.5;
-
-            PixelCanvas.Padding = new Thickness(leftRightPadding, upDownPadding, leftRightPadding, upDownPadding);
-        }
-
-        private async void OnPixelCanvasLoaded(object sender, EventArgs e)
-        {
-            PixelCanvas.SizeChanged += OnPixelCanvasChanged;
-        }
-
-        private async void OnPixelCanvasChanged(object sender, EventArgs e)
-        {
-            if (CanvasScroll.Width > 0)
-            {
-                SetScale();
-
-                PixelCanvas.SizeChanged -= OnPixelCanvasChanged;
-
-                Dispatcher.Dispatch(() =>
-                {
-                    CenterPixelCanvas();
-                });
-            }
-        }
-
-        private void SetScale()
-        {
-            scale = minScale;
-            PixelCanvas.Scale = scale;
-        }
-
-
-
-        private void OnCenter(object sender, EventArgs e)
-        {
-            CenterPixelCanvas();
-        }
-
-        private async void CenterPixelCanvas()
-        {
-
-            Dispatcher.Dispatch(() => CanvasScroll.ScrollToAsync(PixelCanvas, ScrollToPosition.Center, false));
-
-            //await CanvasScroll.ScrollToAsync(PixelCanvas, ScrollToPosition.Center, animated: false);
+            _startPosition1 = e.Touches[0];
+            _startPosition2 = e.Touches[1];
         }
     }
+
+    private void OnDragInteraction(object sender, TouchEventArgs e)
+    {
+        if (_isDrawing && e.Touches.Count() == 1)
+        {
+            HandleInteraction(e.Touches[0]);
+        }
+        else if (_isDragging && e.Touches.Count() == 2)
+        {
+            var currentTouch1 = e.Touches[0];
+            var currentTouch2 = e.Touches[1];
+
+            double avgOffsetX = ((currentTouch1.X - _startPosition1.X) + (currentTouch2.X - _startPosition2.X)) / 2;
+            double avgOffsetY = ((currentTouch1.Y - _startPosition1.Y) + (currentTouch2.Y - _startPosition2.Y)) / 2;
+
+            PixelGraphicsView.TranslationX += avgOffsetX;
+            PixelGraphicsView.TranslationY += avgOffsetY;
+        }
+    }
+
+    private void HandleInteraction(PointF touchPoint)
+    {
+        _drawable.TogglePixel(touchPoint.X, touchPoint.Y);
+        PixelGraphicsView.Invalidate();
+    }
+
+    private bool _isPanelVisible = false;
+    private async void OnToggleClicked(object sender, EventArgs e)
+    {
+        if (_isPanelVisible)
+        {
+            await SidePanel.TranslateTo(-SidePanel.Width, 0, 250);
+            SidePanel.WidthRequest = 0;
+        }
+        else
+        {
+            SidePanel.WidthRequest = 50;
+            await SidePanel.TranslateTo(0, 0, 250);
+        }
+
+        _isPanelVisible = !_isPanelVisible;
+    }
+
+    private void OnZoomChanged(object sender, EventArgs e)
+    {
+        if (sender is not Button button)
+            return;
+
+        if (button.Text == "+")
+            scale *= 1.1;
+        else if (button.Text == "-")
+            scale /= 1.1;
+
+        scale = Math.Max(minScale, Math.Min(scale, 1.0));
+
+        PixelGraphicsViewContainer.Scale = scale;
+    }
+
+    private void OnMinimum(object sender, EventArgs e)
+    {
+
+        if (sender is not Button button)
+            return;
+
+        scale = minScale;
+        PixelGraphicsViewContainer.Scale = minScale;
+    }
+
+    private void OnCenter(object sender, EventArgs e)
+    {
+        CenterPixelCanvas();
+    }
+
+    private  void CenterPixelCanvas()
+    {
+        PixelGraphicsView.TranslationX = 0;
+        PixelGraphicsView.TranslationY = 0;
+
+        //Dispatcher.Dispatch(() => CanvasScroll.ScrollToAsync(PixelCanvas, ScrollToPosition.Center, false));
+    }
 }
+

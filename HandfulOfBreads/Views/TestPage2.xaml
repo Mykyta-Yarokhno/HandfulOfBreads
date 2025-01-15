@@ -44,10 +44,14 @@
                                  Padding="5"
                                  Spacing="10"
                                  WidthRequest="0">
-                <Button Text="+"/>
-                <Button Text="-"/>
-                <Button Text="="/>
-                <Button Text="C"/>
+                <Button Text="+"
+                        Clicked="OnZoomChanged"/>
+                <Button Text="-"
+                        Clicked="OnZoomChanged"/>
+                <Button Text="M"
+                        Clicked="OnEqualed"/>
+                <Button Text="C"
+                        Clicked="OnCenter"/>
             </VerticalStackLayout>
 
         </Grid>

@@ -3,58 +3,56 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="HandfulOfBreads.Views.MainPage">
     <Grid>
-        <Grid.RowDefinitions>
-            <RowDefinition Height="Auto" />
-            <RowDefinition Height="*" />
-        </Grid.RowDefinitions>
+        <Grid BackgroundColor="OrangeRed"
+           x:Name="PixelGraphicsViewContainer">
+            <GraphicsView 
+             x:Name="PixelGraphicsView"
+             Drawable="{Binding Drawable}"
+             StartInteraction="OnStartInteraction"
+             DragInteraction="OnDragInteraction"/>
+        </Grid>
 
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="Auto" />
-            <ColumnDefinition Width="*" />
-        </Grid.ColumnDefinitions>
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="*" />
+            </Grid.RowDefinitions>
 
-        <ScrollView Orientation="Horizontal" Grid.Row="0" Grid.ColumnSpan="2" BackgroundColor="LightGray" Padding="5" HorizontalScrollBarVisibility="Never">
-            <HorizontalStackLayout Spacing="10">
-                <Button Text="☰" 
-                        Clicked="OnToggleClicked"/>
-                <Button Text="New"/>
-                <Button Text="Save" />
-                <Button Text="Preview" />
-                <Button Text="Picture" />
-                <Button Text="Undo" />
-                <Button Text="Pattern Properties" />
-                <Button Text="Test Page"
-                        Clicked="OnNavigateButtonClicked"/>
-            </HorizontalStackLayout>
-        </ScrollView>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
 
-        <VerticalStackLayout x:Name="SidePanel"
-                             Grid.Row="1"
-                             Grid.Column="0"
-                             BackgroundColor="LightGray"
-                             Padding="5"
-                             Spacing="10"
-                             WidthRequest="0">
-            <Button Text="+"
-                    Clicked="OnZoomChanged"/>
-            <Button Text="-"
-                    Clicked="OnZoomChanged"/>
-            <Button Text="="
-                        Clicked="OnEqualed"/>
-            <Button Text="C"
-                        Clicked="OnCenter"/>
-        </VerticalStackLayout>
+            <ScrollView Orientation="Horizontal" Grid.Row="0" Grid.ColumnSpan="2" BackgroundColor="LightGray" Padding="5" HorizontalScrollBarVisibility="Never">
+                <HorizontalStackLayout Spacing="10">
+                    <Button Text="☰" Clicked="OnToggleClicked"/>
+                    <Button Text="New"/>
+                    <Button Text="Save"/>
+                    <Button Text="Preview"/>
+                    <Button Text="Picture"/>
+                    <Button Text="Undo"/>
+                    <Button Text="Pattern Properties"/>
+                    <Button Text="Test Page"/>
+                </HorizontalStackLayout>
+            </ScrollView>
 
-        <ScrollView x:Name="CanvasScroll" 
-                    Orientation="Both" 
-                    Grid.Row="1" Grid.Column="1" 
-                    HorizontalScrollBarVisibility="Never" 
-                    VerticalScrollBarVisibility="Never"
-                    Loaded="OnCanvasScrollLoaded">
-            <Grid x:Name="PixelCanvas"
-                  Loaded="OnPixelCanvasLoaded">
+            <VerticalStackLayout x:Name="SidePanel"
+                              Grid.Row="1"
+                              Grid.Column="0"
+                              BackgroundColor="LightGray"
+                              Padding="5"
+                              Spacing="10"
+                              WidthRequest="0">
+                <Button Text="+"
+                     Clicked="OnZoomChanged"/>
+                <Button Text="-"
+                     Clicked="OnZoomChanged"/>
+                <Button Text="M"
+                     Clicked="OnMinimum"/>
+                <Button Text="C"
+                     Clicked="OnCenter"/>
+            </VerticalStackLayout>
 
-            </Grid>
-        </ScrollView>
+        </Grid>
     </Grid>
 </ContentPage>
