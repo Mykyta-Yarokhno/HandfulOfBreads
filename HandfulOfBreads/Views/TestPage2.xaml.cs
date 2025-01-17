@@ -1,3 +1,5 @@
+using HandfulOfBreads.Drawables;
+
 namespace HandfulOfBreads.Views;
 
 public partial class TestPage2 : ContentPage

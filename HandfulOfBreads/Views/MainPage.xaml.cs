@@ -1,4 +1,10 @@
-﻿namespace HandfulOfBreads.Views;
+﻿using HandfulOfBreads.Drawables;
+using HandfulOfBreads.Services;
+using Microsoft.Maui.Graphics.Platform;
+using System.Reflection;
+using IImage = Microsoft.Maui.Graphics.IImage;
+
+namespace HandfulOfBreads.Views;
 
 public partial class MainPage : ContentPage
 {
@@ -10,22 +16,47 @@ public partial class MainPage : ContentPage
     private double scale;
     private double minScale;
 
+    private readonly ImageSavingService _imageSavingService = new ImageSavingService();
+
     public IDrawable Drawable { get; }
 
-    public MainPage()
+    public MainPage(int firstNumber, int secondNumber)
     {
         InitializeComponent();
         Drawable = _drawable;
         BindingContext = this;
 
-        _drawable.InitializeGrid(15, 30, PixelSize);
+        InitializeDrawable(firstNumber, secondNumber);
+    }
 
-        PixelGraphicsView.WidthRequest = 30 * PixelSize;
-        PixelGraphicsView.HeightRequest = 15 * PixelSize;
+    private async void InitializeDrawable(int firstNumber, int secondNumber)
+    {
+        ImageSource imageSource = ImageSource.FromFile("bonk.png");
 
-        PixelGraphicsViewContainer.WidthRequest = 30 * PixelSize * 10;
-        PixelGraphicsViewContainer.HeightRequest = 15 * PixelSize * 10;
+        var image  = LoadImageAsIImage();
 
+        _drawable.InitializeGrid(secondNumber, firstNumber, PixelSize, image);
+
+        PixelGraphicsView.WidthRequest = firstNumber * PixelSize;
+        PixelGraphicsView.HeightRequest = secondNumber * PixelSize;
+
+        PixelGraphicsViewContainer.WidthRequest = firstNumber * PixelSize * 10;
+        PixelGraphicsViewContainer.HeightRequest = secondNumber * PixelSize * 10;
+    } 
+
+    private IImage? LoadImageAsIImage()
+    {
+        IImage image;
+
+        Assembly assembly = GetType().GetTypeInfo().Assembly;
+
+        using (Stream stream = assembly.GetManifestResourceStream("HandfulOfBreads.Resources.Images.bonk.png"))
+        {
+                
+            image = PlatformImage.FromStream(stream);
+        }
+
+        return image;
     }
 
     protected override void OnSizeAllocated(double width, double height)
@@ -37,9 +68,9 @@ public partial class MainPage : ContentPage
         scale = minScale;
 
         PixelGraphicsViewContainer.Scale = minScale;
-}
+    }
 
-private async void OnNavigateButtonClicked(object sender, EventArgs e)
+    private async void OnNavigateButtonClicked(object sender, EventArgs e)
     {
         await Navigation.PushModalAsync(new TestPage2());
     }
@@ -139,5 +170,12 @@ private async void OnNavigateButtonClicked(object sender, EventArgs e)
 
         //Dispatcher.Dispatch(() => CanvasScroll.ScrollToAsync(PixelCanvas, ScrollToPosition.Center, false));
     }
+
+    public async void OnSaveClicked(object sender, EventArgs e)
+    {
+        _imageSavingService.SaveImageToGalleryAsync(_drawable);
+    }
+
 }
+
 

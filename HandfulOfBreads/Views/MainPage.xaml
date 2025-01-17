@@ -25,14 +25,17 @@
 
             <ScrollView Orientation="Horizontal" Grid.Row="0" Grid.ColumnSpan="2" BackgroundColor="LightGray" Padding="5" HorizontalScrollBarVisibility="Never">
                 <HorizontalStackLayout Spacing="10">
-                    <Button Text="☰" Clicked="OnToggleClicked"/>
+                    <Button Text="☰" 
+                            Clicked="OnToggleClicked"/>
                     <Button Text="New"/>
-                    <Button Text="Save"/>
+                    <Button Text="Save"
+                            Clicked="OnSaveClicked"/>
                     <Button Text="Preview"/>
                     <Button Text="Picture"/>
                     <Button Text="Undo"/>
                     <Button Text="Pattern Properties"/>
-                    <Button Text="Test Page"/>
+                    <Button Text="Test Page"
+                            Clicked="OnNavigateButtonClicked"/>
                 </HorizontalStackLayout>
             </ScrollView>
 

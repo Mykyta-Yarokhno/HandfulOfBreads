@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="HandfulOfBreads.Views.StartPage">
+    <StackLayout Padding="20" VerticalOptions="Center">
+        <Label Text="Enter first number (0-100):" />
+        <Entry x:Name="FirstNumberEntry"
+               Keyboard="Numeric"
+               Text="20"
+               TextChanged="OnEntryTextChanged" 
+               Placeholder="0-100" />
+
+        <Label Text="Enter second number (0-100):" />
+        <Entry x:Name="SecondNumberEntry"
+               Keyboard="Numeric"
+               Text="10"
+               TextChanged="OnEntryTextChanged"
+               Placeholder="0-100" />
+
+        <Button Text="OK"
+                IsEnabled="True"
+                Clicked="OnOkButtonClicked"
+                x:Name="OkButton" />
+    </StackLayout>
+</ContentPage>
