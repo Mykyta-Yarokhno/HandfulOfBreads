@@ -27,13 +27,10 @@
                 <HorizontalStackLayout Spacing="10">
                     <Button Text="☰" 
                             Clicked="OnToggleClicked"/>
-                    <Button Text="New"/>
+                    <Button Text="New"
+                            Clicked="OnNewButtonClicked"/>
                     <Button Text="Save"
                             Clicked="OnSaveClicked"/>
-                    <Button Text="Preview"/>
-                    <Button Text="Picture"/>
-                    <Button Text="Undo"/>
-                    <Button Text="Pattern Properties"/>
                     <Button Text="Test Page"
                             Clicked="OnNavigateButtonClicked"/>
                 </HorizontalStackLayout>

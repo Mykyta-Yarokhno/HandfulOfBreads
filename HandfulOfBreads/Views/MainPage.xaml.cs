@@ -17,6 +17,7 @@ public partial class MainPage : ContentPage
     private double minScale;
 
     private readonly ImageSavingService _imageSavingService = new ImageSavingService();
+    private NewGraphicsViewPageModal _modal;
 
     public IDrawable Drawable { get; }
 
@@ -68,6 +69,20 @@ public partial class MainPage : ContentPage
         scale = minScale;
 
         PixelGraphicsViewContainer.Scale = minScale;
+    }
+
+    private async void OnNewButtonClicked(object sender, EventArgs e)
+    {
+        var modalPage = new NewGraphicsViewPageModal();
+
+        modalPage.Confirmed += OnModalConfirmed;
+
+        await Navigation.PushModalAsync(modalPage);
+    }
+
+    private void OnModalConfirmed(object sender, (int firstNumber, int secondNumber) args)
+    {
+        InitializeDrawable(args.firstNumber, args.secondNumber);
     }
 
     private async void OnNavigateButtonClicked(object sender, EventArgs e)

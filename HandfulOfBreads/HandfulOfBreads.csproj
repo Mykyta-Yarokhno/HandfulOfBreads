@@ -84,12 +84,18 @@
 	</ItemGroup>
 
 	<ItemGroup>
+	  <Compile Update="Views\NewGraphicsViewPageModal.xaml.cs">
+	    <DependentUpon>NewGraphicsViewPageModal.xaml</DependentUpon>
+	  </Compile>
 	  <Compile Update="Views\TestPage2.xaml.cs">
 	    <DependentUpon>TestPage2.xaml</DependentUpon>
 	  </Compile>
 	</ItemGroup>
 
 	<ItemGroup>
+	  <MauiXaml Update="Views\NewGraphicsViewPageModal.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	  </MauiXaml>
 	  <MauiXaml Update="Views\StartPage.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
