@@ -1,10 +1,10 @@
-using HandfulOfBreads.Drawables;
+using HandfulOfBreads.Graphics.DrawablePatterns;
 
 namespace HandfulOfBreads.Views;
 
 public partial class TestPage2 : ContentPage
 {
-    private readonly PixelGridDrawable _drawable = new();
+    private readonly LoomPatternDrawable _drawable = new();
     private const int PixelSize = 40;
     private bool _isDrawing;
     private bool _isDragging;

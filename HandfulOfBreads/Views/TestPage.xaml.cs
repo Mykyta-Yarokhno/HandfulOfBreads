@@ -1,9 +1,10 @@
 using CommunityToolkit.Maui.Core;
-using HandfulOfBreads.Drawables;
+using HandfulOfBreads.Graphics.DrawablePatterns;
+
 namespace HandfulOfBreads.Views;
 public partial class TestPage : ContentPage
 {
-    private readonly PixelGridDrawable _drawable = new();
+    private readonly LoomPatternDrawable _drawable = new();
     private const int PixelSize = 20;
     private bool _isDrawing;
 

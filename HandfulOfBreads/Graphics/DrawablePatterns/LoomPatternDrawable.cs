@@ -2,9 +2,9 @@
 using System.Reflection;
 using IImage = Microsoft.Maui.Graphics.IImage;
 
-namespace HandfulOfBreads.Drawables
+namespace HandfulOfBreads.Graphics.DrawablePatterns
 {
-    internal class PixelGridDrawable : IDrawable
+    internal class LoomPatternDrawable : IPatternDrawable
     {
         private readonly List<List<bool>> _grid = new();
         private int _rows;
@@ -26,6 +26,7 @@ namespace HandfulOfBreads.Drawables
             for (int i = 0; i < rows; i++)
             {
                 var row = new List<bool>();
+
                 for (int j = 0; j < columns; j++)
                 {
                     row.Add(false);
@@ -147,3 +148,4 @@ namespace HandfulOfBreads.Drawables
         }
     }
 }
+

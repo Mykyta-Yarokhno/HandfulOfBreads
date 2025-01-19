@@ -3,6 +3,16 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="HandfulOfBreads.Views.StartPage">
     <StackLayout Padding="20" VerticalOptions="Center">
+        <Label Text="Select stitch:" />
+        <Picker x:Name="PatternPicker"
+                Title="Choose a stitch"
+                SelectedIndexChanged="OnPatternPickerSelectedIndexChanged">
+            <Picker.Items>
+                <x:String>Loom</x:String>
+                <x:String>Brick</x:String>
+                <x:String>Payote</x:String>
+            </Picker.Items>
+        </Picker>
         <Label Text="Enter first number (0-100):" />
         <Entry x:Name="FirstNumberEntry"
                Keyboard="Numeric"

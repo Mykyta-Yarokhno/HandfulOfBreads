@@ -1,4 +1,4 @@
-﻿using HandfulOfBreads.Drawables;
+﻿using HandfulOfBreads.Graphics.DrawablePatterns;
 using HandfulOfBreads.Services;
 using Microsoft.Maui.Graphics.Platform;
 using System.Reflection;
@@ -8,7 +8,7 @@ namespace HandfulOfBreads.Views;
 
 public partial class MainPage : ContentPage
 {
-    private readonly PixelGridDrawable _drawable = new();
+    private IPatternDrawable _currentPattern;
     private const int PixelSize = 40;
     private bool _isDrawing;
     private bool _isDragging;
@@ -17,32 +17,51 @@ public partial class MainPage : ContentPage
     private double minScale;
 
     private readonly ImageSavingService _imageSavingService = new ImageSavingService();
-    private NewGraphicsViewPageModal _modal;
 
     public IDrawable Drawable { get; }
 
-    public MainPage(int firstNumber, int secondNumber)
+    public MainPage(int firstNumber, int secondNumber, string selectedPattern)
     {
         InitializeComponent();
-        Drawable = _drawable;
+
+        if (selectedPattern == "Loom")
+        {
+            _currentPattern = new LoomPatternDrawable();
+
+            PixelGraphicsView.WidthRequest = firstNumber * PixelSize;
+            PixelGraphicsView.HeightRequest = secondNumber * PixelSize ;
+        }
+        else if (selectedPattern == "Brick")
+        {
+            _currentPattern = new BrickPatternDrawable();
+
+            PixelGraphicsView.WidthRequest = firstNumber * PixelSize;
+            PixelGraphicsView.HeightRequest = secondNumber * PixelSize + 20;
+        }
+        //else if (selectedPattern == "Payote")
+        //{
+        //    _currentPattern = new PayotePatternDrawable();
+        //}
+
+        Drawable = _currentPattern;
         BindingContext = this;
 
         InitializeDrawable(firstNumber, secondNumber);
+
+        
+
+        PixelGraphicsViewContainer.WidthRequest = firstNumber * PixelSize * 10;
+        PixelGraphicsViewContainer.HeightRequest = secondNumber * PixelSize * 10;
     }
 
-    private async void InitializeDrawable(int firstNumber, int secondNumber)
+    private void InitializeDrawable(int firstNumber, int secondNumber)
     {
         ImageSource imageSource = ImageSource.FromFile("bonk.png");
 
         var image  = LoadImageAsIImage();
 
-        _drawable.InitializeGrid(secondNumber, firstNumber, PixelSize, image);
-
-        PixelGraphicsView.WidthRequest = firstNumber * PixelSize;
-        PixelGraphicsView.HeightRequest = secondNumber * PixelSize;
-
-        PixelGraphicsViewContainer.WidthRequest = firstNumber * PixelSize * 10;
-        PixelGraphicsViewContainer.HeightRequest = secondNumber * PixelSize * 10;
+        _currentPattern.InitializeGrid(secondNumber, firstNumber, PixelSize, image);
+ 
     } 
 
     private IImage? LoadImageAsIImage()
@@ -127,7 +146,7 @@ public partial class MainPage : ContentPage
 
     private void HandleInteraction(PointF touchPoint)
     {
-        _drawable.TogglePixel(touchPoint.X, touchPoint.Y);
+        _currentPattern.TogglePixel(touchPoint.X, touchPoint.Y);
         PixelGraphicsView.Invalidate();
     }
 
@@ -188,7 +207,7 @@ public partial class MainPage : ContentPage
 
     public async void OnSaveClicked(object sender, EventArgs e)
     {
-        _imageSavingService.SaveImageToGalleryAsync(_drawable);
+        _imageSavingService.SaveImageToGalleryAsync(_currentPattern);
     }
 
 }

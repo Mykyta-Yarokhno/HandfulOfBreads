@@ -25,11 +25,29 @@ public partial class StartPage : ContentPage
         return false;
     }
 
+    private void OnPatternPickerSelectedIndexChanged(object sender, EventArgs e)
+    {
+        if (/*PatternPicker.SelectedIndex == 1 ||*/ PatternPicker.SelectedIndex == 2)
+        {
+            DisplayAlert("Unavailable", "This option is currently disabled.", "OK");
+            PatternPicker.SelectedIndex = 0;
+        }
+    }
+
     private async void OnOkButtonClicked(object sender, EventArgs e)
     {
+
+        string selectedPattern = PatternPicker.SelectedItem?.ToString();
+
+        if (string.IsNullOrWhiteSpace(selectedPattern))
+        {
+            DisplayAlert("Error", "Please select a pattern.", "OK");
+            return;
+        }
+
         int firstNumber = int.Parse(FirstNumberEntry.Text);
         int secondNumber = int.Parse(SecondNumberEntry.Text);
 
-        await Navigation.PushModalAsync(new MainPage(firstNumber, secondNumber));
+        await Navigation.PushModalAsync(new MainPage(firstNumber, secondNumber, selectedPattern));
     }
 }

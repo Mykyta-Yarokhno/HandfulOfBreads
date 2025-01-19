@@ -1,11 +1,10 @@
-﻿using HandfulOfBreads.Drawables;
-using SkiaSharp;
+﻿using HandfulOfBreads.Graphics.DrawablePatterns;
 
 namespace HandfulOfBreads.Services
 {
     internal class ImageSavingService
     {
-        public async Task SaveImageToGalleryAsync(PixelGridDrawable _drawable)
+        public async Task SaveImageToGalleryAsync(IPatternDrawable _drawable)
         {
             #if ANDROID
                         var fileName = $"pixel_grid_{DateTime.Now:yyyyMMdd_HHmmss}.png";
