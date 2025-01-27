@@ -51,6 +51,9 @@
                      Clicked="OnMinimum"/>
                 <Button Text="C"
                      Clicked="OnCenter"/>
+                <Button x:Name="OpenColorPickerButton" 
+                        Clicked="OnOpenColorPickerClicked" 
+                        BackgroundColor="White"  />    
             </VerticalStackLayout>
 
         </Grid>

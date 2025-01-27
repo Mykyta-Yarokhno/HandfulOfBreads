@@ -58,14 +58,19 @@
 
 	<ItemGroup>
 	  <MauiImage Remove="Resources\Images\bonk.png" />
+	  <MauiImage Remove="Resources\Images\color_palette.png" />
 	</ItemGroup>
 
 	<ItemGroup>
 	  <None Remove="Resources\Images\bonk.png" />
+	  <None Remove="Resources\Images\color_palette.png" />
 	</ItemGroup>
 
 	<ItemGroup>
 	  <EmbeddedResource Include="Resources\Images\bonk.png">
+	    <CopyToOutputDirectory></CopyToOutputDirectory>
+	  </EmbeddedResource>
+	  <EmbeddedResource Include="Resources\Images\color_palette.png">
 	    <CopyToOutputDirectory></CopyToOutputDirectory>
 	  </EmbeddedResource>
 	</ItemGroup>
@@ -87,6 +92,9 @@
 	  <Compile Update="Views\NewGraphicsViewPageModal.xaml.cs">
 	    <DependentUpon>NewGraphicsViewPageModal.xaml</DependentUpon>
 	  </Compile>
+	  <Compile Update="Views\Popups\ColorPickerPopup.xaml.cs">
+	    <DependentUpon>ColorPickerPopup.xaml</DependentUpon>
+	  </Compile>
 	  <Compile Update="Views\TestPage2.xaml.cs">
 	    <DependentUpon>TestPage2.xaml</DependentUpon>
 	  </Compile>
@@ -94,6 +102,9 @@
 
 	<ItemGroup>
 	  <MauiXaml Update="Views\NewGraphicsViewPageModal.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	  </MauiXaml>
+	  <MauiXaml Update="Views\Popups\ColorPickerPopup.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
 	  <MauiXaml Update="Views\StartPage.xaml">

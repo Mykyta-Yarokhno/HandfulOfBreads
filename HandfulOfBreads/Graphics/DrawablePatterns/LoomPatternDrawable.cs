@@ -6,12 +6,20 @@ namespace HandfulOfBreads.Graphics.DrawablePatterns
 {
     internal class LoomPatternDrawable : IPatternDrawable
     {
-        private readonly List<List<bool>> _grid = new();
+        private readonly List<List<Color>> _grid = new();
         private int _rows;
         private int _columns;
         private int _pixelSize;
 
         private IImage? _fillImage;
+
+        private Color _selectedColor = Colors.White;
+
+        public Color SelectedColor
+        {
+            get => _selectedColor;
+            set => _selectedColor = value;
+        }
 
         public void InitializeGrid(int rows, int columns, int pixelSize, IImage? fillImage = null)
         {
@@ -19,17 +27,16 @@ namespace HandfulOfBreads.Graphics.DrawablePatterns
             _columns = columns;
             _pixelSize = pixelSize;
 
-            _fillImage = fillImage;
+            _fillImage = null;
 
             _grid.Clear();
 
             for (int i = 0; i < rows; i++)
             {
-                var row = new List<bool>();
-
+                var row = new List<Color>();
                 for (int j = 0; j < columns; j++)
                 {
-                    row.Add(false);
+                    row.Add(Colors.Transparent);
                 }
                 _grid.Add(row);
             }
@@ -47,7 +54,7 @@ namespace HandfulOfBreads.Graphics.DrawablePatterns
                     float x = col * _pixelSize;
                     float y = row * _pixelSize;
 
-                    if (_grid[row][col])
+                    if (_grid[row][col] != Colors.Transparent)
                     {
                         if (_fillImage != null)
                         {
@@ -55,7 +62,7 @@ namespace HandfulOfBreads.Graphics.DrawablePatterns
                         }
                         else
                         {
-                            canvas.FillColor = Colors.Black;
+                            canvas.FillColor = _grid[row][col];
                             canvas.FillRectangle(x, y, _pixelSize, _pixelSize);
                         }
                     }
@@ -74,10 +81,7 @@ namespace HandfulOfBreads.Graphics.DrawablePatterns
 
             if (row >= 0 && row < _rows && col >= 0 && col < _columns)
             {
-                if (!_grid[row][col])
-                {
-                    _grid[row][col] = true;
-                }
+                _grid[row][col] = _selectedColor;
             }
         }
 
@@ -88,6 +92,16 @@ namespace HandfulOfBreads.Graphics.DrawablePatterns
             if (stream == null) return null;
 
             return SKBitmap.Decode(stream);
+        }
+
+        private SKColor ConvertToSKColor(Color color)
+        {
+            return new SKColor(
+                (byte)(color.Red * 255),
+                (byte)(color.Green * 255),
+                (byte)(color.Blue * 255),
+                (byte)(color.Alpha * 255)
+            );
         }
 
         public async Task SaveToFileAsync(string filePath)
@@ -102,6 +116,7 @@ namespace HandfulOfBreads.Graphics.DrawablePatterns
 
             var resourcePath = "HandfulOfBreads.Resources.Images.bonk.png";
             var _fillImage2 = LoadBitmapFromResource(resourcePath);
+            _fillImage2 = null;
 
             for (int row = 0; row < _rows; row++)
             {
@@ -110,7 +125,7 @@ namespace HandfulOfBreads.Graphics.DrawablePatterns
                     float x = col * _pixelSize;
                     float y = row * _pixelSize;
 
-                    if (_grid[row][col])
+                    if (_grid[row][col] != Colors.Transparent)
                     {
                         if (_fillImage2 != null && _fillImage2 is SKBitmap bitmap)
                         {
@@ -121,7 +136,7 @@ namespace HandfulOfBreads.Graphics.DrawablePatterns
                         {
                             using var paint = new SKPaint
                             {
-                                Color = SKColors.Black,
+                                Color = ConvertToSKColor(_grid[row][col]),
                                 Style = SKPaintStyle.Fill
                             };
                             canvas.DrawRect(x, y, _pixelSize, _pixelSize, paint);

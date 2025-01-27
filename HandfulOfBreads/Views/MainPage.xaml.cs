@@ -1,6 +1,9 @@
-﻿using HandfulOfBreads.Graphics.DrawablePatterns;
+﻿using CommunityToolkit.Maui.Views;
+using HandfulOfBreads.Graphics.DrawablePatterns;
 using HandfulOfBreads.Services;
+using HandfulOfBreads.Views.Popups;
 using Microsoft.Maui.Graphics.Platform;
+using SkiaSharp;
 using System.Reflection;
 using IImage = Microsoft.Maui.Graphics.IImage;
 
@@ -29,7 +32,7 @@ public partial class MainPage : ContentPage
             _currentPattern = new LoomPatternDrawable();
 
             PixelGraphicsView.WidthRequest = firstNumber * PixelSize;
-            PixelGraphicsView.HeightRequest = secondNumber * PixelSize ;
+            PixelGraphicsView.HeightRequest = secondNumber * PixelSize;
         }
         else if (selectedPattern == "Brick")
         {
@@ -48,7 +51,7 @@ public partial class MainPage : ContentPage
 
         InitializeDrawable(firstNumber, secondNumber);
 
-        
+
 
         PixelGraphicsViewContainer.WidthRequest = firstNumber * PixelSize * 10;
         PixelGraphicsViewContainer.HeightRequest = secondNumber * PixelSize * 10;
@@ -58,11 +61,11 @@ public partial class MainPage : ContentPage
     {
         ImageSource imageSource = ImageSource.FromFile("bonk.png");
 
-        var image  = LoadImageAsIImage();
+        var image = LoadImageAsIImage();
 
         _currentPattern.InitializeGrid(secondNumber, firstNumber, PixelSize, image);
- 
-    } 
+
+    }
 
     private IImage? LoadImageAsIImage()
     {
@@ -72,7 +75,7 @@ public partial class MainPage : ContentPage
 
         using (Stream stream = assembly.GetManifestResourceStream("HandfulOfBreads.Resources.Images.bonk.png"))
         {
-                
+
             image = PlatformImage.FromStream(stream);
         }
 
@@ -197,7 +200,7 @@ public partial class MainPage : ContentPage
         CenterPixelCanvas();
     }
 
-    private  void CenterPixelCanvas()
+    private void CenterPixelCanvas()
     {
         PixelGraphicsView.TranslationX = 0;
         PixelGraphicsView.TranslationY = 0;
@@ -210,6 +213,17 @@ public partial class MainPage : ContentPage
         _imageSavingService.SaveImageToGalleryAsync(_currentPattern);
     }
 
-}
+    private async void OnOpenColorPickerClicked(object sender, EventArgs e)
+    {
+        var colorPickerPopup = new ColorPickerPopup();
+        var result = await this.ShowPopupAsync(colorPickerPopup);
 
+        if (result is Color selectedColor)
+        {
+            _currentPattern.SelectedColor = selectedColor;
+            OpenColorPickerButton.BackgroundColor = selectedColor;
+        }
+    }
+
+}
 
