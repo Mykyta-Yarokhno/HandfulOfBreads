@@ -88,23 +88,9 @@ public partial class MainPage : ContentPage
 
         minScale = Math.Min(width / PixelGraphicsView.Width, height / PixelGraphicsView.Height);
 
-        scale = minScale;
+        scale = minScale ;
 
         PixelGraphicsViewContainer.Scale = minScale;
-    }
-
-    private async void OnNewButtonClicked(object sender, EventArgs e)
-    {
-        var modalPage = new NewGraphicsViewPageModal();
-
-        modalPage.Confirmed += OnModalConfirmed;
-
-        await Navigation.PushModalAsync(modalPage);
-    }
-
-    private void OnModalConfirmed(object sender, (int firstNumber, int secondNumber) args)
-    {
-        InitializeDrawable(args.firstNumber, args.secondNumber);
     }
 
     private async void OnNavigateButtonClicked(object sender, EventArgs e)
@@ -112,11 +98,15 @@ public partial class MainPage : ContentPage
         await Navigation.PushModalAsync(new TestPage2());
     }
 
+    private PointF? _previousTouchPoint = null;
+
     private void OnStartInteraction(object sender, TouchEventArgs e)
     {
         if (e.Touches.Count() == 1)
         {
             _isDrawing = true;
+            _previousTouchPoint = null;
+
             HandleInteraction(e.Touches[0]);
         }
         else if (e.Touches.Count() == 2)
@@ -149,7 +139,30 @@ public partial class MainPage : ContentPage
 
     private void HandleInteraction(PointF touchPoint)
     {
+        if (_previousTouchPoint.HasValue)
+        {
+            var previousPoint = _previousTouchPoint.Value;
+            float deltaX = touchPoint.X - previousPoint.X;
+            float deltaY = touchPoint.Y - previousPoint.Y;
+            int steps = (int)Math.Max(Math.Abs(deltaX), Math.Abs(deltaY));
+
+            for (int i = 1; i <= steps; i++)
+            {
+                float interpolatedX = previousPoint.X + deltaX * i / steps;
+                float interpolatedY = previousPoint.Y + deltaY * i / steps;
+                _currentPattern.TogglePixel(interpolatedX, interpolatedY);
+            }
+        }
+
         _currentPattern.TogglePixel(touchPoint.X, touchPoint.Y);
+        //PixelGraphicsView.Invalidate();
+
+        _previousTouchPoint = touchPoint;
+    }
+
+    private void OnEndInteraction(object sender, TouchEventArgs e)
+    {
+        _previousTouchPoint = null;
         PixelGraphicsView.Invalidate();
     }
 
@@ -187,7 +200,6 @@ public partial class MainPage : ContentPage
 
     private void OnMinimum(object sender, EventArgs e)
     {
-
         if (sender is not Button button)
             return;
 
@@ -225,5 +237,12 @@ public partial class MainPage : ContentPage
         }
     }
 
+    private async void OnNewButtonClicked(object sender, EventArgs e)
+    {
+        var result = new NewGraphicsViewPopup();
+        await this.ShowPopupAsync(result);
+
+        InitializeDrawable(result.FirstNumber, result.SecondNumber);
+    }
 }
 

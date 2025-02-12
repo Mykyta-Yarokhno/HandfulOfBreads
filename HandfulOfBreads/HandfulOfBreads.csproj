@@ -89,9 +89,6 @@
 	</ItemGroup>
 
 	<ItemGroup>
-	  <Compile Update="Views\NewGraphicsViewPageModal.xaml.cs">
-	    <DependentUpon>NewGraphicsViewPageModal.xaml</DependentUpon>
-	  </Compile>
 	  <Compile Update="Views\Popups\ColorPickerPopup.xaml.cs">
 	    <DependentUpon>ColorPickerPopup.xaml</DependentUpon>
 	  </Compile>
@@ -101,10 +98,10 @@
 	</ItemGroup>
 
 	<ItemGroup>
-	  <MauiXaml Update="Views\NewGraphicsViewPageModal.xaml">
+	  <MauiXaml Update="Views\Popups\ColorPickerPopup.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
-	  <MauiXaml Update="Views\Popups\ColorPickerPopup.xaml">
+	  <MauiXaml Update="Views\Popups\NewGraphicsViewPopup.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
 	  <MauiXaml Update="Views\StartPage.xaml">

@@ -163,4 +163,3 @@ namespace HandfulOfBreads.Graphics.DrawablePatterns
         }
     }
 }
-

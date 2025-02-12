@@ -9,7 +9,8 @@
              x:Name="PixelGraphicsView"
              Drawable="{Binding Drawable}"
              StartInteraction="OnStartInteraction"
-             DragInteraction="OnDragInteraction"/>
+             DragInteraction="OnDragInteraction"
+             EndInteraction="OnEndInteraction"/>
         </Grid>
 
         <Grid>
