@@ -34,8 +34,20 @@
                             Clicked="OnSaveClicked"/>
                     <Button Text="Test Page"
                             Clicked="OnNavigateButtonClicked"/>
+                    <Button Text="Start Beading"
+                            Clicked="OnStartBeadingClicked"/>
                 </HorizontalStackLayout>
             </ScrollView>
+
+            <VerticalStackLayout IsVisible="{Binding IsBeadingActive}" 
+                             Grid.Row="1" 
+                             Grid.Column="1"
+                             HorizontalOptions="End" 
+                             VerticalOptions="Center"
+                             Spacing="10">
+                <Button Text="▲" Clicked="OnMoveRowUpClicked"/>
+                <Button Text="▼" Clicked="OnMoveRowDownClicked"/>
+            </VerticalStackLayout>
 
             <VerticalStackLayout x:Name="SidePanel"
                               Grid.Row="1"

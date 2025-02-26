@@ -1,4 +1,5 @@
 ﻿using SkiaSharp;
+using System.ComponentModel.Design;
 using System.Reflection;
 using IImage = Microsoft.Maui.Graphics.IImage;
 
@@ -42,6 +43,9 @@ namespace HandfulOfBreads.Graphics.DrawablePatterns
             }
         }
 
+        private Color _overlayColor = Color.FromArgb("#80000000");
+        private int? _selectedRow = null;
+
         public void Draw(ICanvas canvas, RectF dirtyRect)
         {
             canvas.FillColor = Colors.White;
@@ -72,6 +76,13 @@ namespace HandfulOfBreads.Graphics.DrawablePatterns
                     canvas.DrawRectangle(x, y, _pixelSize, _pixelSize);
                 }
             }
+
+            if (_selectedRow.HasValue)
+            {
+                float y = _selectedRow.Value * _pixelSize;
+                canvas.FillColor = _overlayColor;
+                canvas.FillRectangle(0, y, _columns * _pixelSize, _pixelSize);
+            }
         }
 
         public void TogglePixel(float x, float y)
@@ -82,6 +93,19 @@ namespace HandfulOfBreads.Graphics.DrawablePatterns
             if (row >= 0 && row < _rows && col >= 0 && col < _columns)
             {
                 _grid[row][col] = _selectedColor;
+            }
+        }
+
+        public void HighlightRow(int row)
+        {
+            if (row == 0)
+            {
+                _selectedRow = 0;
+            }
+            else
+            {
+                int newRow = _selectedRow.Value + row;
+                _selectedRow = Math.Clamp(newRow, 0, _rows - 1);
             }
         }
 

@@ -180,6 +180,11 @@ namespace HandfulOfBreads.Graphics.DrawablePatterns
                 data.SaveTo(stream);
             }
         }
+
+        public void HighlightRow(int row)
+        {
+            throw new NotImplementedException();
+        }
     }
 }
 

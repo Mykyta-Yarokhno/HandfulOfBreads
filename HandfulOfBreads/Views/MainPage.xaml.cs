@@ -88,9 +88,11 @@ public partial class MainPage : ContentPage
 
         minScale = Math.Min(width / PixelGraphicsView.Width, height / PixelGraphicsView.Height);
 
-        scale = minScale ;
+        //scale = minScale;
+        scale = 0.5;
 
-        PixelGraphicsViewContainer.Scale = minScale;
+        //PixelGraphicsViewContainer.Scale = minScale;
+        PixelGraphicsViewContainer.Scale = scale;
     }
 
     private async void OnNavigateButtonClicked(object sender, EventArgs e)
@@ -100,18 +102,21 @@ public partial class MainPage : ContentPage
 
     private PointF? _previousTouchPoint = null;
 
-    private void OnStartInteraction(object sender, TouchEventArgs e)
+    private PointF _onePoint;
+
+    private  void OnStartInteraction(object sender, TouchEventArgs e)
     {
         if (e.Touches.Count() == 1)
         {
             _isDrawing = true;
             _previousTouchPoint = null;
 
-            HandleInteraction(e.Touches[0]);
+            _onePoint = e.Touches[0];
         }
         else if (e.Touches.Count() == 2)
         {
             _isDragging = true;
+            _isDrawing = false;
 
             _startPosition1 = e.Touches[0];
             _startPosition2 = e.Touches[1];
@@ -155,14 +160,18 @@ public partial class MainPage : ContentPage
         }
 
         _currentPattern.TogglePixel(touchPoint.X, touchPoint.Y);
-        //PixelGraphicsView.Invalidate();
+        PixelGraphicsView.Invalidate();
 
         _previousTouchPoint = touchPoint;
     }
 
     private void OnEndInteraction(object sender, TouchEventArgs e)
     {
+        if (_isDrawing)
+            HandleInteraction(_onePoint);
+
         _previousTouchPoint = null;
+        _isDrawing = false;
         PixelGraphicsView.Invalidate();
     }
 
@@ -193,7 +202,7 @@ public partial class MainPage : ContentPage
         else if (button.Text == "-")
             scale /= 1.1;
 
-        scale = Math.Max(minScale, Math.Min(scale, 1.0));
+        //scale = Math.Max(minScale, Math.Min(scale, 1.0));
 
         PixelGraphicsViewContainer.Scale = scale;
     }
@@ -222,7 +231,7 @@ public partial class MainPage : ContentPage
 
     public async void OnSaveClicked(object sender, EventArgs e)
     {
-        _imageSavingService.SaveImageToGalleryAsync(_currentPattern);
+        await _imageSavingService.SaveImageToGalleryAsync(_currentPattern);
     }
 
     private async void OnOpenColorPickerClicked(object sender, EventArgs e)
@@ -244,5 +253,27 @@ public partial class MainPage : ContentPage
 
         InitializeDrawable(result.FirstNumber, result.SecondNumber);
     }
+
+
+    public bool IsBeadingActive { get; set; } = false;
+
+    private void OnStartBeadingClicked(object sender, EventArgs e)
+    {
+        IsBeadingActive = true;
+
+        OnPropertyChanged(nameof(IsBeadingActive));
+
+        MoveRow(0);
+    }
+
+    private void OnMoveRowUpClicked(object sender, EventArgs e) => MoveRow(-1);
+    private void OnMoveRowDownClicked(object sender, EventArgs e) => MoveRow(1);
+
+    private void MoveRow(int direction)
+    {
+        _currentPattern.HighlightRow(direction);
+        PixelGraphicsView.Invalidate();
+    }
+
 }
 

@@ -9,5 +9,7 @@ namespace HandfulOfBreads.Graphics.DrawablePatterns
         void Draw(ICanvas canvas, RectF dirtyRect);
         void TogglePixel(float x, float y);
         Task SaveToFileAsync(string filePath);
+
+        public void HighlightRow(int row);
     }
 }
