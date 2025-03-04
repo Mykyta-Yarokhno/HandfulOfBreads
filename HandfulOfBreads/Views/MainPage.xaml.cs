@@ -95,11 +95,6 @@ public partial class MainPage : ContentPage
         PixelGraphicsViewContainer.Scale = scale;
     }
 
-    private async void OnNavigateButtonClicked(object sender, EventArgs e)
-    {
-        await Navigation.PushModalAsync(new TestPage2());
-    }
-
     private PointF? _previousTouchPoint = null;
 
     private PointF _onePoint;
@@ -168,7 +163,7 @@ public partial class MainPage : ContentPage
     private void OnEndInteraction(object sender, TouchEventArgs e)
     {
         if (_isDrawing)
-            HandleInteraction(_onePoint);
+            _currentPattern.TogglePixel(_onePoint.X, _onePoint.Y);
 
         _previousTouchPoint = null;
         _isDrawing = false;

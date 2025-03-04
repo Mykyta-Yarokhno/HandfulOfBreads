@@ -46,7 +46,7 @@ namespace HandfulOfBreads.Graphics.DrawablePatterns
         private Color _overlayColor = Color.FromArgb("#80000000");
         private int? _selectedRow = null;
 
-        public void Draw(ICanvas canvas, RectF dirtyRect)
+        public async void Draw(ICanvas canvas, RectF dirtyRect)
         {
             canvas.FillColor = Colors.White;
             canvas.FillRectangle(dirtyRect);
@@ -60,21 +60,26 @@ namespace HandfulOfBreads.Graphics.DrawablePatterns
 
                     if (_grid[row][col] != Colors.Transparent)
                     {
-                        if (_fillImage != null)
-                        {
-                            canvas.DrawImage(_fillImage, x, y, _pixelSize, _pixelSize);
-                        }
-                        else
-                        {
-                            canvas.FillColor = _grid[row][col];
-                            canvas.FillRectangle(x, y, _pixelSize, _pixelSize);
-                        }
+                        canvas.FillColor = _grid[row][col];
+                        canvas.FillRectangle(x, y, _pixelSize, _pixelSize);
                     }
-
-                    canvas.StrokeColor = Colors.Gray;
-                    canvas.StrokeSize = 1;
-                    canvas.DrawRectangle(x, y, _pixelSize, _pixelSize);
                 }
+            }
+
+            canvas.StrokeColor = Colors.Gray;
+            canvas.StrokeSize = 1;
+
+            for (int col = 0; col <= _columns; col++)
+            {
+                float x = col * _pixelSize;
+                canvas.DrawLine(x, 0, x, _rows * _pixelSize);
+            }
+
+
+            for (int row = 0; row <= _rows; row++)
+            {
+                float y = row * _pixelSize;
+                canvas.DrawLine(0, y, _columns * _pixelSize, y);
             }
 
             if (_selectedRow.HasValue)

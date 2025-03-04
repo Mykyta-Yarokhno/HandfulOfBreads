@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:HandfulOfBreads.ViewModels"
+             x:Class="HandfulOfBreads.Views.ConvertPhotoPage">
+    <ContentPage.BindingContext>
+        <vm:ConvertPhotoViewModel/>
+    </ContentPage.BindingContext>
+    <VerticalStackLayout Padding="20" Spacing="10">
+        <Image>
+            <Image.Source>
+                <StreamImageSource>
+                    <StreamImageSource.Stream>
+                        <x:Reference Name="ImageData"/>
+                    </StreamImageSource.Stream>
+                </StreamImageSource>
+            </Image.Source>
+        </Image>
+        <Button Text="Select Photo" Command="{Binding SelectPhotoCommand}"/>
+        <Button Text="Convert to Grid" Clicked="ConvertToGrid_Clicked"/>
+    </VerticalStackLayout>
+</ContentPage>

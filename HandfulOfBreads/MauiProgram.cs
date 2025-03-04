@@ -1,4 +1,7 @@
 ﻿using CommunityToolkit.Maui;
+using HandfulOfBreads.Services;
+using HandfulOfBreads.ViewModels;
+using HandfulOfBreads.Views;
 using Microsoft.Extensions.Logging;
 
 namespace HandfulOfBreads
@@ -20,6 +23,12 @@ namespace HandfulOfBreads
 
 #if DEBUG
     		builder.Logging.AddDebug();
+
+            builder.Services.AddSingleton<StartPageViewModel>();
+            builder.Services.AddSingleton<StartPage>();
+            builder.Services.AddSingleton<ImageLoadingService>();
+
+            builder.Services.AddSingleton<ConvertPhotoPage>();
 #endif
 
             return builder.Build();

@@ -32,8 +32,6 @@
                             Clicked="OnNewButtonClicked"/>
                     <Button Text="Save"
                             Clicked="OnSaveClicked"/>
-                    <Button Text="Test Page"
-                            Clicked="OnNavigateButtonClicked"/>
                     <Button Text="Start Beading"
                             Clicked="OnStartBeadingClicked"/>
                 </HorizontalStackLayout>
