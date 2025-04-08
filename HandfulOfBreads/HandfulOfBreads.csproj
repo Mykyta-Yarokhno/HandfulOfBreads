@@ -59,11 +59,13 @@
 	<ItemGroup>
 	  <MauiImage Remove="Resources\Images\bonk.png" />
 	  <MauiImage Remove="Resources\Images\color_palette.png" />
+	  <MauiImage Remove="Resources\Images\cp22.png" />
 	</ItemGroup>
 
 	<ItemGroup>
 	  <None Remove="Resources\Images\bonk.png" />
 	  <None Remove="Resources\Images\color_palette.png" />
+	  <None Remove="Resources\Images\cp22.png" />
 	</ItemGroup>
 
 	<ItemGroup>
@@ -73,6 +75,7 @@
 	  <EmbeddedResource Include="Resources\Images\color_palette.png">
 	    <CopyToOutputDirectory></CopyToOutputDirectory>
 	  </EmbeddedResource>
+	  <EmbeddedResource Include="Resources\Images\cp22.png" />
 	</ItemGroup>
 
 	<ItemGroup>

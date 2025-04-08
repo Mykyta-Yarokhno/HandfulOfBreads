@@ -1,6 +1,9 @@
 ﻿using SkiaSharp;
 using System.ComponentModel.Design;
+using System.Globalization;
 using System.Reflection;
+using System.Text;
+using System.Text.Json;
 using IImage = Microsoft.Maui.Graphics.IImage;
 
 namespace HandfulOfBreads.Graphics.DrawablePatterns
@@ -22,7 +25,7 @@ namespace HandfulOfBreads.Graphics.DrawablePatterns
             set => _selectedColor = value;
         }
 
-        public void InitializeGrid(int rows, int columns, int pixelSize, IImage? fillImage = null)
+        public void InitializeGrid(int rows, int columns, int pixelSize, IImage? fillImage = null, List<List<Color>> grid = null)
         {
             _rows = rows;
             _columns = columns;
@@ -32,14 +35,27 @@ namespace HandfulOfBreads.Graphics.DrawablePatterns
 
             _grid.Clear();
 
-            for (int i = 0; i < rows; i++)
+            if (grid != null)
             {
-                var row = new List<Color>();
-                for (int j = 0; j < columns; j++)
+                foreach (var row in grid)
                 {
-                    row.Add(Colors.Transparent);
+                    _grid.Add(new List<Color>(row));
                 }
-                _grid.Add(row);
+
+                _rows = _grid.Count ;
+                _columns = _grid[0].Count;
+            }
+            else
+            {
+                for (int i = 0; i < rows; i++)
+                {
+                    var row = new List<Color>();
+                    for (int j = 0; j < columns; j++)
+                    {
+                        row.Add(Colors.Transparent);
+                    }
+                    _grid.Add(row);
+                }
             }
         }
 
@@ -140,12 +156,7 @@ namespace HandfulOfBreads.Graphics.DrawablePatterns
 
             using var surface = SKSurface.Create(new SKImageInfo(width, height));
             var canvas = surface.Canvas;
-
             canvas.Clear(SKColors.White);
-
-            var resourcePath = "HandfulOfBreads.Resources.Images.bonk.png";
-            var _fillImage2 = LoadBitmapFromResource(resourcePath);
-            _fillImage2 = null;
 
             for (int row = 0; row < _rows; row++)
             {
@@ -156,20 +167,12 @@ namespace HandfulOfBreads.Graphics.DrawablePatterns
 
                     if (_grid[row][col] != Colors.Transparent)
                     {
-                        if (_fillImage2 != null && _fillImage2 is SKBitmap bitmap)
+                        using var paint = new SKPaint
                         {
-                            var rect = new SKRect(x, y, x + _pixelSize, y + _pixelSize);
-                            canvas.DrawBitmap(bitmap, rect);
-                        }
-                        else
-                        {
-                            using var paint = new SKPaint
-                            {
-                                Color = ConvertToSKColor(_grid[row][col]),
-                                Style = SKPaintStyle.Fill
-                            };
-                            canvas.DrawRect(x, y, _pixelSize, _pixelSize, paint);
-                        }
+                            Color = ConvertToSKColor(_grid[row][col]),
+                            Style = SKPaintStyle.Fill
+                        };
+                        canvas.DrawRect(x, y, _pixelSize, _pixelSize, paint);
                     }
 
                     using var strokePaint = new SKPaint
@@ -183,12 +186,42 @@ namespace HandfulOfBreads.Graphics.DrawablePatterns
             }
 
             using var image = surface.Snapshot();
-            using var data = image.Encode(SKEncodedImageFormat.Png, 100);
+            using var imageData = image.Encode(SKEncodedImageFormat.Png, 100);
 
-            using (var stream = File.OpenWrite(filePath))
+            using var memoryStream = new MemoryStream();
+            imageData.SaveTo(memoryStream);
+
+            string json = SerializeGridWithMetadata();
+            byte[] jsonBytes = Encoding.UTF8.GetBytes("\n<GRID>\n" + json + "\n</GRID>\n");
+            memoryStream.Write(jsonBytes, 0, jsonBytes.Length);
+
+            File.WriteAllBytes(filePath, memoryStream.ToArray());
+        }
+
+        public string SerializeGridWithMetadata()
+        {
+            var serializableGrid = _grid.Select(row => row.Select(color => MyToHex(color)).ToList()).ToList();
+
+            var meta = new
             {
-                data.SaveTo(stream);
-            }
+                name = "Loom",
+                rows = _columns,
+                columns = _rows,
+                pixelSize = _pixelSize,
+                grid = serializableGrid
+            };
+
+            return JsonSerializer.Serialize(meta);
+        }
+
+        public string MyToHex(Color color)
+        {
+            byte a = (byte)(color.Alpha * 255);
+            byte r = (byte)(color.Red * 255);
+            byte g = (byte)(color.Green * 255);
+            byte b = (byte)(color.Blue * 255);
+
+            return $"#{a:X2}{r:X2}{g:X2}{b:X2}";
         }
     }
 }

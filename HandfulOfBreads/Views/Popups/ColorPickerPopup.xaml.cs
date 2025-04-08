@@ -18,7 +18,7 @@ public partial class ColorPickerPopup : Popup
     {
         try
         {
-            var resourcePath = "HandfulOfBreads.Resources.Images.color_palette.png";
+            var resourcePath = "HandfulOfBreads.Resources.Images.cp22.png";
             var assembly = GetType().GetTypeInfo().Assembly;
 
             using var stream = assembly.GetManifestResourceStream(resourcePath);

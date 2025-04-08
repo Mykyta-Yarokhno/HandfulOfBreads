@@ -15,7 +15,7 @@ namespace HandfulOfBreads.Graphics.DrawablePatterns
 
         public Color SelectedColor { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
 
-        public void InitializeGrid(int rows, int columns, int pixelSize, IImage? fillImage = null)
+        public void InitializeGrid(int rows, int columns, int pixelSize, IImage? fillImage = null, List<List<Color>> grid = null)
         {
             _rows = rows;
             _columns = columns;

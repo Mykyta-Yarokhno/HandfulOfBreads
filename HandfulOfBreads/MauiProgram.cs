@@ -27,8 +27,6 @@ namespace HandfulOfBreads
             builder.Services.AddSingleton<StartPageViewModel>();
             builder.Services.AddSingleton<StartPage>();
             builder.Services.AddSingleton<ImageLoadingService>();
-
-            builder.Services.AddSingleton<ConvertPhotoPage>();
 #endif
 
             return builder.Build();

@@ -1,7 +1,7 @@
-<?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:vm="clr-namespace:HandfulOfBreads.ViewModels"
+             xmlns:sys="clr-namespace:System;assembly=netstandard"
              x:Class="HandfulOfBreads.Views.ConvertPhotoPage">
     <ContentPage.BindingContext>
         <vm:ConvertPhotoViewModel/>
@@ -17,6 +17,7 @@
             </Image.Source>
         </Image>
         <Button Text="Select Photo" Command="{Binding SelectPhotoCommand}"/>
-        <Button Text="Convert to Grid" Clicked="ConvertToGrid_Clicked"/>
+        <Button Text="Convert to Grid" Command="{Binding ConvertToGridCommand}"/>
+        <Grid x:Name="GridDisplay" BackgroundColor="LightGray" HeightRequest="300"/>
     </VerticalStackLayout>
 </ContentPage>

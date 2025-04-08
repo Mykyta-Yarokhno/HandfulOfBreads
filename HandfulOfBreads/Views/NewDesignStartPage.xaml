@@ -31,5 +31,9 @@
             IsEnabled="True"
             Clicked="OnOkButtonClicked"
             x:Name="OkButton" />
+
+        <Button Text="Open Existing"
+            IsEnabled="True"
+            Clicked="OnOpenExistingButtonClicked"/>
     </StackLayout>
 </ContentPage>

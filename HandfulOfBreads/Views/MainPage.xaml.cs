@@ -23,11 +23,20 @@ public partial class MainPage : ContentPage
 
     public IDrawable Drawable { get; }
 
-    public MainPage(int firstNumber, int secondNumber, string selectedPattern)
+    private List<List<Color>> _grid = null;
+
+    public MainPage(int firstNumber, int secondNumber, string selectedPattern, List<List<Color>> grid = null)
     {
         InitializeComponent();
 
-        if (selectedPattern == "Loom")
+        if(grid != null)
+        {
+            _grid = grid;
+            _currentPattern = new LoomPatternDrawable();
+            PixelGraphicsView.WidthRequest = firstNumber * PixelSize;
+            PixelGraphicsView.HeightRequest = secondNumber * PixelSize;
+        }
+        else if (selectedPattern == "Loom")
         {
             _currentPattern = new LoomPatternDrawable();
 
@@ -63,7 +72,15 @@ public partial class MainPage : ContentPage
 
         var image = LoadImageAsIImage();
 
-        _currentPattern.InitializeGrid(secondNumber, firstNumber, PixelSize, image);
+        if (_grid != null)
+        {
+            _currentPattern.InitializeGrid(secondNumber, firstNumber, PixelSize, image, _grid);
+        }
+        else
+        {
+            _currentPattern.InitializeGrid(secondNumber, firstNumber, PixelSize, image);
+        }
+        
 
     }
 
