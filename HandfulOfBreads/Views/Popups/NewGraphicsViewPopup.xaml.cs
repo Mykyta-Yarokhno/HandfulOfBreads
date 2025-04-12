@@ -19,6 +19,10 @@ public partial class NewGraphicsViewPopup : Popup
             FirstNumber = firstNumber;
             SecondNumber = secondNumber;
 
+
+            Application.Current.MainPage.Navigation.PushAsync(new MainPage(FirstNumber, SecondNumber, "Loom"));
+
+
             Close();
         }
         //else

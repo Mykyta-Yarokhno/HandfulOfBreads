@@ -12,13 +12,12 @@ public partial class NewPatternPopup : Popup
     private async void ConvertPhoto_Clicked(object sender, EventArgs e)
     {
         Close();
-        await Shell.Current.GoToAsync(nameof(ConvertPhotoPage));
     }
 
-    private async void DrawDesign_Clicked(object sender, EventArgs e)
+    private async void DrawNewDesign_Clicked(object sender, EventArgs e)
     {
+        Application.Current.MainPage.Navigation.PushAsync(new NewDesignStartPage());
         Close();
-        await Shell.Current.GoToAsync(nameof(NewDesignStartPage));
     }
 
     private async void ImportFile_Clicked(object sender, EventArgs e)

@@ -1,68 +1,45 @@
-﻿using HandfulOfBreads.Services;
-using System;
-using System.Collections.ObjectModel;
-using System.Threading.Tasks;
-using System.Windows.Input;
-using Microsoft.Maui.Controls;
-using CommunityToolkit.Maui.Views;
+﻿using CommunityToolkit.Maui.Views;
+using HandfulOfBreads.Resources.Localization;
+using HandfulOfBreads.Services;
+using HandfulOfBreads.Services.Interfaces;
 using HandfulOfBreads.Views.Popups;
+using System.Collections.ObjectModel;
+using System.ComponentModel;
+using System.Diagnostics;
+using System.Globalization;
+using System.Windows.Input;
 
 namespace HandfulOfBreads.ViewModels
 {
-    public class StartPageViewModel
+    public class StartPageViewModel : BaseViewModel
     {
-        private readonly ImageLoadingService _imageLoadingService;
-        public ObservableCollection<ImageModel> Images { get; set; } = new ObservableCollection<ImageModel>();
-        public ICommand AddImageCommand { get; set; }
+        public LocalizationResourceManager LocalizationResourceManager
+        => LocalizationResourceManager.Instance;
 
-        public StartPageViewModel(ImageLoadingService imageLoadingService)
+        private readonly IPopupService _popupService;
+        public ICommand AddNewCommand { get; set; }
+        public ICommand LanguageSwitchCommand { get; }
+
+        public StartPageViewModel(IPopupService popupService)
         {
-            _imageLoadingService = imageLoadingService;
-            AddImageCommand = new Command(async () => await AddImageAsync());
-            LoadImagesAsync();
+            _popupService = popupService;
+            AddNewCommand = new Command(async () => await ChooseNewAsync());
+            LanguageSwitchCommand = new Command(async () => await OnLanguageSwitch());
         }
 
-        private async Task LoadImagesAsync()
-        {
-            var images = await _imageLoadingService.LoadSavedImagesAsync(40);
-            foreach (var image in images)
-            {
-                Images.Add(image);
-            }
-            await Task.Delay(100);
-            DisplayImages();
-        }
-
-        public void DisplayImages()
-        {
-            if (Shell.Current?.CurrentPage?.FindByName<FlexLayout>("ImagesFlexLayout") is FlexLayout flexLayout)
-            {
-                System.Diagnostics.Debug.WriteLine($"FlexLayout found: {flexLayout.Id}");
-                flexLayout.Children.Clear();
-
-                foreach (var imageModel in Images)
-                {
-                    var imageButton = new ImageButton
-                    {
-                        Source = imageModel.Thumbnail,
-                        Aspect = Aspect.AspectFill,
-                        WidthRequest = 100,
-                        HeightRequest = 100,
-                        Margin = 5
-                    };
-                    flexLayout.Children.Add(imageButton);
-                }
-            }
-            else
-            {
-                System.Diagnostics.Debug.WriteLine("ImagesFlexLayout not found.");
-            }
-        }
-
-        private async Task AddImageAsync()
+        private async Task ChooseNewAsync()
         {
             var popup = new NewPatternPopup();
-            await Shell.Current.CurrentPage.ShowPopupAsync(popup);
+            await _popupService.ShowPopupAsync(popup);
+        }
+
+        private async Task OnLanguageSwitch()
+        {
+            var switchToCulture = AppResources.Culture.TwoLetterISOLanguageName
+               .Equals("uk", StringComparison.InvariantCultureIgnoreCase) ?
+               new CultureInfo("en-US") : new CultureInfo("uk-UA");
+
+            LocalizationResourceManager.Instance.SetCulture(switchToCulture);
         }
     }
 }

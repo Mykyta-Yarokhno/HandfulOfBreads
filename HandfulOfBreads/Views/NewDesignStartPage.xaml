@@ -1,39 +1,37 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:viewModels="clr-namespace:HandfulOfBreads.ViewModels"
              x:Class="HandfulOfBreads.Views.NewDesignStartPage">
-    <StackLayout Padding="20" VerticalOptions="Center">
-        <Label Text="Select stitch:" />
-        <Picker x:Name="PatternPicker"
-            Title="Choose a stitch"
-            SelectedIndexChanged="OnPatternPickerSelectedIndexChanged">
-            <Picker.Items>
-                <x:String>Loom</x:String>
-                <x:String>Brick</x:String>
-                <x:String>Payote</x:String>
-            </Picker.Items>
-        </Picker>
-        <Label Text="Enter first number (0-100):" />
-        <Entry x:Name="FirstNumberEntry"
-           Keyboard="Numeric"
-           Text="10"
-           TextChanged="OnEntryTextChanged" 
-           Placeholder="0-100" />
+    <ContentPage.BindingContext>
+        <viewModels:NewDesignStartViewModel />
+    </ContentPage.BindingContext>
 
-        <Label Text="Enter second number (0-100):" />
-        <Entry x:Name="SecondNumberEntry"
-           Keyboard="Numeric"
-           Text="20"
-           TextChanged="OnEntryTextChanged"
-           Placeholder="0-100" />
+    <StackLayout Padding="20" VerticalOptions="Center">
+        <Label Text="{Binding LocalizationResourceManager[SelectStitch]}" />
+
+        <Picker Title="Choose a stitch"
+                ItemsSource="{Binding Patterns}"
+                SelectedItem="{Binding SelectedPattern}"
+                IsEnabled="False"/>
+
+        <Label Text="{Binding LocalizationResourceManager[EnterRowsNumber]}" />
+        <Entry Keyboard="Numeric"
+               Text="{Binding Rows}"
+               Placeholder="0-200" />
+
+        <Label Text="{Binding LocalizationResourceManager[EnterColumnsNumber]}" />
+        <Entry Keyboard="Numeric"
+               Text="{Binding Columns}"
+               Placeholder="0-200" />
 
         <Button Text="OK"
-            IsEnabled="True"
-            Clicked="OnOkButtonClicked"
-            x:Name="OkButton" />
+                Command="{Binding OkCommand}"
+                IsEnabled="{Binding IsFormValid}"
+                Margin="10"/>
 
-        <Button Text="Open Existing"
-            IsEnabled="True"
-            Clicked="OnOpenExistingButtonClicked"/>
+        <Button Text="{Binding LocalizationResourceManager[OpenExisting]}"
+                Command="{Binding OpenExistingCommand}"
+                Margin="10"/>
     </StackLayout>
 </ContentPage>

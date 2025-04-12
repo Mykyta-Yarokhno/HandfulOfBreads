@@ -41,9 +41,6 @@ namespace HandfulOfBreads.Graphics.DrawablePatterns
                 {
                     _grid.Add(new List<Color>(row));
                 }
-
-                _rows = _grid.Count ;
-                _columns = _grid[0].Count;
             }
             else
             {
@@ -98,11 +95,30 @@ namespace HandfulOfBreads.Graphics.DrawablePatterns
                 canvas.DrawLine(0, y, _columns * _pixelSize, y);
             }
 
+            //if (_selectedRow.HasValue)
+            //{
+            //    float y = _selectedRow.Value * _pixelSize;
+            //    canvas.FillColor = _overlayColor;
+            //    canvas.FillRectangle(0, y, _columns * _pixelSize, _pixelSize);
+            //}
+
+            //if (_selectedRow.HasValue)
+            //{
+            //    float y = _selectedRow.Value * _pixelSize + _pixelSize / 2;
+            //    canvas.StrokeColor = _overlayColor;
+            //    canvas.StrokeSize = 2; 
+            //    canvas.DrawLine(0, y, _columns * _pixelSize, y);
+            //}
+
             if (_selectedRow.HasValue)
             {
                 float y = _selectedRow.Value * _pixelSize;
-                canvas.FillColor = _overlayColor;
-                canvas.FillRectangle(0, y, _columns * _pixelSize, _pixelSize);
+                float height = _pixelSize;
+                float width = _columns * _pixelSize;
+
+                canvas.StrokeColor = _overlayColor;
+                canvas.StrokeSize = 5; 
+                canvas.DrawRectangle(0, y, width, height);
             }
         }
 
@@ -205,8 +221,8 @@ namespace HandfulOfBreads.Graphics.DrawablePatterns
             var meta = new
             {
                 name = "Loom",
-                rows = _columns,
-                columns = _rows,
+                rows = _rows,
+                columns = _columns,
                 pixelSize = _pixelSize,
                 grid = serializableGrid
             };

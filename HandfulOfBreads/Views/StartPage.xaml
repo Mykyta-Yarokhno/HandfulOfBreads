@@ -1,15 +1,59 @@
+<?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:viewModels="clr-namespace:HandfulOfBreads.ViewModels"
              x:Class="HandfulOfBreads.Views.StartPage">
-    <AbsoluteLayout BackgroundColor="SlateGray">
-        <ScrollView AbsoluteLayout.LayoutBounds="0, 0, 1, 1" AbsoluteLayout.LayoutFlags="SizeProportional">
-            <FlexLayout x:Name="ImagesFlexLayout" Wrap="Wrap" JustifyContent="SpaceAround" AlignItems="Start" AlignContent="Start" Padding="10"/>
-        </ScrollView>
+    <Grid RowDefinitions="Auto,*" BackgroundColor="Wheat">
+        <Grid Grid.Row="0"
+          Padding="5"
+          BackgroundColor="#c09061"
+          ColumnDefinitions="*,Auto,*">
 
-        <Button Text="+"
-                AbsoluteLayout.LayoutBounds="1, 1, 60, 60"
-                AbsoluteLayout.LayoutFlags="PositionProportional"
-                CornerRadius="30"
-                Command="{Binding AddImageCommand}"/>
-    </AbsoluteLayout>
+            <Button Text="{Binding LocalizationResourceManager[SwitchLanguageButton]}"
+                BackgroundColor="#98694d"
+                WidthRequest="60"
+                HeightRequest="40"
+                Command="{Binding LanguageSwitchCommand}"
+                HorizontalOptions="Start"
+                VerticalOptions="Center"
+                Grid.Column="0"/>
+
+            <Label Text="{Binding LocalizationResourceManager[Gallery]}"
+               TextColor="#553d3a"
+               FontAttributes="Bold"
+               FontSize="20"
+               VerticalOptions="Center"
+               VerticalTextAlignment="Center"
+               Grid.Column="1"/>
+
+            <Button Text="+"
+                BackgroundColor="#98694d"
+                WidthRequest="40"
+                HeightRequest="40"
+                CornerRadius="20"
+                Padding="0"
+                FontSize="30"
+                Command="{Binding AddNewCommand}"
+                HorizontalOptions="End"
+                VerticalOptions="Center"
+                Grid.Column="2"/>
+        </Grid>
+        <BoxView Grid.ColumnSpan="2"
+             HeightRequest="1"
+             BackgroundColor="Gray"
+             VerticalOptions="End"
+             HorizontalOptions="FillAndExpand"/>    
+
+        <ScrollView Grid.Row="1"
+                x:Name="scrollView"
+                Orientation="Vertical">
+            <FlexLayout x:Name="stackLayout"
+                    Direction="Row"
+                    Wrap="Wrap"
+                    JustifyContent="Start"
+                    AlignItems="Start"
+                    Margin="10"/>
+        </ScrollView>
+    </Grid>
+
 </ContentPage>

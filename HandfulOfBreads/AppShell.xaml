@@ -8,7 +8,7 @@
     Title="HandfulOfBreads">
 
     <ShellContent
-        ContentTemplate="{DataTemplate views:NewDesignStartPage}"
+        ContentTemplate="{DataTemplate views:StartPage}"
         Route="StartPage" />
 
 </Shell>

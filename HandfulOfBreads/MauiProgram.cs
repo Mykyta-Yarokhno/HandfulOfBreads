@@ -1,5 +1,6 @@
 ﻿using CommunityToolkit.Maui;
 using HandfulOfBreads.Services;
+using HandfulOfBreads.Services.Interfaces;
 using HandfulOfBreads.ViewModels;
 using HandfulOfBreads.Views;
 using Microsoft.Extensions.Logging;
@@ -23,11 +24,10 @@ namespace HandfulOfBreads
 
 #if DEBUG
     		builder.Logging.AddDebug();
-
-            builder.Services.AddSingleton<StartPageViewModel>();
-            builder.Services.AddSingleton<StartPage>();
-            builder.Services.AddSingleton<ImageLoadingService>();
 #endif
+            builder.Services.AddSingleton<IPopupService, Services.PopupService>();
+            builder.Services.AddTransient<StartPageViewModel>();
+            builder.Services.AddTransient<StartPage>();
 
             return builder.Build();
         }

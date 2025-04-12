@@ -21,34 +21,39 @@ public partial class MainPage : ContentPage
 
     private readonly ImageSavingService _imageSavingService = new ImageSavingService();
 
+    public LocalizationResourceManager LocalizationResourceManager
+        => LocalizationResourceManager.Instance;
+
     public IDrawable Drawable { get; }
 
     private List<List<Color>> _grid = null;
 
-    public MainPage(int firstNumber, int secondNumber, string selectedPattern, List<List<Color>> grid = null)
+    public MainPage(int columns, int rows, string selectedPattern, List<List<Color>> grid = null)
     {
         InitializeComponent();
 
-        if(grid != null)
+        Shell.SetNavBarIsVisible(this, false);
+
+        if (grid != null)
         {
             _grid = grid;
             _currentPattern = new LoomPatternDrawable();
-            PixelGraphicsView.WidthRequest = firstNumber * PixelSize;
-            PixelGraphicsView.HeightRequest = secondNumber * PixelSize;
+            PixelGraphicsView.WidthRequest = columns * PixelSize;
+            PixelGraphicsView.HeightRequest = rows * PixelSize;
         }
         else if (selectedPattern == "Loom")
         {
             _currentPattern = new LoomPatternDrawable();
 
-            PixelGraphicsView.WidthRequest = firstNumber * PixelSize;
-            PixelGraphicsView.HeightRequest = secondNumber * PixelSize;
+            PixelGraphicsView.WidthRequest = columns * PixelSize;
+            PixelGraphicsView.HeightRequest = rows * PixelSize;
         }
         else if (selectedPattern == "Brick")
         {
             _currentPattern = new BrickPatternDrawable();
 
-            PixelGraphicsView.WidthRequest = firstNumber * PixelSize;
-            PixelGraphicsView.HeightRequest = secondNumber * PixelSize + 20;
+            PixelGraphicsView.WidthRequest = columns * PixelSize;
+            PixelGraphicsView.HeightRequest = rows * PixelSize + 20;
         }
         //else if (selectedPattern == "Payote")
         //{
@@ -58,15 +63,15 @@ public partial class MainPage : ContentPage
         Drawable = _currentPattern;
         BindingContext = this;
 
-        InitializeDrawable(firstNumber, secondNumber);
+        InitializeDrawable(rows, columns);
 
 
 
-        PixelGraphicsViewContainer.WidthRequest = firstNumber * PixelSize * 10;
-        PixelGraphicsViewContainer.HeightRequest = secondNumber * PixelSize * 10;
+        PixelGraphicsViewContainer.WidthRequest = columns * PixelSize * 10;
+        PixelGraphicsViewContainer.HeightRequest = rows * PixelSize * 10;
     }
 
-    private void InitializeDrawable(int firstNumber, int secondNumber)
+    private void InitializeDrawable(int rows, int columns)
     {
         ImageSource imageSource = ImageSource.FromFile("bonk.png");
 
@@ -74,11 +79,11 @@ public partial class MainPage : ContentPage
 
         if (_grid != null)
         {
-            _currentPattern.InitializeGrid(secondNumber, firstNumber, PixelSize, image, _grid);
+            _currentPattern.InitializeGrid(rows, columns, PixelSize, image, _grid);
         }
         else
         {
-            _currentPattern.InitializeGrid(secondNumber, firstNumber, PixelSize, image);
+            _currentPattern.InitializeGrid(rows, columns, PixelSize, image);
         }
         
 

@@ -1,0 +1,190 @@
+﻿using HandfulOfBreads.Resources.Localization;
+using HandfulOfBreads.Services;
+using HandfulOfBreads.Views;
+using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Globalization;
+using System.Linq;
+using System.Text;
+using System.Text.Json;
+using System.Threading.Tasks;
+using System.Windows.Input;
+
+namespace HandfulOfBreads.ViewModels
+{
+    public class NewDesignStartViewModel : BaseViewModel
+    {
+        private string _columns;
+        private string _rows;
+        private string _selectedPattern;
+
+        public LocalizationResourceManager LocalizationResourceManager
+        => LocalizationResourceManager.Instance;
+
+        public ObservableCollection<string> Patterns { get; } = new() { "Loom", "Brick", "Payote" };
+
+        public string Columns
+        {
+            get => _columns;
+            set
+            {
+                if (SetProperty(ref _columns, value))
+                    ValidateInput();
+            }
+        }
+
+        public string Rows
+        {
+            get => _rows;
+            set
+            {
+                if (SetProperty(ref _rows, value))
+                    ValidateInput();
+            }
+        }
+
+        public string SelectedPattern
+        {
+            get => _selectedPattern;
+            set
+            {
+                if (value == "Payote" || value == "Brick")
+                {
+                    Application.Current.MainPage.DisplayAlert("Unavailable", "This option is currently disabled.", "OK");
+                    SelectedPattern = "Loom";
+                }
+                else
+                {
+                    SetProperty(ref _selectedPattern, value);
+                }
+            }
+        }
+
+        private bool _isFormValid;
+        public bool IsFormValid
+        {
+            get => _isFormValid;
+            set => SetProperty(ref _isFormValid, value);
+        }
+
+        public ICommand OpenExistingCommand { get; }
+        public ICommand OkCommand { get; }
+        
+        public NewDesignStartViewModel()
+        {
+            _selectedPattern = Patterns[0];
+
+            _rows = "20";
+            _columns = "10";
+            
+            OpenExistingCommand = new Command(async () => await OnOpenExisting());
+            OkCommand = new Command(async () => await OnOk(), () => IsFormValid);
+
+            //LanguageSwitchCommand = new Command(OnLanguageSwitch);
+
+            ValidateInput();
+        }
+
+        private void ValidateInput()
+        {
+            bool isValid = int.TryParse(Columns, out int c) && int.TryParse(Rows, out int r)
+                && c >= 0 && c <= 200 && r >= 0 && r <= 200;
+            IsFormValid = isValid;
+            ((Command)OkCommand).ChangeCanExecute();
+        }
+
+        private async Task OnOk()
+        {
+            int columns = int.Parse(Columns);
+            int rows = int.Parse(Rows);
+
+            await Application.Current.MainPage.Navigation.PushAsync(new MainPage(columns, rows, SelectedPattern));
+        }
+
+        private async Task OnOpenExisting()
+        {
+            try
+            {
+                var fileResult = await FilePicker.PickAsync(new PickOptions
+                {
+                    PickerTitle = "Оберіть ваш збережений малюнок",
+                    FileTypes = FilePickerFileType.Images
+                });
+
+                if (fileResult == null) return;
+                var filePath = fileResult.FullPath;
+
+                if (!Path.GetFileName(filePath).StartsWith("pixel_grid_"))
+                {
+                    await Application.Current.MainPage.DisplayAlert("Помилка", "Цей файл не є малюнком програми.", "OK");
+                    return;
+                }
+
+                var (name, rows, columns, pixelSize, grid) = await LoadGridFromFileAsync(filePath);
+                await Application.Current.MainPage.Navigation.PushModalAsync(new MainPage(columns, rows, name, grid));
+            }
+            catch (Exception ex)
+            {
+                await Application.Current.MainPage.DisplayAlert("Помилка", ex.Message, "OK");
+            }
+        }
+
+        private async Task<(string name, int rows, int columns, int pixelSize, List<List<Color>> grid)> LoadGridFromFileAsync(string filePath)
+        {
+            byte[] fileBytes = await File.ReadAllBytesAsync(filePath);
+            string fileText = Encoding.UTF8.GetString(fileBytes);
+
+            int gridStart = fileText.IndexOf("<GRID>");
+            int gridEnd = fileText.IndexOf("</GRID>");
+
+            if (gridStart == -1 || gridEnd == -1)
+                throw new Exception("Не знайдено JSON-метадані у файлі.");
+
+            string json = fileText.Substring(gridStart + "<GRID>".Length, gridEnd - gridStart - "<GRID>".Length).Trim();
+            var meta = JsonSerializer.Deserialize<GridMeta>(json);
+
+            if (meta is null)
+                throw new Exception("Не вдалося розпарсити JSON.");
+
+            var grid = meta.grid
+                .Select(row => row.Select(hex => FromHex(hex)).ToList())
+                .ToList();
+
+            return (meta.name, meta.rows, meta.columns, meta.pixelSize, grid);
+        }
+
+        private Color FromHex(string hex)
+        {
+            if (string.IsNullOrWhiteSpace(hex)) return Colors.Transparent;
+            if (hex.StartsWith("#")) hex = hex[1..];
+
+            if (hex.Length == 6)
+            {
+                byte r = Convert.ToByte(hex[..2], 16);
+                byte g = Convert.ToByte(hex[2..4], 16);
+                byte b = Convert.ToByte(hex[4..6], 16);
+                return Color.FromRgb(r, g, b);
+            }
+            else if (hex.Length == 8)
+            {
+                byte a = Convert.ToByte(hex[..2], 16);
+                byte r = Convert.ToByte(hex[2..4], 16);
+                byte g = Convert.ToByte(hex[4..6], 16);
+                byte b = Convert.ToByte(hex[6..8], 16);
+                return Color.FromRgba(r, g, b, a);
+            }
+
+            return Colors.Transparent;
+        }
+
+        public class GridMeta
+        {
+            public string name { get; set; }
+            public int rows { get; set; }
+            public int columns { get; set; }
+            public int pixelSize { get; set; }
+            public List<List<string>> grid { get; set; }
+        }
+    }
+}
