@@ -138,10 +138,16 @@
   <data name="StartBeading" xml:space="preserve">
     <value>Start Beading</value>
   </data>
-  <data name="New" xml:space="preserve">
-    <value>New</value>
-  </data>
   <data name="Gallery" xml:space="preserve">
     <value>Gallery</value>
+  </data>
+  <data name="Cancel" xml:space="preserve">
+    <value>Cancel</value>
+  </data>
+  <data name="Open" xml:space="preserve">
+    <value>Open</value>
+  </data>
+  <data name="NewDesign" xml:space="preserve">
+    <value>New design</value>
   </data>
 </root>

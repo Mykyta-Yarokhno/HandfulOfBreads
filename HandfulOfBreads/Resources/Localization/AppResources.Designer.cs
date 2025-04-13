@@ -61,6 +61,15 @@ namespace HandfulOfBreads.Resources.Localization {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Cancel.
+        /// </summary>
+        internal static string Cancel {
+            get {
+                return ResourceManager.GetString("Cancel", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Enter columns number:.
         /// </summary>
         internal static string EnterColumnsNumber {
@@ -88,11 +97,20 @@ namespace HandfulOfBreads.Resources.Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to New.
+        ///   Looks up a localized string similar to New design.
         /// </summary>
-        internal static string New {
+        internal static string NewDesign {
             get {
-                return ResourceManager.GetString("New", resourceCulture);
+                return ResourceManager.GetString("NewDesign", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Open.
+        /// </summary>
+        internal static string Open {
+            get {
+                return ResourceManager.GetString("Open", resourceCulture);
             }
         }
         

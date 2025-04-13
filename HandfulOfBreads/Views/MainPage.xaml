@@ -28,7 +28,7 @@
                 <HorizontalStackLayout Spacing="10">
                     <Button Text="☰" 
                             Clicked="OnToggleClicked"/>
-                    <Button Text="{Binding LocalizationResourceManager[New]}"
+                    <Button Text="{Binding LocalizationResourceManager[NewDesign]}"
                             Clicked="OnNewButtonClicked"/>
                     <Button Text="{Binding LocalizationResourceManager[Save]}"
                             Clicked="OnSaveClicked"/>

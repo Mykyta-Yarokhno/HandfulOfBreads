@@ -138,10 +138,16 @@
   <data name="StartBeading" xml:space="preserve">
     <value>Розпочати плетіння</value>
   </data>
-  <data name="New" xml:space="preserve">
-    <value>Новий дизайн</value>
-  </data>
   <data name="Gallery" xml:space="preserve">
     <value>Галерея</value>
+  </data>
+  <data name="Cancel" xml:space="preserve">
+    <value>Відмінити</value>
+  </data>
+  <data name="Open" xml:space="preserve">
+    <value>Відкрити</value>
+  </data>
+  <data name="NewDesign" xml:space="preserve">
+    <value>Новий дизайн</value>
   </data>
 </root>

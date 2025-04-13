@@ -1,9 +1,13 @@
 using CommunityToolkit.Maui.Views;
+using HandfulOfBreads.Services;
 
 namespace HandfulOfBreads.Views.Popups;
 
 public partial class NewPatternPopup : Popup
 {
+    public LocalizationResourceManager LocalizationResourceManager
+       => LocalizationResourceManager.Instance;
+
     public NewPatternPopup()
     {
         InitializeComponent();
