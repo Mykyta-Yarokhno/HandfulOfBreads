@@ -17,20 +17,22 @@ namespace HandfulOfBreads.ViewModels
         => LocalizationResourceManager.Instance;
 
         private readonly IPopupService _popupService;
+        private readonly NewPatternPopup _newPatternPopup;
         public ICommand AddNewCommand { get; set; }
         public ICommand LanguageSwitchCommand { get; }
 
-        public StartPageViewModel(IPopupService popupService)
+        public StartPageViewModel(IPopupService popupService, NewPatternPopup newPatternPopup)
         {
             _popupService = popupService;
+            _newPatternPopup = newPatternPopup;
+
             AddNewCommand = new Command(async () => await ChooseNewAsync());
             LanguageSwitchCommand = new Command(async () => await OnLanguageSwitch());
         }
 
         private async Task ChooseNewAsync()
         {
-            var popup = new NewPatternPopup();
-            await _popupService.ShowPopupAsync(popup);
+            await _popupService.ShowPopupAsync(_newPatternPopup);
         }
 
         private async Task OnLanguageSwitch()

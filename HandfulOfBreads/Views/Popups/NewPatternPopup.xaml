@@ -5,7 +5,7 @@
                 x:Class="HandfulOfBreads.Views.Popups.NewPatternPopup">
     <VerticalStackLayout Padding="20" Spacing="10" BackgroundColor="Wheat">
         <Button Text="{Binding LocalizationResourceManager[NewDesign]}" 
-                BackgroundColor="#98694d"
+                Style="{StaticResource MainButton}"
                 Clicked="DrawNewDesign_Clicked" 
                 ContentLayout="Left, 20"/>
         <Button Text="Convert a photo" Clicked="ConvertPhoto_Clicked"  ContentLayout="Left, 20" IsEnabled="False"/>

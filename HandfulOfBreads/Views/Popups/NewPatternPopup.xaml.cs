@@ -5,12 +5,16 @@ namespace HandfulOfBreads.Views.Popups;
 
 public partial class NewPatternPopup : Popup
 {
+    private readonly NewDesignStartPage _newDesignStartPage;
+
     public LocalizationResourceManager LocalizationResourceManager
        => LocalizationResourceManager.Instance;
 
-    public NewPatternPopup()
+    public NewPatternPopup(NewDesignStartPage newDesignStartPage)
     {
         InitializeComponent();
+
+        _newDesignStartPage = newDesignStartPage;
     }
 
     private async void ConvertPhoto_Clicked(object sender, EventArgs e)
@@ -20,7 +24,7 @@ public partial class NewPatternPopup : Popup
 
     private async void DrawNewDesign_Clicked(object sender, EventArgs e)
     {
-        Application.Current.MainPage.Navigation.PushAsync(new NewDesignStartPage());
+        Application.Current.MainPage.Navigation.PushAsync(_newDesignStartPage);
         Close();
     }
 

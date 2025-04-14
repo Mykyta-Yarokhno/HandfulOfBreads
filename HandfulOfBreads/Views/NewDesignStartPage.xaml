@@ -2,35 +2,44 @@
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:viewModels="clr-namespace:HandfulOfBreads.ViewModels"
-             x:Class="HandfulOfBreads.Views.NewDesignStartPage">
-    <ContentPage.BindingContext>
-        <viewModels:NewDesignStartViewModel />
-    </ContentPage.BindingContext>
-
-    <StackLayout Padding="20" VerticalOptions="Center">
-        <Label Text="{Binding LocalizationResourceManager[SelectStitch]}" />
+             x:Class="HandfulOfBreads.Views.NewDesignStartPage"
+             BackgroundColor="Wheat">
+    
+    <StackLayout Padding="20" 
+                 VerticalOptions="Center">
+        <Label Text="{Binding LocalizationResourceManager[SelectStitch]}"
+               TextColor="#553d3a"/>
 
         <Picker Title="Choose a stitch"
+                TextColor="#98694d"
                 ItemsSource="{Binding Patterns}"
                 SelectedItem="{Binding SelectedPattern}"
                 IsEnabled="False"/>
 
-        <Label Text="{Binding LocalizationResourceManager[EnterRowsNumber]}" />
+        <Label Text="{Binding LocalizationResourceManager[EnterRowsNumber]}"
+               TextColor="#553d3a"/>
         <Entry Keyboard="Numeric"
+               TextColor="#98694d"
                Text="{Binding Rows}"
-               Placeholder="0-200" />
+               Placeholder="0-200"
+               />
 
-        <Label Text="{Binding LocalizationResourceManager[EnterColumnsNumber]}" />
+        <Label Text="{Binding LocalizationResourceManager[EnterColumnsNumber]}"
+               TextColor="#553d3a"/>
         <Entry Keyboard="Numeric"
                Text="{Binding Columns}"
-               Placeholder="0-200" />
+               TextColor="#98694d"
+               Placeholder="0-200"
+               Visual="Material"/>
 
         <Button Text="OK"
+                Style="{StaticResource MainButton}"
                 Command="{Binding OkCommand}"
                 IsEnabled="{Binding IsFormValid}"
                 Margin="10"/>
 
         <Button Text="{Binding LocalizationResourceManager[OpenExisting]}"
+                Style="{StaticResource MainButton}"
                 Command="{Binding OpenExistingCommand}"
                 Margin="10"/>
     </StackLayout>

@@ -5,25 +5,28 @@
              x:Class="HandfulOfBreads.Views.Popups.NewGraphicsViewPopup">
     <Grid VerticalOptions="Center" HorizontalOptions="Center">
         <Frame BackgroundColor="White"
-           CornerRadius="10"
+           CornerRadius="0"
            Padding="20"
            WidthRequest="300">
             <StackLayout Spacing="15">
                 <Label Text="Enter Dimensions"
-                   FontAttributes="Bold"
-                   HorizontalOptions="Center" />
+                       TextColor="#553d3a"
+                       FontAttributes="Bold"
+                       HorizontalOptions="Center" />
                 <Entry x:Name="FirstNumberEntry"
-                   Placeholder="First Number"
-                   Keyboard="Numeric" />
+                       TextColor="#553d3a"
+                       Placeholder="First Number"
+                       Keyboard="Numeric" />
                 <Entry x:Name="SecondNumberEntry"
+                       TextColor="#553d3a"
                    Placeholder="Second Number"
                    Keyboard="Numeric" />
                 <Button Text="OK"
-                    Clicked="OnOkClicked" />
+                        Style="{StaticResource MainButton}"
+                        Clicked="OnOkClicked" />
                 <Button Text="Cancel"
-                    Clicked="OnCancelClicked"
-                    BackgroundColor="Gray"
-                    TextColor="White" />
+                        Style="{StaticResource MainButton}"
+                        Clicked="OnCancelClicked"/>
             </StackLayout>
         </Frame>
     </Grid>

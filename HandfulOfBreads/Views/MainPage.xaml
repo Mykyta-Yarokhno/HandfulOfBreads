@@ -27,12 +27,16 @@
             <ScrollView Orientation="Horizontal" Grid.Row="0" Grid.ColumnSpan="2" BackgroundColor="LightGray" Padding="5" HorizontalScrollBarVisibility="Never">
                 <HorizontalStackLayout Spacing="10">
                     <Button Text="☰" 
+                            Style="{StaticResource MainButton}"
                             Clicked="OnToggleClicked"/>
                     <Button Text="{Binding LocalizationResourceManager[NewDesign]}"
+                            Style="{StaticResource MainButton}"
                             Clicked="OnNewButtonClicked"/>
                     <Button Text="{Binding LocalizationResourceManager[Save]}"
+                            Style="{StaticResource MainButton}"
                             Clicked="OnSaveClicked"/>
                     <Button Text="{Binding LocalizationResourceManager[StartBeading]}"
+                            Style="{StaticResource MainButton}"
                             Clicked="OnStartBeadingClicked"/>
                 </HorizontalStackLayout>
             </ScrollView>
@@ -43,8 +47,12 @@
                              HorizontalOptions="End" 
                              VerticalOptions="Center"
                              Spacing="10">
-                <Button Text="▲" Clicked="OnMoveRowUpClicked"/>
-                <Button Text="▼" Clicked="OnMoveRowDownClicked"/>
+                <Button Text="▲"
+                        Style="{StaticResource MainButton}"
+                        Clicked="OnMoveRowUpClicked"/>
+                <Button Text="▼"
+                        Style="{StaticResource MainButton}"
+                        Clicked="OnMoveRowDownClicked"/>
             </VerticalStackLayout>
 
             <VerticalStackLayout x:Name="SidePanel"
@@ -55,13 +63,17 @@
                               Spacing="10"
                               WidthRequest="0">
                 <Button Text="+"
-                     Clicked="OnZoomChanged"/>
+                        Style="{StaticResource MainButton}"
+                        Clicked="OnZoomChanged"/>
                 <Button Text="-"
-                     Clicked="OnZoomChanged"/>
+                        Style="{StaticResource MainButton}"
+                        Clicked="OnZoomChanged"/>
                 <Button Text="M"
-                     Clicked="OnMinimum"/>
+                        Style="{StaticResource MainButton}"
+                        Clicked="OnMinimum"/>
                 <Button Text="C"
-                     Clicked="OnCenter"/>
+                        Style="{StaticResource MainButton}"
+                        Clicked="OnCenter"/>
                 <Button x:Name="OpenColorPickerButton" 
                         Clicked="OnOpenColorPickerClicked" 
                         BackgroundColor="White"  />    

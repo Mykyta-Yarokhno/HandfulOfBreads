@@ -3,6 +3,7 @@ using HandfulOfBreads.Services;
 using HandfulOfBreads.Services.Interfaces;
 using HandfulOfBreads.ViewModels;
 using HandfulOfBreads.Views;
+using HandfulOfBreads.Views.Popups;
 using Microsoft.Extensions.Logging;
 
 namespace HandfulOfBreads
@@ -29,7 +30,17 @@ namespace HandfulOfBreads
             builder.Services.AddTransient<StartPageViewModel>();
             builder.Services.AddTransient<StartPage>();
 
-            return builder.Build();
+            builder.Services.AddTransient<NewDesignStartViewModel>();
+            builder.Services.AddTransient<NewDesignStartPage>();
+
+            builder.Services.AddTransient<NewPatternPopup>();
+
+            builder.Services.AddSingleton<ImageLoadingService>();
+
+            var app = builder.Build();
+            App.Services = app.Services;
+
+            return app;
         }
     }
 }

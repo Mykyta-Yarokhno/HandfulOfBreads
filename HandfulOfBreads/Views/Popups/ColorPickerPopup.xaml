@@ -26,7 +26,8 @@
                  BackgroundColor="Gray" 
                  HorizontalOptions="Center" />
 
-        <Button Text="Confirm" 
+        <Button Text="Confirm"
+                Style="{StaticResource MainButton}"
                 HorizontalOptions="Center" 
                 Clicked="OnConfirmClicked" />
     </VerticalStackLayout>

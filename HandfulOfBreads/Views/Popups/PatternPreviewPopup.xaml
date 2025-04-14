@@ -12,16 +12,14 @@
         <Grid ColumnDefinitions="*, *">
 
             <Button Text="{Binding LocalizationResourceManager[Cancel]}"
-                    BackgroundColor="#98694d"
-                    TextColor="White"
+                    Style="{StaticResource MainButton}"
                     HorizontalOptions="Start"
                     Clicked="OnCancelClicked"
                     Grid.Column="0"
                     Margin="0,0,10,0"/>
 
             <Button Text="{Binding LocalizationResourceManager[Open]}"
-                    BackgroundColor="#98694d"
-                    TextColor="White"
+                    Style="{StaticResource MainButton}"
                     Clicked="OnOpenClicked"
                     HorizontalOptions="End"
                     Grid.Column="1"/>

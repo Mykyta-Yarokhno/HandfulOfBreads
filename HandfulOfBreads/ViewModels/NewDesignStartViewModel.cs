@@ -1,6 +1,7 @@
 ﻿using HandfulOfBreads.Resources.Localization;
 using HandfulOfBreads.Services;
 using HandfulOfBreads.Views;
+using Microsoft.Maui.Graphics;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -18,6 +19,8 @@ namespace HandfulOfBreads.ViewModels
         private string _columns;
         private string _rows;
         private string _selectedPattern;
+
+        private readonly ImageLoadingService _imageLoadingService;
 
         public LocalizationResourceManager LocalizationResourceManager
         => LocalizationResourceManager.Instance;
@@ -71,7 +74,7 @@ namespace HandfulOfBreads.ViewModels
         public ICommand OpenExistingCommand { get; }
         public ICommand OkCommand { get; }
         
-        public NewDesignStartViewModel()
+        public NewDesignStartViewModel(ImageLoadingService imageLoadingService)
         {
             _selectedPattern = Patterns[0];
 
@@ -82,6 +85,7 @@ namespace HandfulOfBreads.ViewModels
             OkCommand = new Command(async () => await OnOk(), () => IsFormValid);
 
             //LanguageSwitchCommand = new Command(OnLanguageSwitch);
+            _imageLoadingService = imageLoadingService;
 
             ValidateInput();
         }
@@ -121,70 +125,13 @@ namespace HandfulOfBreads.ViewModels
                     return;
                 }
 
-                var (name, rows, columns, pixelSize, grid) = await LoadGridFromFileAsync(filePath);
+                var (name, rows, columns, pixelSize, grid) = await _imageLoadingService.LoadGridFromFileAsync(filePath);
                 await Application.Current.MainPage.Navigation.PushModalAsync(new MainPage(columns, rows, name, grid));
             }
             catch (Exception ex)
             {
                 await Application.Current.MainPage.DisplayAlert("Помилка", ex.Message, "OK");
             }
-        }
-
-        private async Task<(string name, int rows, int columns, int pixelSize, List<List<Color>> grid)> LoadGridFromFileAsync(string filePath)
-        {
-            byte[] fileBytes = await File.ReadAllBytesAsync(filePath);
-            string fileText = Encoding.UTF8.GetString(fileBytes);
-
-            int gridStart = fileText.IndexOf("<GRID>");
-            int gridEnd = fileText.IndexOf("</GRID>");
-
-            if (gridStart == -1 || gridEnd == -1)
-                throw new Exception("Не знайдено JSON-метадані у файлі.");
-
-            string json = fileText.Substring(gridStart + "<GRID>".Length, gridEnd - gridStart - "<GRID>".Length).Trim();
-            var meta = JsonSerializer.Deserialize<GridMeta>(json);
-
-            if (meta is null)
-                throw new Exception("Не вдалося розпарсити JSON.");
-
-            var grid = meta.grid
-                .Select(row => row.Select(hex => FromHex(hex)).ToList())
-                .ToList();
-
-            return (meta.name, meta.rows, meta.columns, meta.pixelSize, grid);
-        }
-
-        private Color FromHex(string hex)
-        {
-            if (string.IsNullOrWhiteSpace(hex)) return Colors.Transparent;
-            if (hex.StartsWith("#")) hex = hex[1..];
-
-            if (hex.Length == 6)
-            {
-                byte r = Convert.ToByte(hex[..2], 16);
-                byte g = Convert.ToByte(hex[2..4], 16);
-                byte b = Convert.ToByte(hex[4..6], 16);
-                return Color.FromRgb(r, g, b);
-            }
-            else if (hex.Length == 8)
-            {
-                byte a = Convert.ToByte(hex[..2], 16);
-                byte r = Convert.ToByte(hex[2..4], 16);
-                byte g = Convert.ToByte(hex[4..6], 16);
-                byte b = Convert.ToByte(hex[6..8], 16);
-                return Color.FromRgba(r, g, b, a);
-            }
-
-            return Colors.Transparent;
-        }
-
-        public class GridMeta
-        {
-            public string name { get; set; }
-            public int rows { get; set; }
-            public int columns { get; set; }
-            public int pixelSize { get; set; }
-            public List<List<string>> grid { get; set; }
         }
     }
 }

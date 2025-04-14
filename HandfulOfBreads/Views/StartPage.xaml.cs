@@ -1,4 +1,5 @@
 using CommunityToolkit.Maui.Views;
+using HandfulOfBreads.Services;
 using HandfulOfBreads.ViewModels;
 using HandfulOfBreads.Views.Popups;
 using System.Text;
@@ -8,13 +9,21 @@ namespace HandfulOfBreads.Views;
 
 public partial class StartPage : ContentPage
 {
-	public StartPage(StartPageViewModel viewModel)
-	{
+    private readonly ImageLoadingService _imageLoadingService;
+    public StartPage(StartPageViewModel viewModel, ImageLoadingService imageLoadingService)
+    {
         InitializeComponent();
         BindingContext = viewModel;
         Shell.SetNavBarIsVisible(this, false);
-
+        _imageLoadingService = imageLoadingService;
         LoadPixelGrids();
+    }
+
+    private async void OnRefreshing(object sender, EventArgs e)
+    {
+        await Task.Delay(500);
+        LoadPixelGrids();
+        refreshView.IsRefreshing = false;
     }
 
     private void LoadPixelGrids()
@@ -30,22 +39,30 @@ public partial class StartPage : ContentPage
 
             stackLayout.Children.Clear();
 
+            var screenWidth = DeviceDisplay.MainDisplayInfo.Width / DeviceDisplay.MainDisplayInfo.Density;
+            double itemSize = screenWidth switch
+            {
+                <= 500 => 150,    
+                <= 800 => 220,     
+                _ => 220        
+            };
+
             foreach (var file in pixelGridFiles)
             {
                 var image = new Image
                 {
-                   Source = ImageSource.FromFile(file),
+                    Source = ImageSource.FromFile(file),
                     Aspect = Aspect.AspectFit,
-                    WidthRequest = 150,
-                    HeightRequest = 150
+                    WidthRequest = itemSize,
+                    HeightRequest = itemSize
                 };
 
                 var frame = new Frame
                 {
                     Content = image,
                     Margin = new Thickness(10),
-                    WidthRequest = 154,
-                    HeightRequest = 154,
+                    WidthRequest = itemSize+4,
+                    HeightRequest = itemSize+4,
                     CornerRadius = 0,
                     HasShadow = false,
                     BorderColor = Color.FromArgb("#553d3a"),
@@ -55,7 +72,7 @@ public partial class StartPage : ContentPage
                 var tapGesture = new TapGestureRecognizer();
                 tapGesture.Tapped += async (s, e) =>
                 {
-                    var popup = new PatternPreviewPopup(file);
+                    var popup = new PatternPreviewPopup(file , _imageLoadingService);
                     await Application.Current.MainPage.ShowPopupAsync(popup);
                 };
 
@@ -71,62 +88,5 @@ public partial class StartPage : ContentPage
         {
             Application.Current.MainPage.DisplayAlert("Помилка", ex.Message, "OK");
         }
-    }
-
-    private async Task<(string name, int rows, int columns, int pixelSize, List<List<Color>> grid)> LoadGridFromFileAsync(string filePath)
-    {
-        byte[] fileBytes = await File.ReadAllBytesAsync(filePath);
-        string fileText = Encoding.UTF8.GetString(fileBytes);
-
-        int gridStart = fileText.IndexOf("<GRID>");
-        int gridEnd = fileText.IndexOf("</GRID>");
-
-        if (gridStart == -1 || gridEnd == -1)
-            throw new Exception("Не знайдено JSON-метадані у файлі.");
-
-        string json = fileText.Substring(gridStart + "<GRID>".Length, gridEnd - gridStart - "<GRID>".Length).Trim();
-        var meta = JsonSerializer.Deserialize<GridMeta>(json);
-
-        if (meta is null)
-            throw new Exception("Не вдалося розпарсити JSON.");
-
-        var grid = meta.grid
-            .Select(row => row.Select(hex => FromHex(hex)).ToList())
-            .ToList();
-
-        return (meta.name, meta.rows, meta.columns, meta.pixelSize, grid);
-    }
-
-    private Color FromHex(string hex)
-    {
-        if (string.IsNullOrWhiteSpace(hex)) return Colors.Transparent;
-        if (hex.StartsWith("#")) hex = hex[1..];
-
-        if (hex.Length == 6)
-        {
-            byte r = Convert.ToByte(hex[..2], 16);
-            byte g = Convert.ToByte(hex[2..4], 16);
-            byte b = Convert.ToByte(hex[4..6], 16);
-            return Color.FromRgb(r, g, b);
-        }
-        else if (hex.Length == 8)
-        {
-            byte a = Convert.ToByte(hex[..2], 16);
-            byte r = Convert.ToByte(hex[2..4], 16);
-            byte g = Convert.ToByte(hex[4..6], 16);
-            byte b = Convert.ToByte(hex[6..8], 16);
-            return Color.FromRgba(r, g, b, a);
-        }
-
-        return Colors.Transparent;
-    }
-
-    public class GridMeta
-    {
-        public string name { get; set; }
-        public int rows { get; set; }
-        public int columns { get; set; }
-        public int pixelSize { get; set; }
-        public List<List<string>> grid { get; set; }
     }
 }

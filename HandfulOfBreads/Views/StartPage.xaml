@@ -10,7 +10,7 @@
           ColumnDefinitions="*,Auto,*">
 
             <Button Text="{Binding LocalizationResourceManager[SwitchLanguageButton]}"
-                BackgroundColor="#98694d"
+                Style="{StaticResource MainButton}"
                 WidthRequest="60"
                 HeightRequest="40"
                 Command="{Binding LanguageSwitchCommand}"
@@ -27,7 +27,7 @@
                Grid.Column="1"/>
 
             <Button Text="+"
-                BackgroundColor="#98694d"
+                Style="{StaticResource MainButton}"
                 WidthRequest="40"
                 HeightRequest="40"
                 CornerRadius="20"
@@ -42,18 +42,22 @@
              HeightRequest="1"
              BackgroundColor="Gray"
              VerticalOptions="End"
-             HorizontalOptions="FillAndExpand"/>    
+             HorizontalOptions="FillAndExpand"/>
 
-        <ScrollView Grid.Row="1"
-                x:Name="scrollView"
-                Orientation="Vertical">
-            <FlexLayout x:Name="stackLayout"
-                    Direction="Row"
-                    Wrap="Wrap"
-                    JustifyContent="Start"
-                    AlignItems="Start"
-                    Margin="10"/>
-        </ScrollView>
+
+        <RefreshView Grid.Row="1"
+                 x:Name="refreshView"
+                 Refreshing="OnRefreshing">
+            <ScrollView>
+                <FlexLayout x:Name="stackLayout"
+                        Direction="Row"
+                        Wrap="Wrap"
+                        JustifyContent="Start"
+                        AlignItems="Start"
+                        AlignContent="Start"
+                        Margin="10"/>
+            </ScrollView>
+        </RefreshView>
     </Grid>
 
 </ContentPage>
