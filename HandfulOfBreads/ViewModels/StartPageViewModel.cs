@@ -17,14 +17,12 @@ namespace HandfulOfBreads.ViewModels
         => LocalizationResourceManager.Instance;
 
         private readonly IPopupService _popupService;
-        private readonly NewPatternPopup _newPatternPopup;
         public ICommand AddNewCommand { get; set; }
         public ICommand LanguageSwitchCommand { get; }
 
-        public StartPageViewModel(IPopupService popupService, NewPatternPopup newPatternPopup)
+        public StartPageViewModel(IPopupService popupService)
         {
             _popupService = popupService;
-            _newPatternPopup = newPatternPopup;
 
             AddNewCommand = new Command(async () => await ChooseNewAsync());
             LanguageSwitchCommand = new Command(async () => await OnLanguageSwitch());
@@ -32,7 +30,17 @@ namespace HandfulOfBreads.ViewModels
 
         private async Task ChooseNewAsync()
         {
-            await _popupService.ShowPopupAsync(_newPatternPopup);
+            
+            var popup = App.Services.GetRequiredService<NewPatternPopup>();
+
+            var result = await _popupService.ShowPopupAsync<string>(popup);
+
+            if (result == "ConvertPhoto")
+            {
+                var images = await ImagesLoadingService.GetRecentImagesAsync();
+
+                await _popupService.ShowPopupAsync(new ChoosePhotoPopup(images));
+            }
         }
 
         private async Task OnLanguageSwitch()

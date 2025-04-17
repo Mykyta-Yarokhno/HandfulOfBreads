@@ -14,5 +14,10 @@ namespace HandfulOfBreads.Services
         {
             await Application.Current.MainPage.ShowPopupAsync(popup);
         }
+
+        public async Task<T?> ShowPopupAsync<T>(Popup popup)
+        {
+            return (T?) await Application.Current.MainPage.ShowPopupAsync(popup);
+        }
     }
 }

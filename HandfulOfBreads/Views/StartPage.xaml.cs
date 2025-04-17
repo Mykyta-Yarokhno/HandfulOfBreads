@@ -9,8 +9,8 @@ namespace HandfulOfBreads.Views;
 
 public partial class StartPage : ContentPage
 {
-    private readonly ImageLoadingService _imageLoadingService;
-    public StartPage(StartPageViewModel viewModel, ImageLoadingService imageLoadingService)
+    private readonly GridLoadingService _imageLoadingService;
+    public StartPage(StartPageViewModel viewModel, GridLoadingService imageLoadingService)
     {
         InitializeComponent();
         BindingContext = viewModel;
@@ -26,8 +26,10 @@ public partial class StartPage : ContentPage
         refreshView.IsRefreshing = false;
     }
 
-    private void LoadPixelGrids()
+    private async void LoadPixelGrids()
     {
+        var status = await Permissions.RequestAsync<Permissions.StorageRead>();
+
         try
         {
 #if ANDROID

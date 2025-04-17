@@ -19,7 +19,7 @@ public partial class MainPage : ContentPage
     private double scale;
     private double minScale;
 
-    private readonly ImageSavingService _imageSavingService = new ImageSavingService();
+    private readonly GridSavingService _imageSavingService = new GridSavingService();
 
     public LocalizationResourceManager LocalizationResourceManager
         => LocalizationResourceManager.Instance;

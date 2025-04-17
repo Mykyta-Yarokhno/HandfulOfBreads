@@ -20,7 +20,7 @@ namespace HandfulOfBreads.ViewModels
         private string _rows;
         private string _selectedPattern;
 
-        private readonly ImageLoadingService _imageLoadingService;
+        private readonly GridLoadingService _imageLoadingService;
 
         public LocalizationResourceManager LocalizationResourceManager
         => LocalizationResourceManager.Instance;
@@ -74,7 +74,7 @@ namespace HandfulOfBreads.ViewModels
         public ICommand OpenExistingCommand { get; }
         public ICommand OkCommand { get; }
         
-        public NewDesignStartViewModel(ImageLoadingService imageLoadingService)
+        public NewDesignStartViewModel(GridLoadingService imageLoadingService)
         {
             _selectedPattern = Patterns[0];
 

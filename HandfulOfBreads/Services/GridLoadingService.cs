@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace HandfulOfBreads.Services
 {
-    public class ImageLoadingService
+    public class GridLoadingService
     {
         public async Task<(string name, int rows, int columns, int pixelSize, List<List<Color>> grid)> LoadGridFromFileAsync(string filePath)
         {

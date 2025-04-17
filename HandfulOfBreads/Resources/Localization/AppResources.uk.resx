@@ -148,6 +148,9 @@
     <value>Відкрити</value>
   </data>
   <data name="NewDesign" xml:space="preserve">
-    <value>Новий дизайн</value>
+    <value>Створити власний дизайн</value>
+  </data>
+  <data name="ConvertAPhoto" xml:space="preserve">
+    <value>Сітка із фотографії</value>
   </data>
 </root>

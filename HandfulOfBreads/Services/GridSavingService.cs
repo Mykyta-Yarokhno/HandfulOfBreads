@@ -2,7 +2,7 @@
 
 namespace HandfulOfBreads.Services
 {
-    internal class ImageSavingService
+    internal class GridSavingService
     {
         public async Task SaveImageToGalleryAsync(IPatternDrawable _drawable)
         {

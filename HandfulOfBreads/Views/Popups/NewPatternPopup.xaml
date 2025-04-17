@@ -8,7 +8,10 @@
                 Style="{StaticResource MainButton}"
                 Clicked="DrawNewDesign_Clicked" 
                 ContentLayout="Left, 20"/>
-        <Button Text="Convert a photo" Clicked="ConvertPhoto_Clicked"  ContentLayout="Left, 20" IsEnabled="False"/>
+        <Button Text="{Binding LocalizationResourceManager[ConvertAPhoto]}" 
+                Style="{StaticResource MainButton}"
+                Clicked="ConvertPhoto_Clicked"  
+                ContentLayout="Left, 20" />
         <Button Text="Import a file" Clicked="ImportFile_Clicked"  ContentLayout="Left, 20" IsEnabled="False"/>
     </VerticalStackLayout>
 </toolkit:Popup>

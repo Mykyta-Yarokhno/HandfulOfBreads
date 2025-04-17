@@ -8,11 +8,11 @@ namespace HandfulOfBreads.Views.Popups;
 public partial class PatternPreviewPopup : Popup
 {
     private readonly string _filePath;
-    private readonly ImageLoadingService _imageLoadingService;
+    private readonly GridLoadingService _imageLoadingService;
     public LocalizationResourceManager LocalizationResourceManager
        => LocalizationResourceManager.Instance;
 
-    public PatternPreviewPopup(string filePath, ImageLoadingService imageLoadingService)
+    public PatternPreviewPopup(string filePath, GridLoadingService imageLoadingService)
     {
         InitializeComponent();
         _filePath = filePath;

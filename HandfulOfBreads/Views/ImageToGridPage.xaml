@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="HandfulOfBreads.Views.ImageToGridPage"
+             Title="ImageToGridPage">
+    <Grid ColumnDefinitions="*, 2*" Padding="10">
+        <Image Grid.Column="0"
+                   Aspect="AspectFit"
+                   Source="{Binding ImageSource}" />
+
+        <StackLayout Grid.Column="1" Padding="20" Spacing="15">
+            <Label Text="Width:" />
+            <Entry Text="{Binding Width}" Keyboard="Numeric" />
+
+            <Label Text="Height:" />
+            <Entry Text="{Binding Height}" Keyboard="Numeric" />
+
+            <Label Text="Pattern:" />
+            <Picker ItemsSource="{Binding Patterns}" 
+                        SelectedItem="{Binding SelectedPattern}" />
+
+            <Button Text="Ready" Command="{Binding GenerateGridCommand}" />
+            <Button Text="OK"  Command="{Binding GoToMainPageCommand}"/>
+        </StackLayout>
+    </Grid>
+</ContentPage>

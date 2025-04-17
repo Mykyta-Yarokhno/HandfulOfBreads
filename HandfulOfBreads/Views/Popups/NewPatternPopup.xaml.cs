@@ -19,7 +19,7 @@ public partial class NewPatternPopup : Popup
 
     private async void ConvertPhoto_Clicked(object sender, EventArgs e)
     {
-        Close();
+        Close("ConvertPhoto");
     }
 
     private async void DrawNewDesign_Clicked(object sender, EventArgs e)

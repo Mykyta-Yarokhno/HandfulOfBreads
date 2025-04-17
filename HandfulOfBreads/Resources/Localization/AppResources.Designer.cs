@@ -70,6 +70,15 @@ namespace HandfulOfBreads.Resources.Localization {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Convert a photo.
+        /// </summary>
+        internal static string ConvertAPhoto {
+            get {
+                return ResourceManager.GetString("ConvertAPhoto", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Enter columns number:.
         /// </summary>
         internal static string EnterColumnsNumber {
@@ -97,7 +106,7 @@ namespace HandfulOfBreads.Resources.Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to New design.
+        ///   Looks up a localized string similar to Draw your own design.
         /// </summary>
         internal static string NewDesign {
             get {

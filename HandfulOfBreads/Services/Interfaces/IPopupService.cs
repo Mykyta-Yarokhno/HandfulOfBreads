@@ -10,5 +10,6 @@ namespace HandfulOfBreads.Services.Interfaces
     public interface IPopupService
     {
         Task ShowPopupAsync(Popup popup);
+        Task<T?> ShowPopupAsync<T>(Popup popup);
     }
 }
