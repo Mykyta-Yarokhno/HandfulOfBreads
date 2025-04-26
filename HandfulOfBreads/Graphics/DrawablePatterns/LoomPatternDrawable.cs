@@ -97,13 +97,6 @@ namespace HandfulOfBreads.Graphics.DrawablePatterns
 
             //if (_selectedRow.HasValue)
             //{
-            //    float y = _selectedRow.Value * _pixelSize;
-            //    canvas.FillColor = _overlayColor;
-            //    canvas.FillRectangle(0, y, _columns * _pixelSize, _pixelSize);
-            //}
-
-            //if (_selectedRow.HasValue)
-            //{
             //    float y = _selectedRow.Value * _pixelSize + _pixelSize / 2;
             //    canvas.StrokeColor = _overlayColor;
             //    canvas.StrokeSize = 2; 

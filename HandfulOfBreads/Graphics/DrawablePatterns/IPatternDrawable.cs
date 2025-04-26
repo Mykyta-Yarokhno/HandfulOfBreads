@@ -2,7 +2,7 @@
 
 namespace HandfulOfBreads.Graphics.DrawablePatterns
 {
-    internal interface IPatternDrawable : IDrawable
+    public interface IPatternDrawable : IDrawable
     {
         Color SelectedColor { get; set; }
         void InitializeGrid(int rows, int columns, int pixelSize, IImage? fillImage = null, List<List<Color>> grid = null);

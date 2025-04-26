@@ -28,6 +28,13 @@ namespace HandfulOfBreads
 #endif
             builder.Services.AddSingleton<IPopupService, Services.PopupService>();
 
+            builder.Services.AddSingleton<GridLoadingService>();
+
+            builder.Services.AddSingleton<ImagesLoadingService>();
+
+            builder.Services.AddTransient<MainPageViewModel>();
+            builder.Services.AddTransient<MainPage>();
+
             builder.Services.AddTransient<StartPageViewModel>();
             builder.Services.AddTransient<StartPage>();
 
@@ -38,9 +45,7 @@ namespace HandfulOfBreads
             builder.Services.AddTransient<ImageToGridPage>();
 
             builder.Services.AddTransient<NewPatternPopup>();
-
-            builder.Services.AddSingleton<GridLoadingService>();
-            builder.Services.AddSingleton<ImagesLoadingService>();
+            builder.Services.AddTransient<ColorPickerPopup>();
 
             var app = builder.Build();
             App.Services = app.Services;

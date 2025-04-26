@@ -1,16 +1,19 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             x:Class="HandfulOfBreads.Views.MainPage">
+             x:Class="HandfulOfBreads.Views.MainPage"
+             xmlns:viewmodels="clr-namespace:HandfulOfBreads.ViewModels"
+             x:DataType="viewmodels:MainPageViewModel">
+    
     <Grid>
         <Grid BackgroundColor="Wheat"
-           x:Name="PixelGraphicsViewContainer">
+              x:Name="PixelGraphicsViewContainer">
             <GraphicsView 
-             x:Name="PixelGraphicsView"
-             Drawable="{Binding Drawable}"
-             StartInteraction="OnStartInteraction"
-             DragInteraction="OnDragInteraction"
-             EndInteraction="OnEndInteraction"/>
+                x:Name="PixelGraphicsView"
+                Drawable="{Binding Drawable}"
+                StartInteraction="OnStartInteraction"
+                DragInteraction="OnDragInteraction"
+                EndInteraction="OnEndInteraction" />
         </Grid>
 
         <Grid>
@@ -26,59 +29,59 @@
 
             <ScrollView Orientation="Horizontal" Grid.Row="0" Grid.ColumnSpan="2" BackgroundColor="LightGray" Padding="5" HorizontalScrollBarVisibility="Never">
                 <HorizontalStackLayout Spacing="10">
-                    <Button Text="☰" 
+                    <Button Text="☰"
                             Style="{StaticResource MainButton}"
-                            Clicked="OnToggleClicked"/>
+                            Clicked="OnToggleClicked" />
                     <Button Text="{Binding LocalizationResourceManager[NewDesign]}"
                             Style="{StaticResource MainButton}"
-                            Clicked="OnNewButtonClicked"/>
+                            Command="{Binding NewDesignCommand}" 
+                            IsEnabled="False"/>
                     <Button Text="{Binding LocalizationResourceManager[Save]}"
                             Style="{StaticResource MainButton}"
-                            Clicked="OnSaveClicked"/>
+                            Command="{Binding SaveCommand}" />
                     <Button Text="{Binding LocalizationResourceManager[StartBeading]}"
                             Style="{StaticResource MainButton}"
-                            Clicked="OnStartBeadingClicked"/>
+                            Command="{Binding StartBeadingCommand}" />
                 </HorizontalStackLayout>
             </ScrollView>
 
             <VerticalStackLayout IsVisible="{Binding IsBeadingActive}" 
-                             Grid.Row="1" 
-                             Grid.Column="1"
-                             HorizontalOptions="End" 
-                             VerticalOptions="Center"
-                             Spacing="10">
+                                 Grid.Row="1" 
+                                 Grid.Column="1"
+                                 HorizontalOptions="End" 
+                                 VerticalOptions="Center"
+                                 Spacing="10">
                 <Button Text="▲"
                         Style="{StaticResource MainButton}"
-                        Clicked="OnMoveRowUpClicked"/>
+                        Command="{Binding MoveRowUpCommand}" />
                 <Button Text="▼"
                         Style="{StaticResource MainButton}"
-                        Clicked="OnMoveRowDownClicked"/>
+                        Command="{Binding MoveRowDownCommand}" />
             </VerticalStackLayout>
 
             <VerticalStackLayout x:Name="SidePanel"
-                              Grid.Row="1"
-                              Grid.Column="0"
-                              BackgroundColor="LightGray"
-                              Padding="5"
-                              Spacing="10"
-                              WidthRequest="0">
+                                 Grid.Row="1"
+                                 Grid.Column="0"
+                                 BackgroundColor="LightGray"
+                                 Padding="5"
+                                 Spacing="10"
+                                 WidthRequest="0">
                 <Button Text="+"
                         Style="{StaticResource MainButton}"
                         Clicked="OnZoomChanged"/>
                 <Button Text="-"
                         Style="{StaticResource MainButton}"
-                        Clicked="OnZoomChanged"/>
+                        Clicked="OnZoomChanged" />
                 <Button Text="M"
                         Style="{StaticResource MainButton}"
-                        Clicked="OnMinimum"/>
+                        Clicked="OnMinimum" />
                 <Button Text="C"
                         Style="{StaticResource MainButton}"
-                        Clicked="OnCenter"/>
+                        Clicked="OnCenter" />
                 <Button x:Name="OpenColorPickerButton" 
-                        Clicked="OnOpenColorPickerClicked" 
-                        BackgroundColor="White"  />    
+                        Command="{Binding OpenColorPickerCommand}" 
+                        BackgroundColor="{Binding SelectedColor}" />
             </VerticalStackLayout>
-
         </Grid>
     </Grid>
 </ContentPage>

@@ -11,7 +11,8 @@
         <Button Text="{Binding LocalizationResourceManager[ConvertAPhoto]}" 
                 Style="{StaticResource MainButton}"
                 Clicked="ConvertPhoto_Clicked"  
-                ContentLayout="Left, 20" />
+                ContentLayout="Left, 20" 
+                IsEnabled="False"/>
         <Button Text="Import a file" Clicked="ImportFile_Clicked"  ContentLayout="Left, 20" IsEnabled="False"/>
     </VerticalStackLayout>
 </toolkit:Popup>
