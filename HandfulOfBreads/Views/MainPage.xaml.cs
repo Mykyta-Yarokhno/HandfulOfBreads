@@ -1,13 +1,17 @@
 ﻿using HandfulOfBreads.ViewModels;
+using Microsoft.Maui.Layouts;
 
 namespace HandfulOfBreads.Views
 {
     public partial class MainPage : ContentPage
     {
+        #region Basic
         private readonly MainPageViewModel _viewModel;
-        private const int PixelSize = 40;
+        private const int _pixelSize = 40;
         private double scale;
         private double minScale;
+        private int _columns;
+        private int _rows;
 
         public MainPage(int columns, int rows, string selectedPattern, List<List<Color>>? grid = null)
         {
@@ -15,18 +19,21 @@ namespace HandfulOfBreads.Views
 
             Shell.SetNavBarIsVisible(this, false);
 
+            _columns = columns;
+            _rows = rows;
+
             _viewModel = new MainPageViewModel(columns, rows, selectedPattern, grid);
             BindingContext = _viewModel;
 
             _viewModel.InvalidateRequested += OnInvalidateRequested;
 
-            PixelGraphicsView.WidthRequest = columns * PixelSize;
+            PixelGraphicsView.WidthRequest = columns * _pixelSize;
             PixelGraphicsView.HeightRequest = selectedPattern == "Brick"
-                ? rows * PixelSize + 20
-                : rows * PixelSize;
+                ? rows * _pixelSize + 20
+                : rows * _pixelSize;
 
-            PixelGraphicsViewContainer.WidthRequest = columns * PixelSize * 10;
-            PixelGraphicsViewContainer.HeightRequest = rows * PixelSize * 10;
+            PixelGraphicsViewContainer.WidthRequest = columns * _pixelSize * 10;
+            PixelGraphicsViewContainer.HeightRequest = rows * _pixelSize * 10;
         }
 
         private void OnInvalidateRequested()
@@ -46,30 +53,67 @@ namespace HandfulOfBreads.Views
             //PixelGraphicsViewContainer.Scale = minScale;
             PixelGraphicsViewContainer.Scale = scale;
         }
+        #endregion
 
+        #region Canvas Interaction
 
+        //move, scale, paint
         private PointF? _previousTouchPoint = null;
         private PointF _onePoint;
         private Point _startPosition1, _startPosition2;
 
         private bool _isDrawing;
         private bool _isDragging;
+        
 
         private float _initialDistance;
         private double _initialScale;
+
+        //selection
+        private (int Row, int Col)? _selectionStartCell;
+        private (int Row, int Col)? _selectionEndCell;
+        private bool _isSelecting = false;
+        private bool _isMovingPastePreview;
 
         private void OnStartInteraction(object sender, TouchEventArgs e)
         {
             if (e.Touches.Count() == 1)
             {
-                _isDrawing = true;
-                _previousTouchPoint = null;
-                _onePoint = e.Touches[0];
+                if (_isSelecting)
+                {
+                    var touch = e.Touches[0];
+
+                    _selectionStartCell = (
+                        (int)(touch.Y / _pixelSize),
+                        (int)(touch.X / _pixelSize)
+                    );
+                    _selectionEndCell = _selectionStartCell;
+
+                    HandleSelection(touch);
+                }
+                else if(_isMovingPastePreview)
+                {
+                    (int row, int col)? targetCell = GetCellFromTouchPoint(e.Touches[0]);
+
+                    _viewModel.CurrentPattern.BeginPasteMove(targetCell.Value.row, targetCell.Value.col);
+
+                    _isDrawing = false;
+                    _isSelecting = false;
+                }
+                else
+                {
+                    _isDrawing = true;
+                    _previousTouchPoint = null;
+                    _onePoint = e.Touches[0];
+                }
             }
             else if (e.Touches.Count() == 2)
             {
                 _isDragging = true;
                 _isDrawing = false;
+
+                if (_isSelecting)
+                    _isDragging = false;
 
                 _startPosition1 = e.Touches[0];
                 _startPosition2 = e.Touches[1];
@@ -82,9 +126,22 @@ namespace HandfulOfBreads.Views
 
         private void OnDragInteraction(object sender, TouchEventArgs e)
         {
-            if (_isDrawing && e.Touches.Count() == 1)
+            if (e.Touches.Count() == 1)
             {
-                HandleInteraction(e.Touches[0]);
+                if (_isDrawing)
+                    HandleInteraction(e.Touches[0]);
+                else if (_isSelecting)
+                    HandleSelection(e.Touches[0]);
+                else if (_isMovingPastePreview)
+                {
+                    (int row, int col)? targetCell = GetCellFromTouchPoint(e.Touches[0]);
+
+                    if (targetCell.HasValue)
+                    {
+                        _viewModel.CurrentPattern.SetPastePosition(targetCell.Value.row, targetCell.Value.col);
+                        PixelGraphicsView.Invalidate();
+                    }
+                }
             }
             else if (_isDragging && e.Touches.Count() == 2)
             {
@@ -140,6 +197,20 @@ namespace HandfulOfBreads.Views
             _previousTouchPoint = touchPoint;
         }
 
+        private void HandleSelection(PointF touchPoint)
+        {
+            int col = (int)(touchPoint.X / _pixelSize);
+            int row = (int)(touchPoint.Y / _pixelSize);
+
+            col = Math.Clamp(col, 0, _columns - 1);
+            row = Math.Clamp(row, 0, _rows - 1);
+
+            _selectionEndCell = (row, col);
+
+            _viewModel.CurrentPattern.UpdateSelectionCells(_selectionStartCell, _selectionEndCell);
+            PixelGraphicsView.Invalidate();
+        }
+
         private void OnEndInteraction(object sender, TouchEventArgs e)
         {
             if (_isDrawing)
@@ -149,7 +220,9 @@ namespace HandfulOfBreads.Views
             _isDrawing = false;
             PixelGraphicsView.Invalidate();
         }
+        #endregion
 
+        #region Buttons Interaction
         private bool _isPanelVisible = false;
         private async void OnToggleClicked(object sender, EventArgs e)
         {
@@ -200,5 +273,106 @@ namespace HandfulOfBreads.Views
             //Dispatcher.Dispatch(() => CanvasScroll.ScrollToAsync(PixelCanvas, ScrollToPosition.Center, false));
         }
 
+        private Button _selectButton;
+
+        private void OnSelectClicked(object sender, EventArgs e)
+        {
+            if (sender is Button button)
+                _selectButton = button;
+
+            if (_viewModel.CurrentPattern.IsPasting)
+            {
+                _viewModel.CurrentPattern.CancelPaste();
+                _viewModel.CurrentPattern.UpdateSelectionCells(null, null);
+                _isMovingPastePreview = false;
+                _isSelecting = false;
+            }
+            else
+            {
+                _isSelecting = !_isSelecting;
+
+                if (!_isSelecting)
+                {
+                    _viewModel.CurrentPattern.UpdateSelectionCells(null, null);
+                    _isMovingPastePreview = false;
+                }
+            }
+
+            UpdateUIState();
+        }
+
+
+        private void OnCopyClicked(object sender, EventArgs e)
+        {
+            _viewModel.CurrentPattern.CopySelection();
+
+            if (_viewModel.CurrentPattern.IsPasting)
+            {
+                _isSelecting = false;
+                _isMovingPastePreview = true;
+            }
+
+            UpdateUIState();
+        }
+
+        private void OnCutClicked(object sender, EventArgs e)
+        {
+            _viewModel.CurrentPattern.CutSelection();
+
+            if (_viewModel.CurrentPattern.IsPasting)
+            {
+                _isSelecting = false;
+                _isMovingPastePreview = true;
+            }
+
+            UpdateUIState();
+        }
+
+        private void OnDoneClicked(object sender, EventArgs e)
+        {
+            _viewModel.CurrentPattern.ConfirmPaste();
+            _isSelecting = true;
+            _isMovingPastePreview = false;
+
+            UpdateUIState();
+        }
+
+        private void OnCancelClicked(object sender, EventArgs e)
+        {
+            _viewModel.CurrentPattern.CancelPaste();
+            _isSelecting = true;
+            _isMovingPastePreview = false;
+
+            UpdateUIState();
+        }
+
+        private void UpdateUIState()
+        {
+            CutCopyButtonsContainer.IsVisible = _isSelecting && !_viewModel.CurrentPattern.IsPasting;
+            CancelDoneButtonsContainer.IsVisible = _viewModel.CurrentPattern.IsPasting;
+
+            if (_selectButton != null)
+            {
+                _selectButton.BackgroundColor = _isSelecting ? Color.FromArgb("#553d3a") : Color.FromArgb("#98694d");
+            }
+
+            PixelGraphicsView.Invalidate();
+        }
+
+        public (int row, int col)? GetCellFromTouchPoint(Point touchPoint)
+        {
+            int col = (int)(touchPoint.X / _pixelSize);
+            int row = (int)(touchPoint.Y / _pixelSize);
+
+            if (row >= 0 && row < _rows && col >= 0 && col < _columns)
+            {
+                return (row, col);
+            }
+            else
+            {
+                return null;
+            }
+        }
+        #endregion
     }
 }

@@ -15,6 +15,8 @@ namespace HandfulOfBreads.Graphics.DrawablePatterns
 
         public Color SelectedColor { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
 
+        public bool IsPasting => throw new NotImplementedException();
+
         public void InitializeGrid(int rows, int columns, int pixelSize, IImage? fillImage = null, List<List<Color>> grid = null)
         {
             _rows = rows;
@@ -182,6 +184,46 @@ namespace HandfulOfBreads.Graphics.DrawablePatterns
         }
 
         public void HighlightRow(int row)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void UpdateSelection(PointF? start, PointF? end)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void UpdateSelectionCells((int Row, int Col)? start, (int Row, int Col)? end)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void CopySelection()
+        {
+            throw new NotImplementedException();
+        }
+
+        public void CutSelection()
+        {
+            throw new NotImplementedException();
+        }
+
+        public void ConfirmPaste()
+        {
+            throw new NotImplementedException();
+        }
+
+        public void CancelPaste()
+        {
+            throw new NotImplementedException();
+        }
+
+        public void SetPastePosition(int row, int col)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void BeginPasteMove(int startTouchRow, int startTouchCol)
         {
             throw new NotImplementedException();
         }

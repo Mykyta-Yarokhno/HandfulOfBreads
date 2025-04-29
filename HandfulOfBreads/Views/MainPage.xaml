@@ -13,7 +13,7 @@
                 Drawable="{Binding Drawable}"
                 StartInteraction="OnStartInteraction"
                 DragInteraction="OnDragInteraction"
-                EndInteraction="OnEndInteraction" />
+                EndInteraction="OnEndInteraction"/>
         </Grid>
 
         <Grid>
@@ -78,10 +78,41 @@
                 <Button Text="C"
                         Style="{StaticResource MainButton}"
                         Clicked="OnCenter" />
-                <Button x:Name="OpenColorPickerButton" 
-                        Command="{Binding OpenColorPickerCommand}" 
+                <Button Command="{Binding OpenColorPickerCommand}" 
                         BackgroundColor="{Binding SelectedColor}" />
+                <Button Text="⬚"
+                        FontSize="30"
+                        Padding="0"
+                        Style="{StaticResource MainButton}"
+                        Clicked="OnSelectClicked">
+                </Button>
             </VerticalStackLayout>
+        </Grid>
+        <Grid
+            VerticalOptions="End"
+            HorizontalOptions="Center"
+            Padding="10">
+
+            <HorizontalStackLayout Spacing="10"
+                                   x:Name="CutCopyButtonsContainer"
+                                   IsVisible="False">
+                <Button Text="Cut"
+                        Style="{StaticResource MainButton}"
+                        Clicked="OnCutClicked"/>
+                <Button Text="Copy"
+                        Style="{StaticResource MainButton}"
+                        Clicked="OnCopyClicked"/>
+            </HorizontalStackLayout>
+            <HorizontalStackLayout Spacing="10"
+                       x:Name="CancelDoneButtonsContainer"
+                       IsVisible="False">
+                <Button Text="Done"
+                    Style="{StaticResource MainButton}"
+                    Clicked="OnDoneClicked"/>
+                <Button Text="Cancel"
+                    Style="{StaticResource MainButton}"
+                    Clicked="OnCancelClicked"/>
+            </HorizontalStackLayout>
         </Grid>
     </Grid>
 </ContentPage>
