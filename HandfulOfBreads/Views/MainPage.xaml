@@ -39,7 +39,7 @@
                     <Button Text="{Binding LocalizationResourceManager[Save]}"
                             Style="{StaticResource MainButton}"
                             Command="{Binding SaveCommand}" />
-                    <Button Text="{Binding LocalizationResourceManager[StartBeading]}"
+                    <Button Text="{Binding StartBeadingButtonText}"
                             Style="{StaticResource MainButton}"
                             Command="{Binding StartBeadingCommand}" />
                 </HorizontalStackLayout>
@@ -50,7 +50,8 @@
                                  Grid.Column="1"
                                  HorizontalOptions="End" 
                                  VerticalOptions="Center"
-                                 Spacing="10">
+                                 Spacing="10"
+                                 Padding="10">
                 <Button Text="▲"
                         Style="{StaticResource MainButton}"
                         Command="{Binding MoveRowUpCommand}" />
@@ -78,14 +79,16 @@
                 <Button Text="C"
                         Style="{StaticResource MainButton}"
                         Clicked="OnCenter" />
-                <Button Command="{Binding OpenColorPickerCommand}" 
-                        BackgroundColor="{Binding SelectedColor}" />
                 <Button Text="⬚"
                         FontSize="30"
                         Padding="0"
                         Style="{StaticResource MainButton}"
-                        Clicked="OnSelectClicked">
-                </Button>
+                        Clicked="OnSelectClicked"/>
+                <Button Command="{Binding OpenColorPickerCommand}" 
+                        BackgroundColor="{Binding SelectedColor}" />
+                <Button Text="B"
+                        Style="{StaticResource MainButton}" 
+                        Clicked="OnStartDrawingClicked" />
             </VerticalStackLayout>
         </Grid>
         <Grid

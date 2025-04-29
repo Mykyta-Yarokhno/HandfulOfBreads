@@ -21,12 +21,17 @@ namespace HandfulOfBreads.ViewModels
         public LocalizationResourceManager LocalizationResourceManager
         => LocalizationResourceManager.Instance;
 
+        public string StartBeadingButtonText =>
+            (string)(IsBeadingActive
+                ? LocalizationResourceManager.Instance["StopBeading"]
+                : LocalizationResourceManager.Instance["StartBeading"]);
+
         public IPatternDrawable CurrentPattern { get; private set; }
 
         private readonly IPopupService _popupService;
 
         [ObservableProperty] 
-        private bool isBeadingActive = false;
+        private bool isBeadingActive;
         [ObservableProperty]
         private IDrawable drawable;
         [ObservableProperty]
@@ -92,8 +97,17 @@ namespace HandfulOfBreads.ViewModels
         [RelayCommand]
         public void StartBeading()
         {
-            IsBeadingActive = true;
-            HighlightRow(0);
+            IsBeadingActive = !IsBeadingActive;
+
+            if(IsBeadingActive)
+                HighlightRow(0);
+            else
+                HighlightRow(null);
+        }
+
+        partial void OnIsBeadingActiveChanged(bool oldValue, bool newValue)
+        {
+            OnPropertyChanged(nameof(StartBeadingButtonText));
         }
 
         [RelayCommand]
@@ -102,7 +116,7 @@ namespace HandfulOfBreads.ViewModels
         [RelayCommand]
         public void MoveRowDown() => HighlightRow(1);
 
-        private void HighlightRow(int direction)
+        private void HighlightRow(int? direction)
         {
             CurrentPattern.HighlightRow(direction);
             InvalidateRequested?.Invoke();

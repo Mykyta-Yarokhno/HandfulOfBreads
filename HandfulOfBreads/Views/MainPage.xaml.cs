@@ -97,12 +97,10 @@ namespace HandfulOfBreads.Views
 
                     _viewModel.CurrentPattern.BeginPasteMove(targetCell.Value.row, targetCell.Value.col);
 
-                    _isDrawing = false;
                     _isSelecting = false;
                 }
                 else
                 {
-                    _isDrawing = true;
                     _previousTouchPoint = null;
                     _onePoint = e.Touches[0];
                 }
@@ -110,7 +108,6 @@ namespace HandfulOfBreads.Views
             else if (e.Touches.Count() == 2)
             {
                 _isDragging = true;
-                _isDrawing = false;
 
                 if (_isSelecting)
                     _isDragging = false;
@@ -217,7 +214,6 @@ namespace HandfulOfBreads.Views
                 _viewModel.CurrentPattern.TogglePixel(_onePoint.X, _onePoint.Y);
 
             _previousTouchPoint = null;
-            _isDrawing = false;
             PixelGraphicsView.Invalidate();
         }
         #endregion
@@ -238,6 +234,26 @@ namespace HandfulOfBreads.Views
             }
 
             _isPanelVisible = !_isPanelVisible;
+        }
+
+        private Button _brushButton;
+
+        private void OnStartDrawingClicked(object sender, EventArgs e)
+        {
+            if (_isSelecting)
+                return;
+
+            _isDrawing = !_isDrawing;
+
+            if (sender is Button button)
+            {
+                _brushButton = button;
+
+                _brushButton.BackgroundColor = _isDrawing
+                    ? Color.FromArgb("#553d3a")
+                    : Color.FromArgb("#98694d");
+            }
+                
         }
 
         private void OnZoomChanged(object sender, EventArgs e)
@@ -277,6 +293,12 @@ namespace HandfulOfBreads.Views
 
         private void OnSelectClicked(object sender, EventArgs e)
         {
+            if (_isDrawing)
+            {
+                _isDrawing = false;
+                _brushButton.BackgroundColor = Color.FromArgb("#98694d");
+            }
+
             if (sender is Button button)
                 _selectButton = button;
 

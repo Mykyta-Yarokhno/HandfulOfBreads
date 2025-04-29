@@ -12,7 +12,7 @@ namespace HandfulOfBreads.Graphics.DrawablePatterns
         void TogglePixel(float x, float y);
         Task SaveToFileAsync(string filePath);
 
-        public void HighlightRow(int row);
+        public void HighlightRow(int? row);
         public void UpdateSelectionCells((int Row, int Col)? start, (int Row, int Col)? end);
         public void CopySelection();
         public void CutSelection();

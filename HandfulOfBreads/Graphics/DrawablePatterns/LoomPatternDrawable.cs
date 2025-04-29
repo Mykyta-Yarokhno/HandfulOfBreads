@@ -128,7 +128,7 @@ namespace HandfulOfBreads.Graphics.DrawablePatterns
                 float width = (maxCol - minCol + 1) * _pixelSize;
                 float height = (maxRow - minRow + 1) * _pixelSize;
 
-                canvas.FillColor = new Color(152 / 255f, 105 / 255f, 77 / 255f, 0.2f);
+                canvas.FillColor = new Color(152 / 255f, 105 / 255f, 77 / 255f, 0.1f);
                 canvas.FillRectangle(x, y, width, height);
 
                 canvas.StrokeColor = Color.FromArgb("#98694d");
@@ -157,25 +157,42 @@ namespace HandfulOfBreads.Graphics.DrawablePatterns
                                 float x = gridCol * _pixelSize;
                                 float y = gridRow * _pixelSize;
 
-                                // Напівпрозорий колір для попереднього перегляду
-                                canvas.FillColor = color.WithAlpha(0.6f); // Зробимо трохи менш прозорим
+                                canvas.FillColor = color;
                                 canvas.FillRectangle(x, y, _pixelSize, _pixelSize);
                             }
                         }
                     }
                 }
 
-                // Додамо рамку навколо попереднього перегляду, щоб було видно межі
+                canvas.StrokeColor = Colors.Gray;
+                canvas.StrokeSize = 1;
+
+                for (int col = 0; col <= _columns; col++)
+                {
+                    float x = col * _pixelSize;
+                    canvas.DrawLine(x, 0, x, _rows * _pixelSize);
+                }
+
+
+                for (int row = 0; row <= _rows; row++)
+                {
+                    float y = row * _pixelSize;
+                    canvas.DrawLine(0, y, _columns * _pixelSize, y);
+                }
+
                 float pasteX = startCol * _pixelSize;
                 float pasteY = startRow * _pixelSize;
                 float pasteWidth = _pasteCols * _pixelSize;
                 float pasteHeight = _pasteRows * _pixelSize;
 
-                canvas.StrokeColor = Colors.DodgerBlue; // Яскравий колір для рамки
-                canvas.StrokeSize = 1;
-                canvas.StrokeDashPattern = new float[] { 4, 2 }; // Пунктирна лінія
+                canvas.FillColor = new Color(152 / 255f, 105 / 255f, 77 / 255f, 0.1f);
+                canvas.FillRectangle(pasteX, pasteY, pasteWidth, pasteHeight);
+
+                canvas.StrokeColor = Color.FromArgb("#98694d"); 
+                canvas.StrokeSize = 5;
+                canvas.StrokeDashPattern = new float[] { 4, 2 };
                 canvas.DrawRectangle(pasteX, pasteY, pasteWidth, pasteHeight);
-                canvas.StrokeDashPattern = null; // Скидаємо пунктир
+                canvas.StrokeDashPattern = null; 
             }
 
             //highlight row
@@ -408,15 +425,20 @@ namespace HandfulOfBreads.Graphics.DrawablePatterns
             }
         }
 
-        public void HighlightRow(int row)
+        public void HighlightRow(int? row)
         {
+
             if (row == 0)
             {
                 _selectedRow = 0;
             }
+            else if(row == null)
+            {
+                _selectedRow = null;
+            }
             else
             {
-                int newRow = _selectedRow.Value + row;
+                int newRow = (int)(_selectedRow.Value + row);
                 _selectedRow = Math.Clamp(newRow, 0, _rows - 1);
             }
         }

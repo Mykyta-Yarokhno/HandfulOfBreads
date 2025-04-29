@@ -160,6 +160,15 @@ namespace HandfulOfBreads.Resources.Localization {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Stop Beading.
+        /// </summary>
+        internal static string StopBeading {
+            get {
+                return ResourceManager.GetString("StopBeading", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to ENG.
         /// </summary>
         internal static string SwitchLanguageButton {

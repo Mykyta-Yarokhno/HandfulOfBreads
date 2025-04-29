@@ -227,6 +227,11 @@ namespace HandfulOfBreads.Graphics.DrawablePatterns
         {
             throw new NotImplementedException();
         }
+
+        public void HighlightRow(int? row)
+        {
+            throw new NotImplementedException();
+        }
     }
 }
 

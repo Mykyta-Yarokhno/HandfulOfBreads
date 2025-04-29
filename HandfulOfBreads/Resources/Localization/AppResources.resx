@@ -153,4 +153,7 @@
   <data name="ConvertAPhoto" xml:space="preserve">
     <value>Convert a photo</value>
   </data>
+  <data name="StopBeading" xml:space="preserve">
+    <value>Stop Beading</value>
+  </data>
 </root>

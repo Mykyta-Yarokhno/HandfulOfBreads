@@ -153,4 +153,7 @@
   <data name="ConvertAPhoto" xml:space="preserve">
     <value>Сітка із фотографії</value>
   </data>
+  <data name="StopBeading" xml:space="preserve">
+    <value>Завершити плетіння</value>
+  </data>
 </root>
