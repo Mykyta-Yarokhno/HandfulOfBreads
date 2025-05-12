@@ -4,6 +4,7 @@ using HandfulOfBreads.Services.Interfaces;
 using HandfulOfBreads.ViewModels;
 using HandfulOfBreads.Views;
 using HandfulOfBreads.Views.Popups;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
 namespace HandfulOfBreads
@@ -47,8 +48,26 @@ namespace HandfulOfBreads
             builder.Services.AddTransient<NewPatternPopup>();
             builder.Services.AddTransient<ColorPickerPopup>();
 
+            builder.Services.AddDbContext<AppDbContext>(options =>
+            {
+                var dbPath = Path.Combine(FileSystem.AppDataDirectory, "app.db");
+                options.UseSqlite($"Filename={dbPath}");
+            });
+
+            builder.Services.AddTransient<CsvImportService>();
+
             var app = builder.Build();
             App.Services = app.Services;
+
+            using (var scope = app.Services.CreateScope())
+            {
+                var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+                db.Database.EnsureCreated(); 
+
+                var importer = scope.ServiceProvider.GetRequiredService<CsvImportService>();
+                importer.ImportAllPalettesAsync().Wait(); 
+            }
+
 
             return app;
         }
