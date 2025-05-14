@@ -4,118 +4,130 @@
              x:Class="HandfulOfBreads.Views.MainPage"
              xmlns:viewmodels="clr-namespace:HandfulOfBreads.ViewModels"
              x:DataType="viewmodels:MainPageViewModel">
-    
+
+    <ContentPage.Resources>
+        <Style x:Key="TabletPanelStyle" TargetType="Grid">
+            <Setter Property="HorizontalOptions" Value="End" />
+            <Setter Property="WidthRequest" Value="300" />
+            <Setter Property="VerticalOptions" Value="Fill" />
+        </Style>
+        <Style x:Key="PhonePanelStyle" TargetType="Grid">
+            <Setter Property="VerticalOptions" Value="End" />
+            <Setter Property="HeightRequest" Value="300" />
+            <Setter Property="HorizontalOptions" Value="Fill" />
+        </Style>
+    </ContentPage.Resources>
+
     <Grid>
-        <Grid BackgroundColor="Wheat"
-              x:Name="PixelGraphicsViewContainer">
+        <!-- Main drawing area -->
+        <Grid x:Name="PixelGraphicsViewContainer" BackgroundColor="Wheat">
             <GraphicsView 
                 x:Name="PixelGraphicsView"
                 Drawable="{Binding Drawable}"
                 StartInteraction="OnStartInteraction"
                 DragInteraction="OnDragInteraction"
-                EndInteraction="OnEndInteraction"/>
+                EndInteraction="OnEndInteraction" />
         </Grid>
 
+        <!-- UI Layout -->
         <Grid>
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto" />
+                <!-- Top buttons -->
                 <RowDefinition Height="*" />
+                <!-- Panel and color list -->
             </Grid.RowDefinitions>
 
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="Auto" />
-                <ColumnDefinition Width="*" />
-            </Grid.ColumnDefinitions>
-
-            <ScrollView Orientation="Horizontal" Grid.Row="0" Grid.ColumnSpan="2" BackgroundColor="LightGray" Padding="5" HorizontalScrollBarVisibility="Never">
+            <!-- Top Buttons -->
+            <ScrollView Orientation="Horizontal" Grid.Row="0" BackgroundColor="LightGray" Padding="5" HorizontalScrollBarVisibility="Never">
                 <HorizontalStackLayout Spacing="10">
-                    <Button Text="☰"
-                            Style="{StaticResource MainButton}"
-                            Clicked="OnToggleClicked" />
-                    <Button Text="{Binding LocalizationResourceManager[NewDesign]}"
-                            Style="{StaticResource MainButton}"
-                            Command="{Binding NewDesignCommand}" 
-                            IsEnabled="False"/>
-                    <Button Text="{Binding LocalizationResourceManager[Save]}"
-                            Style="{StaticResource MainButton}"
-                            Command="{Binding SaveCommand}" />
-                    <Button Text="{Binding StartBeadingButtonText}"
-                            Style="{StaticResource MainButton}"
-                            Command="{Binding StartBeadingCommand}" />
+                    <Button Text="{Binding LocalizationResourceManager[NewDesign]}" Style="{StaticResource MainButton}" Command="{Binding NewDesignCommand}" IsEnabled="False"/>
+                    <Button Text="{Binding LocalizationResourceManager[Save]}" Style="{StaticResource MainButton}" Command="{Binding SaveCommand}" />
+                    <Button Text="{Binding StartBeadingButtonText}" Style="{StaticResource MainButton}" Command="{Binding StartBeadingCommand}" />
                 </HorizontalStackLayout>
             </ScrollView>
 
-            <VerticalStackLayout IsVisible="{Binding IsBeadingActive}" 
-                                 Grid.Row="1" 
-                                 Grid.Column="1"
-                                 HorizontalOptions="End" 
-                                 VerticalOptions="Center"
-                                 Spacing="10"
-                                 Padding="10">
-                <Button Text="▲"
-                        Style="{StaticResource MainButton}"
-                        Command="{Binding MoveRowUpCommand}" />
-                <Button Text="▼"
-                        Style="{StaticResource MainButton}"
-                        Command="{Binding MoveRowDownCommand}" />
-            </VerticalStackLayout>
+            <!-- Bottom panel -->
+            <Grid Grid.Row="1">
+                <Grid x:Name="ResponsivePanel"
+                      Style="{OnIdiom Phone={StaticResource PhonePanelStyle}, Tablet={StaticResource TabletPanelStyle}}"
+                      BackgroundColor="LightGray">
 
-            <VerticalStackLayout x:Name="SidePanel"
-                                 Grid.Row="1"
-                                 Grid.Column="0"
-                                 BackgroundColor="LightGray"
-                                 Padding="5"
-                                 Spacing="10"
-                                 WidthRequest="0">
-                <Button Text="+"
-                        Style="{StaticResource MainButton}"
-                        Clicked="OnZoomChanged"/>
-                <Button Text="-"
-                        Style="{StaticResource MainButton}"
-                        Clicked="OnZoomChanged" />
-                <Button Text="M"
-                        Style="{StaticResource MainButton}"
-                        Clicked="OnMinimum" />
-                <Button Text="C"
-                        Style="{StaticResource MainButton}"
-                        Clicked="OnCenter" />
-                <Button Text="⬚"
-                        FontSize="30"
-                        Padding="0"
-                        Style="{StaticResource MainButton}"
-                        Clicked="OnSelectClicked"/>
-                <Button Command="{Binding OpenColorPickerCommand}" 
-                        BackgroundColor="{Binding SelectedColor}" />
-                <Button Text="B"
-                        Style="{StaticResource MainButton}" 
-                        Clicked="OnStartDrawingClicked" />
-            </VerticalStackLayout>
-        </Grid>
-        <Grid
-            VerticalOptions="End"
-            HorizontalOptions="Center"
-            Padding="10">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <!-- Menu buttons -->
+                        <RowDefinition Height="*" />
+                        <!-- Color list -->
+                    </Grid.RowDefinitions>
 
-            <HorizontalStackLayout Spacing="10"
-                                   x:Name="CutCopyButtonsContainer"
-                                   IsVisible="False">
-                <Button Text="Cut"
-                        Style="{StaticResource MainButton}"
-                        Clicked="OnCutClicked"/>
-                <Button Text="Copy"
-                        Style="{StaticResource MainButton}"
-                        Clicked="OnCopyClicked"/>
-            </HorizontalStackLayout>
-            <HorizontalStackLayout Spacing="10"
-                       x:Name="CancelDoneButtonsContainer"
-                       IsVisible="False">
-                <Button Text="Done"
-                    Style="{StaticResource MainButton}"
-                    Clicked="OnDoneClicked"/>
-                <Button Text="Cancel"
-                    Style="{StaticResource MainButton}"
-                    Clicked="OnCancelClicked"/>
-            </HorizontalStackLayout>
+                    <!-- Menu buttons -->
+                    <ScrollView Orientation="Horizontal" Grid.Row="0" BackgroundColor="LightGray" Padding="5" HorizontalScrollBarVisibility="Never">
+                        <HorizontalStackLayout Spacing="10">
+                            <Button Text="⬇" Style="{StaticResource MainButton}" Clicked="OnTogglePanelClicked" />
+                            <Button Text="🎨"  Style="{StaticResource MainButton}" Clicked="OnPaletteButtonClicked"/>
+                            <Button Text="🔍"  Style="{StaticResource MainButton}"/>
+                            <Button Text="+" Style="{StaticResource MainButton}" Clicked="OnZoomChanged" />
+                            <Button Text="-" Style="{StaticResource MainButton}" Clicked="OnZoomChanged" />
+                            <Button Text="M" Style="{StaticResource MainButton}" Clicked="OnMinimum" />
+                            <Button Text="C" Style="{StaticResource MainButton}" Clicked="OnCenter" />
+                            <Button Text="⬚" FontSize="30" Padding="0" Style="{StaticResource MainButton}" Clicked="OnSelectClicked" />
+                            <Button Command="{Binding OpenColorPickerCommand}" BackgroundColor="{Binding SelectedColor}" />
+                            <Button Text="B" Style="{StaticResource MainButton}" Clicked="OnStartDrawingClicked" />
+                        </HorizontalStackLayout>
+                    </ScrollView>
+
+                    <!-- Color grid -->
+                    <ScrollView x:Name="PaletteScrollView" Grid.Row="1">
+                        <CollectionView ItemsSource="{Binding AvailableColors}" ItemsLayout="VerticalGrid, 5">
+                            <CollectionView.ItemTemplate>
+                                <DataTemplate x:DataType="viewmodels:ColorItemViewModel">
+                                    <Frame Padding="0" Margin="5" HeightRequest="50" WidthRequest="50"
+                                           CornerRadius="5" HasShadow="True"
+                                           BorderColor="Black"
+                                           BackgroundColor="{Binding HexColor}">
+                                        <Frame.GestureRecognizers>
+                                            <TapGestureRecognizer
+                            Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodels:MainPageViewModel}}, Path=SelectColorCommand}"
+                            CommandParameter="{Binding .}" />
+                                        </Frame.GestureRecognizers>
+                                        <Grid>
+                                            <Label Text="{Binding Sign}" FontSize="10" TextColor="Black" HorizontalOptions="Start" VerticalOptions="Start" Margin="2"/>
+                                            <Label Text="{Binding Sign}" FontSize="10" TextColor="Black" HorizontalOptions="End" VerticalOptions="Start" Margin="2"/>
+                                            <Label Text="{Binding Sign}" FontSize="10" TextColor="Black" HorizontalOptions="Start" VerticalOptions="End" Margin="2"/>
+                                            <Label Text="{Binding Sign}" FontSize="10" TextColor="Black" HorizontalOptions="End" VerticalOptions="End" Margin="2"/>
+                                            <Label Text="{Binding Code}" FontSize="10" TextColor="Black" HorizontalOptions="Center" VerticalOptions="Center"/>
+                                        </Grid>
+                                    </Frame>
+                                </DataTemplate>
+                            </CollectionView.ItemTemplate>
+                        </CollectionView>
+                    </ScrollView>
+                </Grid>
+
+                <!-- Move row buttons -->
+                <VerticalStackLayout IsVisible="{Binding IsBeadingActive}" HorizontalOptions="Start" VerticalOptions="Center" Spacing="10" Padding="10">
+                    <Button Text="▲" Style="{StaticResource MainButton}" Command="{Binding MoveRowUpCommand}" />
+                    <Button Text="▼" Style="{StaticResource MainButton}" Command="{Binding MoveRowDownCommand}" />
+                </VerticalStackLayout>
+
+                <VerticalStackLayout
+                    HorizontalOptions="Start"
+                    VerticalOptions="Center"
+                    Padding="10"
+                    Spacing="10">
+
+                    <VerticalStackLayout x:Name="CutCopyButtonsContainer" IsVisible="False" Spacing="10">
+                        <Button Text="Cut" Style="{StaticResource MainButton}" Clicked="OnCutClicked"/>
+                        <Button Text="Copy" Style="{StaticResource MainButton}" Clicked="OnCopyClicked"/>
+                    </VerticalStackLayout>
+
+                    <VerticalStackLayout x:Name="CancelDoneButtonsContainer" IsVisible="False" Spacing="10">
+                        <Button Text="Done" Style="{StaticResource MainButton}" Clicked="OnDoneClicked"/>
+                        <Button Text="Cancel" Style="{StaticResource MainButton}" Clicked="OnCancelClicked"/>
+                    </VerticalStackLayout>
+
+                </VerticalStackLayout>
+            </Grid>
         </Grid>
     </Grid>
 </ContentPage>

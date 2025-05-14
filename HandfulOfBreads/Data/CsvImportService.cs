@@ -76,6 +76,6 @@ public class ColorCsvDto
     public string Code { get; set; }
     public string HexColor { get; set; }
     public string Type { get; set; }
-    public string Sign { get; set; }
+    public char? Sign { get; set; }
     public string PaletteName { get; set; }
 }

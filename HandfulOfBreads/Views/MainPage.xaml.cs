@@ -1,5 +1,5 @@
-﻿using HandfulOfBreads.ViewModels;
-using Microsoft.Maui.Layouts;
+﻿using CommunityToolkit.Maui.Views;
+using HandfulOfBreads.ViewModels;
 
 namespace HandfulOfBreads.Views
 {
@@ -34,8 +34,17 @@ namespace HandfulOfBreads.Views
 
             PixelGraphicsViewContainer.WidthRequest = columns * _pixelSize * 10;
             PixelGraphicsViewContainer.HeightRequest = rows * _pixelSize * 10;
+
+            OnAppearing();
         }
 
+
+        protected override async void OnAppearing()
+        {
+            base.OnAppearing();
+
+            await _viewModel.LoadPaletteAsync("Preciosa Rocialles");
+        }
         private void OnInvalidateRequested()
         {
             PixelGraphicsView.Invalidate();
@@ -218,23 +227,7 @@ namespace HandfulOfBreads.Views
         }
         #endregion
 
-        #region Buttons Interaction
-        private bool _isPanelVisible = false;
-        private async void OnToggleClicked(object sender, EventArgs e)
-        {
-            if (_isPanelVisible)
-            {
-                await SidePanel.TranslateTo(-SidePanel.Width, 0, 250);
-                SidePanel.WidthRequest = 0;
-            }
-            else
-            {
-                SidePanel.WidthRequest = 50;
-                await SidePanel.TranslateTo(0, 0, 250);
-            }
-
-            _isPanelVisible = !_isPanelVisible;
-        }
+        #region Buttons Interaction 
 
         private Button _brushButton;
 
@@ -381,6 +374,25 @@ namespace HandfulOfBreads.Views
             PixelGraphicsView.Invalidate();
         }
 
+        private const double CollapsedHeight = 55;
+        private const double ExpandedHeight = 300;
+
+        private bool _isCollapsed = false;
+
+        private async void OnTogglePanelClicked(object sender, EventArgs e)
+        {
+            _isCollapsed = !_isCollapsed;
+
+            PaletteScrollView.IsVisible = !_isCollapsed;
+
+            await ResponsivePanel.FadeTo(0.8, 100);
+            ResponsivePanel.HeightRequest = _isCollapsed ? CollapsedHeight : ExpandedHeight;
+            await ResponsivePanel.FadeTo(1.0, 100);
+
+            if (sender is Button button)
+                button.Text = _isCollapsed ? "⬆" : "⬇";
+        }
+
         public (int row, int col)? GetCellFromTouchPoint(Point touchPoint)
         {
             int col = (int)(touchPoint.X / _pixelSize);
@@ -396,5 +408,45 @@ namespace HandfulOfBreads.Views
             }
         }
         #endregion
+
+
+        private async void OnPaletteButtonClicked(object sender, EventArgs e)
+        {
+            var popup = new CommunityToolkit.Maui.Views.Popup
+            {
+                Content = new StackLayout
+                {
+                    Padding = 10,
+                    Children =
+            {
+                new Label { Text = "Select Palette", FontSize = 20, HorizontalOptions = LayoutOptions.Center },
+                new Button
+                {
+                    Text = "Preciosa Rocialles",
+                    Command = new Command(() => SelectPalette("Preciosa Rocialles"))
+                },
+                new Button
+                {
+                    Text = "ass we can",
+                    Command = new Command(() => SelectPalette("ass we can"))
+                },
+            }
+                }
+            };
+
+            await Application.Current.MainPage.ShowPopupAsync(popup);
+        }
+
+        private async void SelectPalette(string paletteName)
+        {
+            if (BindingContext is MainPageViewModel viewModel)
+            {
+                await viewModel.LoadPaletteAsync(paletteName);
+
+                PaletteScrollView.ForceLayout();
+
+                return;
+            }
+        }
     }
 }

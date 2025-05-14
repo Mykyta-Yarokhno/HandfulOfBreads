@@ -1,14 +1,20 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using HandfulOfBreads.Graphics.DrawablePatterns;
+using HandfulOfBreads.Models;
 using HandfulOfBreads.Services;
 using HandfulOfBreads.Services.Interfaces;
 using HandfulOfBreads.Views.Popups;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Maui.Graphics;
 using Microsoft.Maui.Graphics.Platform;
+using MvvmHelpers;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Diagnostics;
 using System.IO;
 using System.Reflection;
+using Colors = Microsoft.Maui.Graphics.Colors;
 using IImage = Microsoft.Maui.Graphics.IImage;
 
 namespace HandfulOfBreads.ViewModels
@@ -26,9 +32,15 @@ namespace HandfulOfBreads.ViewModels
                 ? LocalizationResourceManager.Instance["StopBeading"]
                 : LocalizationResourceManager.Instance["StartBeading"]);
 
+        //public ObservableCollection<ColorItem> AvailableColors { get; } = new();
+
+        public ObservableRangeCollection<ColorItemViewModel> AvailableColors { get; } = new();
+
         public IPatternDrawable CurrentPattern { get; private set; }
 
         private readonly IPopupService _popupService;
+
+        private readonly AppDbContext _context;
 
         [ObservableProperty] 
         private bool isBeadingActive;
@@ -56,6 +68,8 @@ namespace HandfulOfBreads.ViewModels
                 CurrentPattern.InitializeGrid(rows, columns, PixelSize, image);
 
             _popupService = App.Services.GetRequiredService<IPopupService>();
+
+            _context = App.Services.GetRequiredService<AppDbContext>();
         }
 
         private IImage LoadImage()
@@ -75,6 +89,34 @@ namespace HandfulOfBreads.ViewModels
             //}
 
             //return image;
+        }
+
+        public async Task LoadPaletteAsync(string paletteName)
+        {
+            var palette = await _context.Palettes
+                .AsNoTracking()
+                .Include(p => p.Colors)
+                .FirstOrDefaultAsync(p => p.Name == paletteName);
+
+            if (palette == null)
+            {
+                MainThread.BeginInvokeOnMainThread(() => AvailableColors.Clear());
+                return;
+            }
+
+            var wrapped = palette.Colors.Select(c => new ColorItemViewModel(c));
+            AvailableColors.ReplaceRange(wrapped);
+        }
+
+        [RelayCommand]
+        private void SelectColor(ColorItem colorItem)
+        {
+            if (colorItem is null)
+                return;
+
+            var color = Color.FromArgb(colorItem.HexColor);
+            SelectedColor = color;
+            CurrentPattern.SelectedColor = color;
         }
 
         [RelayCommand]
@@ -136,5 +178,6 @@ namespace HandfulOfBreads.ViewModels
                 SelectedColor = selectedColor;
             }
         }
+
     }
 }

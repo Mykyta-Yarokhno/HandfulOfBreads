@@ -12,7 +12,7 @@ namespace HandfulOfBreads.Models
         public string Code { get; set; }
         public string HexColor { get; set; }
         public string Type { get; set; }
-        public string Sign { get; set; }
+        public char? Sign { get; set; }
 
         public int PaletteId { get; set; }
         public Palette Palette { get; set; }

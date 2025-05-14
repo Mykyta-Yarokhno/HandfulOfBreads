@@ -1,6 +1,78 @@
 ﻿Code,HexColor,Type,Sign,PaletteName
-R00050,#f1f1f3,Natural Transparent,Slash,Preciosa Rocialles
-R01111,#c09c82,Crystal - Solgel Dyed,Slash,Preciosa Rocialles
-R01112,#ba807f,Crystal - Solgel Dyed,Slash,Preciosa Rocialles
-R01113,#b7b197,Crystal - Solgel Dyed,Slash,Preciosa Rocialles
-R01121,#aca2ba,Crystal - Solgel Dyed,Slash,Preciosa Rocialles
+R00050,#f1f1f3,Natural Transparent,/,Preciosa Rocialles
+R01111,#c09c82,Crystal - Solgel Dyed,/,Preciosa Rocialles
+R01112,#ba807f,Crystal - Solgel Dyed,/,Preciosa Rocialles
+R01113,#b7b197,Crystal - Solgel Dyed,/,Preciosa Rocialles
+R01121,#aca2ba,Crystal - Solgel Dyed,/,Preciosa Rocialles
+
+R01122,#9686ab,Crystal - Solgel Dyed,/,Preciosa Rocialles
+R01123,#8170b7,Crystal - Solgel Dyed,/,Preciosa Rocialles
+R01131,#7883b1,Crystal - Solgel Dyed,/,Preciosa Rocialles
+R01132,#6aa3e6,Crystal - Solgel Dyed,/,Preciosa Rocialles
+R01133,#589eb7,Crystal - Solgel Dyed,/,Preciosa Rocialles
+
+R01134,#6abeda,Crystal - Solgel Dyed,/,Preciosa Rocialles
+R01141,#8c8c8c,Crystal - Solgel Dyed,/,Preciosa Rocialles
+R01151,#c8c894,Crystal - Solgel Dyed,/,Preciosa Rocialles
+R01152,#bdc387,Crystal - Solgel Dyed,/,Preciosa Rocialles
+R01153,#c8d59d,Crystal - Solgel Dyed,/,Preciosa Rocialles
+
+R01154,#aecb88,Crystal - Solgel Dyed,/,Preciosa Rocialles
+R01161,#98cc9c,Crystal - Solgel Dyed,/,Preciosa Rocialles
+R01162,#96b99b,Crystal - Solgel Dyed,/,Preciosa Rocialles
+R01163,#90a499,Crystal - Solgel Dyed,/,Preciosa Rocialles
+R01164,#6fcfc3,Crystal - Solgel Dyed,/,Preciosa Rocialles
+
+R01165,#67b5c2,Crystal - Solgel Dyed,/,Preciosa Rocialles
+R01181,#d9d490,Crystal - Solgel Dyed,/,Preciosa Rocialles
+R01182,#e7ce95,Crystal - Solgel Dyed,/,Preciosa Rocialles
+R01183,#f8ce92,Crystal - Solgel Dyed,/,Preciosa Rocialles
+R01184,#efb492,Crystal - Solgel Dyed,/,Preciosa Rocialles
+
+R01185,#f1b599,Crystal - Solgel Dyed,/,Preciosa Rocialles
+R01191,#e88a98,Crystal - Solgel Dyed,/,Preciosa Rocialles
+R01192,#e89dbe,Crystal - Solgel Dyed,/,Preciosa Rocialles
+R01193,#ed81a1,Crystal - Solgel Dyed,/,Preciosa Rocialles
+R01194,#c28a89,Crystal - Solgel Dyed,/,Preciosa Rocialles
+
+R01195,#b4728e,Crystal - Solgel Dyed,/,Preciosa Rocialles
+R01700,#efefef,Opaque Bronze,+,Preciosa Rocialles
+R01710,#cdb88b,Opaque Bronze,+,Preciosa Rocialles
+R01770,#c97960,Opaque Bronze,+,Preciosa Rocialles
+R02090,#eff0f2,Natural Opaque,,Preciosa Rocialles
+
+R03050,#f6f8f7,Natural Opaque,,Preciosa Rocialles
+R07331,#c88984,Chalk - Rose Terra Color,,Preciosa Rocialles
+R07332,#e4a89d,Chalk - Rose Terra Color,,Preciosa Rocialles
+R07631,#d1aaab,Chalk - Rose Terra Color and Sfinx,+,Preciosa Rocialles
+R07633,#ce9896,Chalk - Sfinx and Rose Terra Color,+,Preciosa Rocialles
+
+R08118,#fce9e2,Crystal - Terra Pearl,/,Preciosa Rocialles
+R08128,#dabbdd,Crystal - Terra Pearl,/,Preciosa Rocialles
+R08136,#cde3fb,Crystal - Terra Pearl,/,Preciosa Rocialles
+R08149,#c2c2c2,Crystal - Terra Pearl,/,Preciosa Rocialles
+R08158,#b5f0de,Crystal - Terra Pearl,/,Preciosa Rocialles
+
+R08186,#fdfeec,Crystal - Terra Pearl,/,Preciosa Rocialles
+R08192,#ffeadc,Crystal - Terra Pearl,/,Preciosa Rocialles
+R08198,#ffd5e1,Crystal - Terra Pearl,/,Preciosa Rocialles
+R08225,#ffd5e1,Crystal - Silver Lined and Terra Color Dyed,+,Preciosa Rocialles
+R08228,#a785a6,Crystal - Silver Lined and Terra Color Dyed,+,Preciosa Rocialles
+
+R08236,#3380da,Crystal - Silver Lined and Terra Color Dyed,+,Preciosa Rocialles
+R08256,#aef2cb,Crystal - Silver Lined and Terra Color Dyed,+,Preciosa Rocialles
+R08258,#85f0ea,Crystal - Silver Lined and Terra Color Dyed,+,Preciosa Rocialles
+R08265,#3aa2d9,Crystal - Silver Lined and Terra Color Dyed,+,Preciosa Rocialles
+R08273,#f9dfde,Crystal - Silver Lined and Terra Color Dyed,+,Preciosa Rocialles
+
+R08275,#ffaac1,Crystal - Silver Lined and Terra Color Dyed,+,Preciosa Rocialles
+R08277,#f778bd,Crystal - Silver Lined and Terra Color Dyed,+,Preciosa Rocialles
+R08283,#f1fcd1,Crystal - Silver Lined and Terra Color Dyed,+,Preciosa Rocialles
+R08286,#f0f0a6,Crystal - Silver Lined and Terra Color Dyed,+,Preciosa Rocialles
+R08288,#f8e5d4,Crystal - Silver Lined and Terra Color Dyed,+,Preciosa Rocialles
+
+R08289,#ffcea6,Crystal - Silver Lined and Terra Color Dyed,+,Preciosa Rocialles
+R08298,#d06378,Crystal - Silver Lined and Terra Color Dyed,+,Preciosa Rocialles
+R08318,#e87062,Crystal - Terra Pearl,/,Preciosa Rocialles
+R08328,#847bb4,Crystal - Terra Pearl,/,Preciosa Rocialles
+R08336,#3b84e0,Crystal - Terra Pearl,/,Preciosa Rocialles
