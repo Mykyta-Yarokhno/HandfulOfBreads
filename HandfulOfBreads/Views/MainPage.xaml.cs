@@ -1,5 +1,6 @@
 ﻿using CommunityToolkit.Maui.Views;
 using HandfulOfBreads.ViewModels;
+using HandfulOfBreads.Views.Popups;
 
 namespace HandfulOfBreads.Views
 {
@@ -34,6 +35,11 @@ namespace HandfulOfBreads.Views
 
             PixelGraphicsViewContainer.WidthRequest = columns * _pixelSize * 10;
             PixelGraphicsViewContainer.HeightRequest = rows * _pixelSize * 10;
+
+            _viewModel.RequestInvalidate += () =>
+            {
+                PixelGraphicsView.Invalidate();
+            };
 
             OnAppearing();
         }
@@ -412,40 +418,19 @@ namespace HandfulOfBreads.Views
 
         private async void OnPaletteButtonClicked(object sender, EventArgs e)
         {
-            var popup = new CommunityToolkit.Maui.Views.Popup
+            if (BindingContext is MainPageViewModel vm)
             {
-                Content = new StackLayout
+                string currentPalette = vm.PaletteName;
+
+                var popup = new ChoosePalettePopup(currentPalette);
+
+                popup.PaletteSelected += async (selectedPalette) =>
                 {
-                    Padding = 10,
-                    Children =
-            {
-                new Label { Text = "Select Palette", FontSize = 20, HorizontalOptions = LayoutOptions.Center },
-                new Button
-                {
-                    Text = "Preciosa Rocialles",
-                    Command = new Command(() => SelectPalette("Preciosa Rocialles"))
-                },
-                new Button
-                {
-                    Text = "ass we can",
-                    Command = new Command(() => SelectPalette("ass we can"))
-                },
-            }
-                }
-            };
+                    await vm.LoadPaletteAsync(selectedPalette);
+                    PaletteScrollView.ForceLayout();
+                };
 
-            await Application.Current.MainPage.ShowPopupAsync(popup);
-        }
-
-        private async void SelectPalette(string paletteName)
-        {
-            if (BindingContext is MainPageViewModel viewModel)
-            {
-                await viewModel.LoadPaletteAsync(paletteName);
-
-                PaletteScrollView.ForceLayout();
-
-                return;
+                await this.ShowPopupAsync(popup);
             }
         }
     }

@@ -41,9 +41,10 @@
             <!-- Top Buttons -->
             <ScrollView Orientation="Horizontal" Grid.Row="0" BackgroundColor="LightGray" Padding="5" HorizontalScrollBarVisibility="Never">
                 <HorizontalStackLayout Spacing="10">
-                    <Button Text="{Binding LocalizationResourceManager[NewDesign]}" Style="{StaticResource MainButton}" Command="{Binding NewDesignCommand}" IsEnabled="False"/>
+                    <Button Text="{Binding LocalizationResourceManager[New]}" Style="{StaticResource MainButton}" Command="{Binding NewDesignCommand}"/>
                     <Button Text="{Binding LocalizationResourceManager[Save]}" Style="{StaticResource MainButton}" Command="{Binding SaveCommand}" />
                     <Button Text="{Binding StartBeadingButtonText}" Style="{StaticResource MainButton}" Command="{Binding StartBeadingCommand}" />
+                    <Button Text="{Binding LocalizationResourceManager[Clear]}" Style="{StaticResource MainButton}" Command="{Binding ClearCommand}"/>
                 </HorizontalStackLayout>
             </ScrollView>
 
@@ -71,7 +72,6 @@
                             <Button Text="M" Style="{StaticResource MainButton}" Clicked="OnMinimum" />
                             <Button Text="C" Style="{StaticResource MainButton}" Clicked="OnCenter" />
                             <Button Text="⬚" FontSize="30" Padding="0" Style="{StaticResource MainButton}" Clicked="OnSelectClicked" />
-                            <Button Command="{Binding OpenColorPickerCommand}" BackgroundColor="{Binding SelectedColor}" />
                             <Button Text="B" Style="{StaticResource MainButton}" Clicked="OnStartDrawingClicked" />
                         </HorizontalStackLayout>
                     </ScrollView>

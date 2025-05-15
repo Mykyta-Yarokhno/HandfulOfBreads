@@ -70,6 +70,15 @@ namespace HandfulOfBreads.Resources.Localization {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Clear.
+        /// </summary>
+        internal static string Clear {
+            get {
+                return ResourceManager.GetString("Clear", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Convert a photo.
         /// </summary>
         internal static string ConvertAPhoto {
@@ -102,6 +111,15 @@ namespace HandfulOfBreads.Resources.Localization {
         internal static string Gallery {
             get {
                 return ResourceManager.GetString("Gallery", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to New.
+        /// </summary>
+        internal static string New {
+            get {
+                return ResourceManager.GetString("New", resourceCulture);
             }
         }
         

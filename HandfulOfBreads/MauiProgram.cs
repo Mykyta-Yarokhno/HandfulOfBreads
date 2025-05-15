@@ -47,6 +47,7 @@ namespace HandfulOfBreads
 
             builder.Services.AddTransient<NewPatternPopup>();
             builder.Services.AddTransient<ColorPickerPopup>();
+            builder.Services.AddTransient<ChoosePalettePopup>();
 
             builder.Services.AddDbContext<AppDbContext>(options =>
             {

@@ -4,11 +4,13 @@ using HandfulOfBreads.Graphics.DrawablePatterns;
 using HandfulOfBreads.Models;
 using HandfulOfBreads.Services;
 using HandfulOfBreads.Services.Interfaces;
+using HandfulOfBreads.Views;
 using HandfulOfBreads.Views.Popups;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Maui.Graphics;
 using Microsoft.Maui.Graphics.Platform;
 using MvvmHelpers;
+using SQLitePCL;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
@@ -49,6 +51,10 @@ namespace HandfulOfBreads.ViewModels
         [ObservableProperty]
         private Color selectedColor = Colors.White;
 
+        private int _columns;
+        private int _rows;
+        private IImage? _image;
+
         public MainPageViewModel(int columns, int rows, string selectedPattern, List<List<Color>>? grid = null)
         {
             if (selectedPattern == "Loom")
@@ -70,6 +76,10 @@ namespace HandfulOfBreads.ViewModels
             _popupService = App.Services.GetRequiredService<IPopupService>();
 
             _context = App.Services.GetRequiredService<AppDbContext>();
+
+            _columns = columns;
+            _rows = rows;
+            _image = image;
         }
 
         private IImage LoadImage()
@@ -91,6 +101,8 @@ namespace HandfulOfBreads.ViewModels
             //return image;
         }
 
+        public string PaletteName = "Preciosa Rocialles";
+
         public async Task LoadPaletteAsync(string paletteName)
         {
             var palette = await _context.Palettes
@@ -104,12 +116,24 @@ namespace HandfulOfBreads.ViewModels
                 return;
             }
 
+            PaletteName = paletteName;
+
             var wrapped = palette.Colors.Select(c => new ColorItemViewModel(c));
             AvailableColors.ReplaceRange(wrapped);
         }
 
+        public event Action? RequestInvalidate;
+
         [RelayCommand]
-        private void SelectColor(ColorItem colorItem)
+        private async Task Clear()
+        {
+            CurrentPattern.InitializeGrid(_rows, _columns, PixelSize, _image);
+
+            RequestInvalidate?.Invoke();
+        }
+
+        [RelayCommand]  
+        private void SelectColor(ColorItemViewModel colorItem)
         {
             if (colorItem is null)
                 return;
@@ -122,6 +146,7 @@ namespace HandfulOfBreads.ViewModels
         [RelayCommand]
         private async Task NewDesignAsync()
         {
+            Application.Current.MainPage.Navigation.PushAsync(App.Services.GetRequiredService<NewDesignStartPage>());
             //var result = new NewGraphicsViewPopup();
             //await this.ShowPopupAsync(result);
 
@@ -163,21 +188,5 @@ namespace HandfulOfBreads.ViewModels
             CurrentPattern.HighlightRow(direction);
             InvalidateRequested?.Invoke();
         }
-
-        [RelayCommand]
-        private async Task OpenColorPicker()
-        {
-
-            var popup = App.Services.GetRequiredService<ColorPickerPopup>();
-
-            var result = await _popupService.ShowPopupAsync<Color>(popup);
-
-            if (result is Color selectedColor)
-            {
-                CurrentPattern.SelectedColor = selectedColor;
-                SelectedColor = selectedColor;
-            }
-        }
-
     }
 }
