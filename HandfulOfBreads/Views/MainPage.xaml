@@ -7,14 +7,45 @@
 
     <ContentPage.Resources>
         <Style x:Key="TabletPanelStyle" TargetType="Grid">
+            <Setter Property="ColumnDefinitions">
+                <Setter.Value>
+                    <ColumnDefinitionCollection>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="*"/>
+                    </ColumnDefinitionCollection>
+                </Setter.Value>
+            </Setter>
+            <Setter Property="RowDefinitions">
+                <Setter.Value>
+                    <RowDefinitionCollection>
+                        <RowDefinition Height="*" />
+                    </RowDefinitionCollection>
+                </Setter.Value>
+            </Setter>
             <Setter Property="HorizontalOptions" Value="End" />
-            <Setter Property="WidthRequest" Value="300" />
             <Setter Property="VerticalOptions" Value="Fill" />
+            <Setter Property="WidthRequest" Value="400" />
         </Style>
+
         <Style x:Key="PhonePanelStyle" TargetType="Grid">
+            <Setter Property="RowDefinitions">
+                <Setter.Value>
+                    <RowDefinitionCollection>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="*" />
+                    </RowDefinitionCollection>
+                </Setter.Value>
+            </Setter>
+            <Setter Property="ColumnDefinitions">
+                <Setter.Value>
+                    <ColumnDefinitionCollection>
+                        <ColumnDefinition Width="*" />
+                    </ColumnDefinitionCollection>
+                </Setter.Value>
+            </Setter>
             <Setter Property="VerticalOptions" Value="End" />
-            <Setter Property="HeightRequest" Value="300" />
             <Setter Property="HorizontalOptions" Value="Fill" />
+            <Setter Property="HeightRequest" Value="300" />
         </Style>
     </ContentPage.Resources>
 
@@ -51,57 +82,35 @@
             <!-- Bottom panel -->
             <Grid Grid.Row="1">
                 <Grid x:Name="ResponsivePanel"
-                      Style="{OnIdiom Phone={StaticResource PhonePanelStyle}, Tablet={StaticResource TabletPanelStyle}}"
-                      BackgroundColor="LightGray">
+      Style="{OnIdiom Phone={StaticResource PhonePanelStyle}, Tablet={StaticResource TabletPanelStyle}}"
+      BackgroundColor="LightGray">
 
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="Auto" />
-                        <!-- Menu buttons -->
-                        <RowDefinition Height="*" />
-                        <!-- Color list -->
-                    </Grid.RowDefinitions>
-
-                    <!-- Menu buttons -->
-                    <ScrollView Orientation="Horizontal" Grid.Row="0" BackgroundColor="LightGray" Padding="5" HorizontalScrollBarVisibility="Never">
-                        <HorizontalStackLayout Spacing="10">
-                            <Button Text="⬇" Style="{StaticResource MainButton}" Clicked="OnTogglePanelClicked" />
-                            <Button Text="🎨"  Style="{StaticResource MainButton}" Clicked="OnPaletteButtonClicked"/>
-                            <Button Text="🔍"  Style="{StaticResource MainButton}"/>
+                    <!-- Buttons -->
+                    <ScrollView x:Name="ButtonsPanel"
+                Orientation="{OnIdiom Phone=Horizontal, Tablet=Vertical}"
+                Grid.Row="{OnIdiom Phone=0, Tablet=0}"
+                Grid.Column="{OnIdiom Phone=0, Tablet=0}"
+                Padding="5"
+                BackgroundColor="LightGray"
+                HorizontalScrollBarVisibility="Never"
+                VerticalScrollBarVisibility="Never">
+                        <StackLayout Orientation="{OnIdiom Phone=Horizontal, Tablet=Vertical}" Spacing="10">
+                            <Button x:Name="ToggleButton" Text="{OnIdiom Phone='↓', Tablet='→'}" Style="{StaticResource MainButton}" Clicked="OnTogglePanelClicked" />
+                            <Button Text="🎨" Style="{StaticResource MainButton}" Clicked="OnPaletteButtonClicked"/>
+                            <Button Text="🔍" Style="{StaticResource MainButton}" Clicked="OnSearchButtonClicked"/>
                             <Button Text="+" Style="{StaticResource MainButton}" Clicked="OnZoomChanged" />
                             <Button Text="-" Style="{StaticResource MainButton}" Clicked="OnZoomChanged" />
                             <Button Text="M" Style="{StaticResource MainButton}" Clicked="OnMinimum" />
                             <Button Text="C" Style="{StaticResource MainButton}" Clicked="OnCenter" />
                             <Button Text="⬚" FontSize="30" Padding="0" Style="{StaticResource MainButton}" Clicked="OnSelectClicked" />
                             <Button Text="B" Style="{StaticResource MainButton}" Clicked="OnStartDrawingClicked" />
-                        </HorizontalStackLayout>
+                        </StackLayout>
                     </ScrollView>
 
-                    <!-- Color grid -->
-                    <ScrollView x:Name="PaletteScrollView" Grid.Row="1">
-                        <CollectionView ItemsSource="{Binding AvailableColors}" ItemsLayout="VerticalGrid, 5">
-                            <CollectionView.ItemTemplate>
-                                <DataTemplate x:DataType="viewmodels:ColorItemViewModel">
-                                    <Frame Padding="0" Margin="5" HeightRequest="50" WidthRequest="50"
-                                           CornerRadius="5" HasShadow="True"
-                                           BorderColor="Black"
-                                           BackgroundColor="{Binding HexColor}">
-                                        <Frame.GestureRecognizers>
-                                            <TapGestureRecognizer
-                            Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodels:MainPageViewModel}}, Path=SelectColorCommand}"
-                            CommandParameter="{Binding .}" />
-                                        </Frame.GestureRecognizers>
-                                        <Grid>
-                                            <Label Text="{Binding Sign}" FontSize="10" TextColor="Black" HorizontalOptions="Start" VerticalOptions="Start" Margin="2"/>
-                                            <Label Text="{Binding Sign}" FontSize="10" TextColor="Black" HorizontalOptions="End" VerticalOptions="Start" Margin="2"/>
-                                            <Label Text="{Binding Sign}" FontSize="10" TextColor="Black" HorizontalOptions="Start" VerticalOptions="End" Margin="2"/>
-                                            <Label Text="{Binding Sign}" FontSize="10" TextColor="Black" HorizontalOptions="End" VerticalOptions="End" Margin="2"/>
-                                            <Label Text="{Binding Code}" FontSize="10" TextColor="Black" HorizontalOptions="Center" VerticalOptions="Center"/>
-                                        </Grid>
-                                    </Frame>
-                                </DataTemplate>
-                            </CollectionView.ItemTemplate>
-                        </CollectionView>
-                    </ScrollView>
+                    <!-- Color palette -->
+                    <ScrollView x:Name="PaletteScrollView"
+                Grid.Row="{OnIdiom Phone=1, Tablet=0}"
+                Grid.Column="{OnIdiom Phone=0, Tablet=1}" />
                 </Grid>
 
                 <!-- Move row buttons -->

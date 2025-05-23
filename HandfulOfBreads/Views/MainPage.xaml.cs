@@ -23,9 +23,12 @@ namespace HandfulOfBreads.Views
             _columns = columns;
             _rows = rows;
 
-            _viewModel = new MainPageViewModel(columns, rows, selectedPattern, grid);
-            BindingContext = _viewModel;
+            _viewModel = App.MainViewModel;
 
+            _viewModel.Initialize(columns, rows, selectedPattern, grid);
+            //_viewModel = new MainPageViewModel(columns, rows, selectedPattern, grid);
+            BindingContext = _viewModel;
+            
             _viewModel.InvalidateRequested += OnInvalidateRequested;
 
             PixelGraphicsView.WidthRequest = columns * _pixelSize;
@@ -41,16 +44,21 @@ namespace HandfulOfBreads.Views
                 PixelGraphicsView.Invalidate();
             };
 
-            OnAppearing();
+            var paletteView = ColorPaletteViewCache.GetPaletteView("Preciosa Rocialles");
+
+            if (paletteView != null)
+                PaletteScrollView.Content = paletteView;
+
+            //OnAppearing();
         }
 
 
-        protected override async void OnAppearing()
-        {
-            base.OnAppearing();
+        //protected override async void OnAppearing()
+        //{
+        //    base.OnAppearing();
 
-            await _viewModel.LoadPaletteAsync("Preciosa Rocialles");
-        }
+        //    await _viewModel.LoadPaletteAsync("Preciosa Rocialles");
+        //}
         private void OnInvalidateRequested()
         {
             PixelGraphicsView.Invalidate();
@@ -389,14 +397,24 @@ namespace HandfulOfBreads.Views
         {
             _isCollapsed = !_isCollapsed;
 
+            bool isTablet = DeviceInfo.Idiom == DeviceIdiom.Tablet;
+
             PaletteScrollView.IsVisible = !_isCollapsed;
 
             await ResponsivePanel.FadeTo(0.8, 100);
-            ResponsivePanel.HeightRequest = _isCollapsed ? CollapsedHeight : ExpandedHeight;
-            await ResponsivePanel.FadeTo(1.0, 100);
 
-            if (sender is Button button)
-                button.Text = _isCollapsed ? "⬆" : "⬇";
+            if (isTablet)
+            {
+                ResponsivePanel.WidthRequest = _isCollapsed ? 60 : 400;
+                ToggleButton.Text = _isCollapsed ? "←" : "→";
+            }
+            else
+            {
+                ResponsivePanel.HeightRequest = _isCollapsed ? 60 : 300;
+                ToggleButton.Text = _isCollapsed ? "↑" : "↓";
+            }
+
+            await ResponsivePanel.FadeTo(1.0, 100);
         }
 
         public (int row, int col)? GetCellFromTouchPoint(Point touchPoint)
@@ -415,23 +433,53 @@ namespace HandfulOfBreads.Views
         }
         #endregion
 
-
+        private string _currentPaletteName = "Preciosa Rocialles";
         private async void OnPaletteButtonClicked(object sender, EventArgs e)
         {
             if (BindingContext is MainPageViewModel vm)
             {
-                string currentPalette = vm.PaletteName;
+                string currentPalette = _currentPaletteName;
 
                 var popup = new ChoosePalettePopup(currentPalette);
 
+                //popup.PaletteSelected += async (selectedPalette) =>
+                //{
+                //    await vm.LoadPaletteAsync(selectedPalette);
+                //    PaletteScrollView.ForceLayout();
+                //};
+
                 popup.PaletteSelected += async (selectedPalette) =>
                 {
-                    await vm.LoadPaletteAsync(selectedPalette);
-                    PaletteScrollView.ForceLayout();
+                    PaletteScrollView.Content = ColorPaletteViewCache.GetPaletteView(selectedPalette);
+                    _currentPaletteName = selectedPalette;
+                    //PaletteScrollView.ForceLayout();
                 };
 
                 await this.ShowPopupAsync(popup);
             }
         }
+
+        private async void OnSearchButtonClicked(object sender, EventArgs e)
+        {
+            var currentPaletteColors = ColorPaletteViewCache.GetPaletteColors(_currentPaletteName);
+            if (currentPaletteColors is null)
+                return;
+
+            var popup = new SearchColorPopup(currentPaletteColors);
+
+            popup.ColorSelected += async selectedColor =>
+            {
+                foreach (var c in currentPaletteColors)
+                    c.IsSelected = false;
+
+                selectedColor.IsSelected = true;
+
+                _viewModel.SelectColorCommand.Execute(selectedColor);
+            };
+
+            await Application.Current.MainPage.ShowPopupAsync(popup);
+
+        }
+
     }
 }

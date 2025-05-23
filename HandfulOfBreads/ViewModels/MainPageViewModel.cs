@@ -10,11 +10,6 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Maui.Graphics;
 using Microsoft.Maui.Graphics.Platform;
 using MvvmHelpers;
-using SQLitePCL;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Diagnostics;
-using System.IO;
 using System.Reflection;
 using Colors = Microsoft.Maui.Graphics.Colors;
 using IImage = Microsoft.Maui.Graphics.IImage;
@@ -55,7 +50,14 @@ namespace HandfulOfBreads.ViewModels
         private int _rows;
         private IImage? _image;
 
-        public MainPageViewModel(int columns, int rows, string selectedPattern, List<List<Color>>? grid = null)
+        public MainPageViewModel()
+        {
+            _popupService = App.Services.GetRequiredService<IPopupService>();
+
+            _context = App.Services.GetRequiredService<AppDbContext>();
+        }
+
+        public void Initialize(int columns, int rows, string selectedPattern, List<List<Color>>? grid = null)
         {
             if (selectedPattern == "Loom")
                 CurrentPattern = new LoomPatternDrawable();
@@ -72,10 +74,6 @@ namespace HandfulOfBreads.ViewModels
                 CurrentPattern.InitializeGrid(rows, columns, PixelSize, image, grid);
             else
                 CurrentPattern.InitializeGrid(rows, columns, PixelSize, image);
-
-            _popupService = App.Services.GetRequiredService<IPopupService>();
-
-            _context = App.Services.GetRequiredService<AppDbContext>();
 
             _columns = columns;
             _rows = rows;
@@ -101,26 +99,26 @@ namespace HandfulOfBreads.ViewModels
             //return image;
         }
 
-        public string PaletteName = "Preciosa Rocialles";
+        //public string PaletteName = "Preciosa Rocialles";
 
-        public async Task LoadPaletteAsync(string paletteName)
-        {
-            var palette = await _context.Palettes
-                .AsNoTracking()
-                .Include(p => p.Colors)
-                .FirstOrDefaultAsync(p => p.Name == paletteName);
+        //public async Task LoadPaletteAsync(string paletteName)
+        //{
+        //    var palette = await _context.Palettes
+        //        .AsNoTracking()
+        //        .Include(p => p.Colors)
+        //        .FirstOrDefaultAsync(p => p.Name == paletteName);
 
-            if (palette == null)
-            {
-                MainThread.BeginInvokeOnMainThread(() => AvailableColors.Clear());
-                return;
-            }
+        //    if (palette == null)
+        //    {
+        //        MainThread.BeginInvokeOnMainThread(() => AvailableColors.Clear());
+        //        return;
+        //    }
 
-            PaletteName = paletteName;
+        //    PaletteName = paletteName;
 
-            var wrapped = palette.Colors.Select(c => new ColorItemViewModel(c));
-            AvailableColors.ReplaceRange(wrapped);
-        }
+        //    var wrapped = palette.Colors.Select(c => new ColorItemViewModel(c));
+        //    AvailableColors.ReplaceRange(wrapped);
+        //}
 
         public event Action? RequestInvalidate;
 
