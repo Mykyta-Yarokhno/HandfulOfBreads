@@ -26,6 +26,8 @@ namespace HandfulOfBreads.ViewModels
 
             AddNewCommand = new Command(async () => await ChooseNewAsync());
             LanguageSwitchCommand = new Command(async () => await OnLanguageSwitch());
+
+            AppLogger.Info("StartPageViewModel initialization");
         }
 
         private async Task ChooseNewAsync()
@@ -41,6 +43,8 @@ namespace HandfulOfBreads.ViewModels
 
                 await _popupService.ShowPopupAsync(new ChoosePhotoPopup(images));
             }
+
+            AppLogger.Info("ChooseNewAsync on StartPage");
         }
 
         private async Task OnLanguageSwitch()
@@ -50,6 +54,8 @@ namespace HandfulOfBreads.ViewModels
                new CultureInfo("en-US") : new CultureInfo("uk-UA");
 
             LocalizationResourceManager.Instance.SetCulture(switchToCulture);
+
+            AppLogger.Info("OnLanguageSwitch on StartPage");
         }
     }
 }

@@ -17,13 +17,19 @@ public partial class StartPage : ContentPage
         Shell.SetNavBarIsVisible(this, false);
         _imageLoadingService = imageLoadingService;
         LoadPixelGrids();
+
+        AppLogger.Info("StartPage initialization");
     }
 
     private async void OnRefreshing(object sender, EventArgs e)
     {
+        AppLogger.Info($">> {nameof(OnRefreshing)}");
+
         await Task.Delay(500);
         LoadPixelGrids();
         refreshView.IsRefreshing = false;
+
+        AppLogger.Info($"<< {nameof(OnRefreshing)}");
     }
 
     private async void LoadPixelGrids()
@@ -90,5 +96,7 @@ public partial class StartPage : ContentPage
         {
             Application.Current.MainPage.DisplayAlert("Помилка", ex.Message, "OK");
         }
+
+        AppLogger.Info("LoadPixelGrids in Startpage");
     }
 }

@@ -141,6 +141,8 @@ namespace HandfulOfBreads.ViewModels
             CurrentPattern.SelectedColor = color;
         }
 
+
+
         [RelayCommand]
         private async Task NewDesignAsync()
         {

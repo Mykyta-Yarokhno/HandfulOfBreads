@@ -2,6 +2,8 @@
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="HandfulOfBreads.Views.MainPage"
+             xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
+             xmlns:skia="clr-namespace:SkiaSharp.Views.Maui.Controls;assembly=SkiaSharp.Views.Maui.Controls"
              xmlns:viewmodels="clr-namespace:HandfulOfBreads.ViewModels"
              x:DataType="viewmodels:MainPageViewModel">
 
@@ -82,35 +84,43 @@
             <!-- Bottom panel -->
             <Grid Grid.Row="1">
                 <Grid x:Name="ResponsivePanel"
-      Style="{OnIdiom Phone={StaticResource PhonePanelStyle}, Tablet={StaticResource TabletPanelStyle}}"
-      BackgroundColor="LightGray">
+                      Style="{OnIdiom Phone={StaticResource PhonePanelStyle}, Tablet={StaticResource TabletPanelStyle}}"
+                      BackgroundColor="LightGray">
 
                     <!-- Buttons -->
-                    <ScrollView x:Name="ButtonsPanel"
-                Orientation="{OnIdiom Phone=Horizontal, Tablet=Vertical}"
-                Grid.Row="{OnIdiom Phone=0, Tablet=0}"
-                Grid.Column="{OnIdiom Phone=0, Tablet=0}"
-                Padding="5"
-                BackgroundColor="LightGray"
-                HorizontalScrollBarVisibility="Never"
-                VerticalScrollBarVisibility="Never">
-                        <StackLayout Orientation="{OnIdiom Phone=Horizontal, Tablet=Vertical}" Spacing="10">
-                            <Button x:Name="ToggleButton" Text="{OnIdiom Phone='↓', Tablet='→'}" Style="{StaticResource MainButton}" Clicked="OnTogglePanelClicked" />
-                            <Button Text="🎨" Style="{StaticResource MainButton}" Clicked="OnPaletteButtonClicked"/>
-                            <Button Text="🔍" Style="{StaticResource MainButton}" Clicked="OnSearchButtonClicked"/>
-                            <Button Text="+" Style="{StaticResource MainButton}" Clicked="OnZoomChanged" />
-                            <Button Text="-" Style="{StaticResource MainButton}" Clicked="OnZoomChanged" />
-                            <Button Text="M" Style="{StaticResource MainButton}" Clicked="OnMinimum" />
-                            <Button Text="C" Style="{StaticResource MainButton}" Clicked="OnCenter" />
-                            <Button Text="⬚" FontSize="30" Padding="0" Style="{StaticResource MainButton}" Clicked="OnSelectClicked" />
-                            <Button Text="B" Style="{StaticResource MainButton}" Clicked="OnStartDrawingClicked" />
-                        </StackLayout>
-                    </ScrollView>
+                        <ScrollView x:Name="ButtonsPanel"
+                            Orientation="{OnIdiom Phone=Horizontal, Tablet=Vertical}"
+                            Grid.Row="{OnIdiom Phone=0, Tablet=0}"
+                            Grid.Column="{OnIdiom Phone=0, Tablet=0}"
+                            Padding="5"
+                            BackgroundColor="LightGray"
+                            HorizontalScrollBarVisibility="Never"
+                            VerticalScrollBarVisibility="Never">
+                            <StackLayout Orientation="{OnIdiom Phone=Horizontal, Tablet=Vertical}" Spacing="10">
+                                <Button x:Name="ToggleButton" Text="{OnIdiom Phone='↓', Tablet='→'}" Style="{StaticResource MainButton}" Clicked="OnTogglePanelClicked" />
+                                <Button Text="🎨" Style="{StaticResource MainButton}" Clicked="OnPaletteButtonClicked"/>
+                                <Button Text="🔍" Style="{StaticResource MainButton}" Clicked="OnSearchButtonClicked"/>
+                                <Button Text="+" Style="{StaticResource MainButton}" Clicked="OnZoomChanged" />
+                                <Button Text="-" Style="{StaticResource MainButton}" Clicked="OnZoomChanged" />
+                                <Button Text="M" Style="{StaticResource MainButton}" Clicked="OnMinimum" />
+                                <Button Text="C" Style="{StaticResource MainButton}" Clicked="OnCenter" />
+                                <Button Text="⬚" FontSize="30" Padding="0" Style="{StaticResource MainButton}" Clicked="OnSelectClicked" />
+                                <Button Text="B" Style="{StaticResource MainButton}" Clicked="OnStartDrawingClicked" />
+                            </StackLayout>
+                        </ScrollView>
 
                     <!-- Color palette -->
                     <ScrollView x:Name="PaletteScrollView"
-                Grid.Row="{OnIdiom Phone=1, Tablet=0}"
-                Grid.Column="{OnIdiom Phone=0, Tablet=1}" />
+                            Orientation="Vertical"
+                            Grid.Row="{OnIdiom Phone=1, Tablet=0}"
+                            Grid.Column="{OnIdiom Phone=0, Tablet=1}">
+                        <skia:SKCanvasView x:Name="PaletteCanvasView"
+                       PaintSurface="OnPaintSurface"
+                       EnableTouchEvents="True"
+                       Touch="OnTouch"
+                       HorizontalOptions="FillAndExpand"
+                       VerticalOptions="Start" />
+                    </ScrollView>
                 </Grid>
 
                 <!-- Move row buttons -->

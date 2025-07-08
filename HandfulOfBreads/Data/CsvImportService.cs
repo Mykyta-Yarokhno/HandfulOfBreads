@@ -68,6 +68,8 @@ public class CsvImportService
         }
 
         await _context.SaveChangesAsync();
+
+        AppLogger.Info("ImportAllPalettesAsync");
     }
 }
 

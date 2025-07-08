@@ -6,6 +6,7 @@ using HandfulOfBreads.Views;
 using HandfulOfBreads.Views.Popups;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using SkiaSharp.Views.Maui.Controls.Hosting;
 
 namespace HandfulOfBreads
 {
@@ -17,6 +18,7 @@ namespace HandfulOfBreads
 
             builder
                 .UseMauiApp<App>()
+                .UseSkiaSharp()
                 .UseMauiCommunityToolkit()
                 .ConfigureFonts(fonts =>
                 {
@@ -66,8 +68,14 @@ namespace HandfulOfBreads
                 db.Database.EnsureCreated(); 
 
                 var importer = scope.ServiceProvider.GetRequiredService<CsvImportService>();
-                importer.ImportAllPalettesAsync().Wait(); 
+                importer.ImportAllPalettesAsync().Wait();
+
+                AppLogger.Info("Database active");
             }
+
+            var loggerFactory = app.Services.GetRequiredService<ILoggerFactory>();
+            var logger = loggerFactory.CreateLogger("AppLogger");
+            AppLogger.Initialize(logger);
 
 
             return app;

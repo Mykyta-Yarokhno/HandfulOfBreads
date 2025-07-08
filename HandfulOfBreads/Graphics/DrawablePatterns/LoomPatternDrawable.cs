@@ -78,6 +78,7 @@ namespace HandfulOfBreads.Graphics.DrawablePatterns
 
         public async void Draw(ICanvas canvas, RectF dirtyRect)
         {
+            AppLogger.Info($">> {nameof(Draw)}");
             canvas.FillColor = Colors.White;
             canvas.FillRectangle(dirtyRect);
 
@@ -206,6 +207,8 @@ namespace HandfulOfBreads.Graphics.DrawablePatterns
                 canvas.StrokeSize = 5;
                 canvas.DrawRectangle(0, y, width, height);
             }
+
+            AppLogger.Info($"<< {nameof(Draw)}");
         }
 
         #region Selection

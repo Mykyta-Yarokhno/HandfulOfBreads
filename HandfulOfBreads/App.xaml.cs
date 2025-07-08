@@ -1,5 +1,6 @@
 ﻿
 using HandfulOfBreads.Data;
+using HandfulOfBreads.Services;
 using HandfulOfBreads.ViewModels;
 
 namespace HandfulOfBreads
@@ -23,11 +24,18 @@ namespace HandfulOfBreads
             InitializePalettesAsync();
         }
 
+        //private async void InitializePalettesAsync()
+        //{
+        //    var allPalettes = await ColorRepository.GetAllPalettesAsync();
+
+        //    ColorPaletteViewCache.InitializeAllPalettes(allPalettes, OnColorTapped);
+        //}
+
         private async void InitializePalettesAsync()
         {
             var allPalettes = await ColorRepository.GetAllPalettesAsync();
 
-            ColorPaletteViewCache.InitializeAllPalettes(allPalettes, OnColorTapped);
+            ColorPaletteBitmapCache.InitializeAllPalettes(allPalettes);
         }
 
         private void OnColorTapped(ColorItemViewModel color)

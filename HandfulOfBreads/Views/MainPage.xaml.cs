@@ -1,6 +1,13 @@
 ﻿using CommunityToolkit.Maui.Views;
+using HandfulOfBreads.Services;
 using HandfulOfBreads.ViewModels;
 using HandfulOfBreads.Views.Popups;
+using Microsoft.Maui.Controls;
+using Microsoft.Maui.Graphics;
+using System.Runtime.CompilerServices;
+using CommunityToolkit.Maui;
+using HandfulOfBreads.Graphics;
+using SkiaSharp.Views.Maui;
 
 namespace HandfulOfBreads.Views
 {
@@ -41,27 +48,266 @@ namespace HandfulOfBreads.Views
 
             _viewModel.RequestInvalidate += () =>
             {
+                AppLogger.Info(">> RequestInvalidate");
+
                 PixelGraphicsView.Invalidate();
+
+                AppLogger.Info("<< RequestInvalidate");
             };
 
-            var paletteView = ColorPaletteViewCache.GetPaletteView("Preciosa Rocialles");
+            //var paletteView = ColorPaletteViewCache.GetPaletteView("Preciosa Rocialles");
 
-            if (paletteView != null)
-                PaletteScrollView.Content = paletteView;
+            //if (paletteView != null)
+            //    PaletteScrollView.Content = paletteView;
 
-            //OnAppearing();
+            //PaletteImage.Source = ColorPaletteBitmapCache.GetPaletteBitmap("Preciosa Rocialles").ToImageSource();
+
+            OnAppearing();
+
+            AppLogger.Info("InitializeAllPalettes");
+
+            LoadPalette("Preciosa Rocialles");
         }
+
+        protected override void OnAppearing()
+        {
+            base.OnAppearing();
+
+            PaletteCanvasView.SizeChanged += OnPaletteCanvasViewSizeChanged;
+        }
+
+        private PaletteBitmap? _currentBitmap;
+
+        private PaletteDrawable? _paletteDrawable;
+
+        public int BitmapWidth { get; private set; }
+        public int BitmapHeight { get; private set; }
+
+        private string _currentPaletteName = "";
+
+        private void LoadPalette(string paletteName)
+        {
+            _currentPaletteName = paletteName;
+
+            var colors = ColorPaletteBitmapCache.GetPaletteColors(paletteName);
+            if (colors == null) return;
+
+            //int canvasWidth = (int)(PaletteCanvasView.Width > 0 ? PaletteCanvasView.Width : 300);
+
+            int canvasWidth = (int)PaletteScrollView.Width;
+            if (canvasWidth <= 0)
+            {
+                canvasWidth = (int)PaletteCanvasView.Width;
+            }
+            if (canvasWidth <= 0)
+            {
+                canvasWidth = 300; // fallback
+            }
+
+            var bitmap = ColorPaletteBitmapCache.GeneratePaletteBitmap(
+                colors,
+                columns: 5,
+                totalWidth: canvasWidth);
+
+            _paletteDrawable = new PaletteDrawable(bitmap);
+
+            PaletteCanvasView.WidthRequest = _paletteDrawable.Width;
+            PaletteCanvasView.HeightRequest = _paletteDrawable.Height;
+
+            PaletteCanvasView.InvalidateSurface();
+        }
+
+        private void OnPaletteCanvasViewSizeChanged(object? sender, EventArgs e)
+        {
+            PaletteCanvasView.SizeChanged -= OnPaletteCanvasViewSizeChanged;
+
+            if (PaletteCanvasView.Width > 0)
+            {
+                LoadPalette(_currentPaletteName);
+            }
+        }
+
+        private float _lastScaleX = 1f;
+        private float _lastScaleY = 1f;
+
+        private void OnPaintSurface(object sender, SKPaintSurfaceEventArgs e)
+        {
+            var canvas = e.Surface.Canvas;
+
+            if (_paletteDrawable == null) return;
+
+            float canvasWidth = e.Info.Width;
+            float canvasHeight = e.Info.Height;
+
+            float bitmapWidth = _paletteDrawable.Width;
+            float bitmapHeight = _paletteDrawable.Height;
+
+            float scaleX = canvasWidth / bitmapWidth;
+            float scaleY = canvasHeight / bitmapHeight;
+
+            _lastScaleX = scaleX;
+            _lastScaleY = scaleY;
+
+            canvas.Scale(scaleX, scaleY);
+
+            _paletteDrawable.Draw(canvas);
+        }
+
+
+        private void OnTouch(object sender, SKTouchEventArgs e)
+        {
+            if (e.ActionType == SKTouchAction.Released && _paletteDrawable != null)
+            {
+                var point = e.Location;
+                HandleTap(point.X, point.Y);
+            }
+
+            e.Handled = true;
+        }
+
+        private void HandleTap(float x, float y)
+{
+    if (_paletteDrawable == null) return;
+
+    double density = DeviceDisplay.MainDisplayInfo.Density;
+
+    float canvasWidth = (float)PaletteCanvasView.Width;
+    float canvasHeight = (float)PaletteCanvasView.Height;
+
+    float bitmapWidth = _paletteDrawable.Width;
+    float bitmapHeight = _paletteDrawable.Height;
+
+    float xDips = x / (float)density;
+    float yDips = y / (float)density;
+
+    float scaleX = canvasWidth / bitmapWidth;
+    float scaleY = canvasHeight / bitmapHeight;
+
+    float unscaledX = xDips / scaleX;
+    float unscaledY = yDips / scaleY;
+
+    int margin = 5;
+
+    int col = (int)Math.Floor((unscaledX - margin) / (_paletteDrawable.CellSize + margin));
+    int row = (int)Math.Floor((unscaledY - margin) / (_paletteDrawable.CellSize + margin));
+
+    int index = row * _paletteDrawable.Columns + col;
+
+    Console.WriteLine($"Tap raw=({x},{y}) dips=({xDips},{yDips}) unscaled=({unscaledX},{unscaledY}) col={col} row={row} index={index}");
+
+    if (index >= 0 && index < _paletteDrawable.Colors.Count)
+    {
+        var tappedColor = _paletteDrawable.Colors[index];
+        OnColorTapped(tappedColor);
+    }
+}
+        //
+        private void OnColorTapped(ColorItemViewModel color)
+        {
+
+            foreach (var c in _paletteDrawable.Colors)
+                c.IsSelected = false;
+
+
+            color.IsSelected = true;
+
+            App.MainViewModel.SelectedColor = Color.FromArgb(color.HexColor);
+            App.MainViewModel.CurrentPattern.SelectedColor = App.MainViewModel.SelectedColor;
+
+            PaletteCanvasView.InvalidateSurface();
+        }
+
+
 
 
         //protected override async void OnAppearing()
         //{
+        //    AppLogger.Info($">> {nameof(OnAppearing)}");
+
         //    base.OnAppearing();
 
-        //    await _viewModel.LoadPaletteAsync("Preciosa Rocialles");
+        //    AppLogger.Info($"<< {nameof(OnAppearing)}");
+
+
+        //    //await _viewModel.LoadPaletteAsync("Preciosa Rocialles");
+
+        //    //LoadPaletteGradually();
         //}
+
+        //private void LoadPaletteGradually()
+        //{
+        //    var fullView = ColorPaletteViewCache.GetPaletteView("Preciosa Rocialles");
+
+        //    if (fullView is Microsoft.Maui.Controls.Grid originalGrid)
+        //    {
+        //        var gradualGrid = new Grid
+        //        {
+        //            Padding = originalGrid.Padding,
+        //            ColumnSpacing = originalGrid.ColumnSpacing,
+        //            RowSpacing = originalGrid.RowSpacing,
+        //            Margin = originalGrid.Margin
+        //        };
+
+        //        foreach (var colDef in originalGrid.ColumnDefinitions)
+        //            gradualGrid.ColumnDefinitions.Add(new ColumnDefinition(colDef.Width));
+
+        //        foreach (var rowDef in originalGrid.RowDefinitions)
+        //            gradualGrid.RowDefinitions.Add(new RowDefinition(rowDef.Height));
+
+        //        var children = originalGrid.Children.ToList();
+
+        //        for (int i = 0; i < Math.Min(10, children.Count); i++)
+        //        {
+        //            var child = children[i];
+
+        //            int row = Grid.GetRow((View)child);
+        //            int col = Grid.GetColumn((View)child);
+
+        //            originalGrid.Children.Remove(child);
+        //            gradualGrid.Children.Add(child);
+
+        //            Grid.SetRow((View)child, row);
+        //            Grid.SetColumn((View)child, col);
+        //        }
+
+        //        PaletteScrollView.Content = gradualGrid;
+
+        //        const int batchSize = 10;
+        //        const int delayMs = 20;
+
+        //        _ = Task.Run(async () =>
+        //        {
+        //            for (int i = 10; i < children.Count; i += batchSize)
+        //            {
+        //                var batch = children.Skip(i).Take(batchSize).ToList();
+
+        //                await MainThread.InvokeOnMainThreadAsync(() =>
+        //                {
+        //                    foreach (var child in batch)
+        //                    {
+        //                        int row = Grid.GetRow((View)child);
+        //                        int col = Grid.GetColumn((View)child);
+        //                        gradualGrid.Children.Add(child);
+        //                        Grid.SetRow((View)child, row);
+        //                        Grid.SetColumn((View)child, col);
+        //                    }
+        //                });
+
+        //                await Task.Delay(delayMs);
+        //            }
+        //        });
+        //    }
+        //    else
+        //    {
+        //        PaletteScrollView.Content = fullView;
+        //    }
+        //}
+
         private void OnInvalidateRequested()
         {
             PixelGraphicsView.Invalidate();
+
+            AppLogger.Info("OnInvalidateRequested");
         }
 
         protected override void OnSizeAllocated(double width, double height)
@@ -75,6 +321,8 @@ namespace HandfulOfBreads.Views
 
             //PixelGraphicsViewContainer.Scale = minScale;
             PixelGraphicsViewContainer.Scale = scale;
+
+            AppLogger.Info("OnSizeAllocated");
         }
         #endregion
 
@@ -433,7 +681,7 @@ namespace HandfulOfBreads.Views
         }
         #endregion
 
-        private string _currentPaletteName = "Preciosa Rocialles";
+        //private string _currentPaletteName = "Preciosa Rocialles";
         private async void OnPaletteButtonClicked(object sender, EventArgs e)
         {
             if (BindingContext is MainPageViewModel vm)
