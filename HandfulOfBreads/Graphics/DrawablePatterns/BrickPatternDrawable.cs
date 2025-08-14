@@ -232,6 +232,11 @@ namespace HandfulOfBreads.Graphics.DrawablePatterns
         {
             throw new NotImplementedException();
         }
+
+        public void EraseAt(float x, float y)
+        {
+            throw new NotImplementedException();
+        }
     }
 }
 

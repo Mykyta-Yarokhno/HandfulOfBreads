@@ -13,7 +13,8 @@ public partial class ChoosePalettePopup : Popup
         var paletteNames = new List<string>
         {
             "Preciosa Rocialles",
-            "ass we can"
+            "ass we can",
+            "Used Ñolours"
         };
 
         foreach (var name in paletteNames)

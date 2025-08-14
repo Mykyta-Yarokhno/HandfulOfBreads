@@ -100,6 +100,7 @@
                                 <Button x:Name="ToggleButton" Text="{OnIdiom Phone='↓', Tablet='→'}" Style="{StaticResource MainButton}" Clicked="OnTogglePanelClicked" />
                                 <Button Text="🎨" Style="{StaticResource MainButton}" Clicked="OnPaletteButtonClicked"/>
                                 <Button Text="🔍" Style="{StaticResource MainButton}" Clicked="OnSearchButtonClicked"/>
+                                <Button Text="E" Style="{StaticResource MainButton}" Clicked="OnEraserButtonClicked"/>
                                 <Button Text="+" Style="{StaticResource MainButton}" Clicked="OnZoomChanged" />
                                 <Button Text="-" Style="{StaticResource MainButton}" Clicked="OnZoomChanged" />
                                 <Button Text="M" Style="{StaticResource MainButton}" Clicked="OnMinimum" />

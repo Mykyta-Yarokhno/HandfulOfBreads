@@ -8,6 +8,9 @@ using System.Runtime.CompilerServices;
 using CommunityToolkit.Maui;
 using HandfulOfBreads.Graphics;
 using SkiaSharp.Views.Maui;
+using SkiaSharp;
+using HandfulOfBreads.Graphics.DrawablePatterns;
+using HandfulOfBreads.Models;
 
 namespace HandfulOfBreads.Views
 {
@@ -33,6 +36,7 @@ namespace HandfulOfBreads.Views
             _viewModel = App.MainViewModel;
 
             _viewModel.Initialize(columns, rows, selectedPattern, grid);
+
             //_viewModel = new MainPageViewModel(columns, rows, selectedPattern, grid);
             BindingContext = _viewModel;
             
@@ -67,13 +71,30 @@ namespace HandfulOfBreads.Views
             AppLogger.Info("InitializeAllPalettes");
 
             LoadPalette("Preciosa Rocialles");
+
+            if (grid != null)
+            {
+                var usedColors = GetUsedColorsFromGrid(grid);
+                ColorPaletteBitmapCache.UpdateUsedColors(usedColors);
+            }
         }
 
         protected override void OnAppearing()
         {
             base.OnAppearing();
 
-            PaletteCanvasView.SizeChanged += OnPaletteCanvasViewSizeChanged;
+            if (PaletteCanvasView.Width > 0)
+                LoadPalette(_currentPaletteName);
+            else
+                PaletteCanvasView.SizeChanged += PaletteCanvasView_OnInitialSizeChanged;
+        }
+
+        private void PaletteCanvasView_OnInitialSizeChanged(object? sender, EventArgs e)
+        {
+            PaletteCanvasView.SizeChanged -= PaletteCanvasView_OnInitialSizeChanged;
+
+            if (PaletteCanvasView.Width > 0)
+                LoadPalette(_currentPaletteName);
         }
 
         private PaletteBitmap? _currentBitmap;
@@ -90,9 +111,8 @@ namespace HandfulOfBreads.Views
             _currentPaletteName = paletteName;
 
             var colors = ColorPaletteBitmapCache.GetPaletteColors(paletteName);
-            if (colors == null) return;
-
-            //int canvasWidth = (int)(PaletteCanvasView.Width > 0 ? PaletteCanvasView.Width : 300);
+            if (colors == null || colors.Count == 0)
+                return;
 
             int canvasWidth = (int)PaletteScrollView.Width;
             if (canvasWidth <= 0)
@@ -133,8 +153,10 @@ namespace HandfulOfBreads.Views
         private void OnPaintSurface(object sender, SKPaintSurfaceEventArgs e)
         {
             var canvas = e.Surface.Canvas;
+            canvas.Clear(SKColors.White);
 
-            if (_paletteDrawable == null) return;
+            if (_paletteDrawable == null)
+                return;
 
             float canvasWidth = e.Info.Width;
             float canvasHeight = e.Info.Height;
@@ -149,7 +171,6 @@ namespace HandfulOfBreads.Views
             _lastScaleY = scaleY;
 
             canvas.Scale(scaleX, scaleY);
-
             _paletteDrawable.Draw(canvas);
         }
 
@@ -166,42 +187,42 @@ namespace HandfulOfBreads.Views
         }
 
         private void HandleTap(float x, float y)
-{
-    if (_paletteDrawable == null) return;
+        {
+            if (_paletteDrawable == null) return;
 
-    double density = DeviceDisplay.MainDisplayInfo.Density;
+            double density = DeviceDisplay.MainDisplayInfo.Density;
 
-    float canvasWidth = (float)PaletteCanvasView.Width;
-    float canvasHeight = (float)PaletteCanvasView.Height;
+            float canvasWidth = (float)PaletteCanvasView.Width;
+            float canvasHeight = (float)PaletteCanvasView.Height;
 
-    float bitmapWidth = _paletteDrawable.Width;
-    float bitmapHeight = _paletteDrawable.Height;
+            float bitmapWidth = _paletteDrawable.Width;
+            float bitmapHeight = _paletteDrawable.Height;
 
-    float xDips = x / (float)density;
-    float yDips = y / (float)density;
+            float xDips = x / (float)density;
+            float yDips = y / (float)density;
 
-    float scaleX = canvasWidth / bitmapWidth;
-    float scaleY = canvasHeight / bitmapHeight;
+            float scaleX = canvasWidth / bitmapWidth;
+            float scaleY = canvasHeight / bitmapHeight;
 
-    float unscaledX = xDips / scaleX;
-    float unscaledY = yDips / scaleY;
+            float unscaledX = xDips / scaleX;
+            float unscaledY = yDips / scaleY;
 
-    int margin = 5;
+            int margin = 5;
 
-    int col = (int)Math.Floor((unscaledX - margin) / (_paletteDrawable.CellSize + margin));
-    int row = (int)Math.Floor((unscaledY - margin) / (_paletteDrawable.CellSize + margin));
+            int col = (int)Math.Floor((unscaledX - margin) / (_paletteDrawable.CellSize + margin));
+            int row = (int)Math.Floor((unscaledY - margin) / (_paletteDrawable.CellSize + margin));
 
-    int index = row * _paletteDrawable.Columns + col;
+            int index = row * _paletteDrawable.Columns + col;
 
-    Console.WriteLine($"Tap raw=({x},{y}) dips=({xDips},{yDips}) unscaled=({unscaledX},{unscaledY}) col={col} row={row} index={index}");
+            Console.WriteLine($"Tap raw=({x},{y}) dips=({xDips},{yDips}) unscaled=({unscaledX},{unscaledY}) col={col} row={row} index={index}");
 
-    if (index >= 0 && index < _paletteDrawable.Colors.Count)
-    {
-        var tappedColor = _paletteDrawable.Colors[index];
-        OnColorTapped(tappedColor);
-    }
-}
-        //
+            if (index >= 0 && index < _paletteDrawable.Colors.Count)
+            {
+                var tappedColor = _paletteDrawable.Colors[index];
+                OnColorTapped(tappedColor);
+            }
+        }
+
         private void OnColorTapped(ColorItemViewModel color)
         {
 
@@ -216,92 +237,6 @@ namespace HandfulOfBreads.Views
 
             PaletteCanvasView.InvalidateSurface();
         }
-
-
-
-
-        //protected override async void OnAppearing()
-        //{
-        //    AppLogger.Info($">> {nameof(OnAppearing)}");
-
-        //    base.OnAppearing();
-
-        //    AppLogger.Info($"<< {nameof(OnAppearing)}");
-
-
-        //    //await _viewModel.LoadPaletteAsync("Preciosa Rocialles");
-
-        //    //LoadPaletteGradually();
-        //}
-
-        //private void LoadPaletteGradually()
-        //{
-        //    var fullView = ColorPaletteViewCache.GetPaletteView("Preciosa Rocialles");
-
-        //    if (fullView is Microsoft.Maui.Controls.Grid originalGrid)
-        //    {
-        //        var gradualGrid = new Grid
-        //        {
-        //            Padding = originalGrid.Padding,
-        //            ColumnSpacing = originalGrid.ColumnSpacing,
-        //            RowSpacing = originalGrid.RowSpacing,
-        //            Margin = originalGrid.Margin
-        //        };
-
-        //        foreach (var colDef in originalGrid.ColumnDefinitions)
-        //            gradualGrid.ColumnDefinitions.Add(new ColumnDefinition(colDef.Width));
-
-        //        foreach (var rowDef in originalGrid.RowDefinitions)
-        //            gradualGrid.RowDefinitions.Add(new RowDefinition(rowDef.Height));
-
-        //        var children = originalGrid.Children.ToList();
-
-        //        for (int i = 0; i < Math.Min(10, children.Count); i++)
-        //        {
-        //            var child = children[i];
-
-        //            int row = Grid.GetRow((View)child);
-        //            int col = Grid.GetColumn((View)child);
-
-        //            originalGrid.Children.Remove(child);
-        //            gradualGrid.Children.Add(child);
-
-        //            Grid.SetRow((View)child, row);
-        //            Grid.SetColumn((View)child, col);
-        //        }
-
-        //        PaletteScrollView.Content = gradualGrid;
-
-        //        const int batchSize = 10;
-        //        const int delayMs = 20;
-
-        //        _ = Task.Run(async () =>
-        //        {
-        //            for (int i = 10; i < children.Count; i += batchSize)
-        //            {
-        //                var batch = children.Skip(i).Take(batchSize).ToList();
-
-        //                await MainThread.InvokeOnMainThreadAsync(() =>
-        //                {
-        //                    foreach (var child in batch)
-        //                    {
-        //                        int row = Grid.GetRow((View)child);
-        //                        int col = Grid.GetColumn((View)child);
-        //                        gradualGrid.Children.Add(child);
-        //                        Grid.SetRow((View)child, row);
-        //                        Grid.SetColumn((View)child, col);
-        //                    }
-        //                });
-
-        //                await Task.Delay(delayMs);
-        //            }
-        //        });
-        //    }
-        //    else
-        //    {
-        //        PaletteScrollView.Content = fullView;
-        //    }
-        //}
 
         private void OnInvalidateRequested()
         {
@@ -345,6 +280,8 @@ namespace HandfulOfBreads.Views
         private (int Row, int Col)? _selectionEndCell;
         private bool _isSelecting = false;
         private bool _isMovingPastePreview;
+
+        private bool _isErasing = false;
 
         private void OnStartInteraction(object sender, TouchEventArgs e)
         {
@@ -396,7 +333,7 @@ namespace HandfulOfBreads.Views
         {
             if (e.Touches.Count() == 1)
             {
-                if (_isDrawing)
+                if (_isDrawing || _isErasing)
                     HandleInteraction(e.Touches[0]);
                 else if (_isSelecting)
                     HandleSelection(e.Touches[0]);
@@ -455,13 +392,19 @@ namespace HandfulOfBreads.Views
                 {
                     float interpolatedX = previousPoint.X + deltaX * i / steps;
                     float interpolatedY = previousPoint.Y + deltaY * i / steps;
-                    _viewModel.CurrentPattern.TogglePixel(interpolatedX, interpolatedY);
+                    if (_isErasing)
+                        _viewModel.CurrentPattern.EraseAt(interpolatedX, interpolatedY);
+                    else
+                        _viewModel.CurrentPattern.TogglePixel(interpolatedX, interpolatedY);
                 }
             }
 
-            _viewModel.CurrentPattern.TogglePixel(touchPoint.X, touchPoint.Y);
-            PixelGraphicsView.Invalidate();
+            if (_isErasing)
+                _viewModel.CurrentPattern.EraseAt(touchPoint.X, touchPoint.Y);
+            else
+                _viewModel.CurrentPattern.TogglePixel(touchPoint.X, touchPoint.Y);
 
+            PixelGraphicsView.Invalidate();
             _previousTouchPoint = touchPoint;
         }
 
@@ -496,6 +439,8 @@ namespace HandfulOfBreads.Views
         private void OnStartDrawingClicked(object sender, EventArgs e)
         {
             if (_isSelecting)
+                return;
+            if (_isErasing)
                 return;
 
             _isDrawing = !_isDrawing;
@@ -684,29 +629,112 @@ namespace HandfulOfBreads.Views
         //private string _currentPaletteName = "Preciosa Rocialles";
         private async void OnPaletteButtonClicked(object sender, EventArgs e)
         {
-            if (BindingContext is MainPageViewModel vm)
+            string currentPalette = _currentPaletteName;
+            var popup = new ChoosePalettePopup(currentPalette);
+
+            popup.PaletteSelected += (selectedPalette) =>
             {
-                string currentPalette = _currentPaletteName;
+                _currentPaletteName = selectedPalette;
 
-                var popup = new ChoosePalettePopup(currentPalette);
-
-                //popup.PaletteSelected += async (selectedPalette) =>
-                //{
-                //    await vm.LoadPaletteAsync(selectedPalette);
-                //    PaletteScrollView.ForceLayout();
-                //};
-
-                popup.PaletteSelected += async (selectedPalette) =>
+                if (_currentPaletteName == "Used colours")
                 {
-                    PaletteScrollView.Content = ColorPaletteViewCache.GetPaletteView(selectedPalette);
-                    _currentPaletteName = selectedPalette;
-                    //PaletteScrollView.ForceLayout();
-                };
+                    var colorsFromCanvas = GetUsedColorsFromCanvas();
 
-                await this.ShowPopupAsync(popup);
-            }
+                    ColorPaletteBitmapCache.UpdateUsedColors(colorsFromCanvas);
+                }
+
+                LoadPalette(_currentPaletteName);
+            };
+
+            await this.ShowPopupAsync(popup);
         }
 
+
+        private LoomPatternDrawable _loomPatternDrawable;
+        //
+        private List<ColorItemViewModel> GetUsedColorsFromCanvas(List<List<Color>>? grid = null)
+        {
+            var usedColors = new List<ColorItemViewModel>();
+            var allKnownColors = ColorPaletteBitmapCache.GetAllPalettesColors();
+
+            int rows = grid?.Count ?? _loomPatternDrawable.Rows;
+            int cols = grid != null && grid.Count > 0 ? grid[0].Count : _loomPatternDrawable.Columns;
+
+            for (int row = 0; row < rows; row++)
+            {
+                for (int col = 0; col < cols; col++)
+                {
+                    var color = grid != null ? grid[row][col] : _loomPatternDrawable.GetColorAt(row, col);
+
+                    if (color != Colors.Transparent)
+                    {
+                        string hex = _loomPatternDrawable.MyToHex(color);
+
+                        if (!usedColors.Any(c => c.HexColor.Equals(hex, StringComparison.OrdinalIgnoreCase)))
+                        {
+                            var existingColor = allKnownColors.FirstOrDefault(c =>
+                                c.HexColor.Equals(hex, StringComparison.OrdinalIgnoreCase));
+
+                            var model = existingColor ?? new ColorItem { Code = hex, HexColor = hex };
+                            usedColors.Add(new ColorItemViewModel(model));
+                        }
+                    }
+                }
+            }
+
+            return usedColors;
+        }
+
+        private List<ColorItemViewModel> GetUsedColorsFromGrid(List<List<Color>> grid)
+        {
+            var usedColors = new List<ColorItemViewModel>();
+            var allKnownColors = ColorPaletteBitmapCache.GetAllPalettesColors();
+
+            foreach (var row in grid)
+            {
+                foreach (var color in row)
+                {
+                    if (color.Alpha == 0) 
+                        continue;
+
+                    string hex = ColorToHex(color);
+
+                    if (!usedColors.Any(c =>
+                        c.HexColor.Equals(hex, StringComparison.OrdinalIgnoreCase)))
+                    {
+                        var existingColor = allKnownColors.FirstOrDefault(c =>
+                            c.HexColor.Equals(hex, StringComparison.OrdinalIgnoreCase));
+
+                        var model = existingColor ?? new ColorItem { Code = hex, HexColor = hex };
+                        usedColors.Add(new ColorItemViewModel(model));
+                    }
+                }
+            }
+
+            return usedColors;
+        }
+
+        private string ColorToHex(Color color)
+        {
+            return $"#{(int)(color.Red * 255):X2}{(int)(color.Green * 255):X2}{(int)(color.Blue * 255):X2}";
+        }
+
+        private void EnsureUsedColoursUpToDate()
+        {
+            var cached = ColorPaletteBitmapCache.GetPaletteColors("Used Colours")
+                         ?? new List<ColorItemViewModel>();
+
+            var fromCanvas = GetUsedColorsFromCanvas();
+
+            var merged = cached
+                .Concat(fromCanvas)
+                .GroupBy(c => c.HexColor, StringComparer.OrdinalIgnoreCase)
+                .Select(g => g.First())
+                .ToList();
+
+            ColorPaletteBitmapCache.UpdateUsedColors(merged);
+        }
+        //
         private async void OnSearchButtonClicked(object sender, EventArgs e)
         {
             var currentPaletteColors = ColorPaletteViewCache.GetPaletteColors(_currentPaletteName);
@@ -728,6 +756,30 @@ namespace HandfulOfBreads.Views
             await Application.Current.MainPage.ShowPopupAsync(popup);
 
         }
+
+        private Button _eraseButton;
+        ///
+        private async void OnEraserButtonClicked(object sender, EventArgs e)
+        {
+
+            if (_isSelecting)
+                return;
+            else if (_isDrawing)
+                return;
+
+            _isErasing = !_isErasing;
+
+            if (sender is Button button)
+            {
+                _eraseButton = button;
+
+                _eraseButton.BackgroundColor = _isErasing
+                    ? Color.FromArgb("#553d3a")
+                    : Color.FromArgb("#98694d");
+            }
+
+        }
+        ///
 
     }
 }

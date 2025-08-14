@@ -2,14 +2,17 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using Microsoft.Maui.Controls;
 using HandfulOfBreads.ViewModels;
+using HandfulOfBreads.Models;
 
 public static class ColorPaletteBitmapCache
 {
     private static readonly Dictionary<string, PaletteBitmap> _paletteBitmaps = new();
-
     private static Dictionary<string, List<ColorItemViewModel>> _allPalettes = new();
+
+    private static List<ColorItemViewModel> _usedColors = new();
 
     public static void InitializeAllPalettes(Dictionary<string, List<ColorItemViewModel>> allPalettes)
     {
@@ -19,24 +22,60 @@ public static class ColorPaletteBitmapCache
         {
             _paletteBitmaps[kvp.Key] = GeneratePaletteBitmap(kvp.Value);
         }
+
+        _allPalettes["Used Сolours"] = _usedColors;
+        _paletteBitmaps["Used Сolours"] = GeneratePaletteBitmap(_usedColors);
+    }
+
+    public static List<ColorItem> GetAllPalettesColors()
+    {
+        return _allPalettes
+            .SelectMany(p => p.Value) 
+            .GroupBy(c => c.HexColor, StringComparer.OrdinalIgnoreCase) 
+            .Select(g => new ColorItem
+            {
+                Code = g.First().Code,
+                HexColor = g.Key
+            })
+            .ToList();
+    }
+
+
+    public static void UpdateUsedColors(IEnumerable<ColorItemViewModel> usedColors)
+    {
+        _usedColors = usedColors
+            .GroupBy(c => c.Code)
+            .Select(g => g.First())
+            .ToList();
+
+        _allPalettes["Used Сolours"] = _usedColors;
+        _paletteBitmaps["Used Сolours"] = GeneratePaletteBitmap(_usedColors);
     }
 
     public static PaletteBitmap? GetPaletteBitmap(string paletteName)
     {
+        if (paletteName == "Used Сolours")
+        {
+            _paletteBitmaps["Used Сolours"] = GeneratePaletteBitmap(_usedColors);
+        }
+
         return _paletteBitmaps.TryGetValue(paletteName, out var bitmap) ? bitmap : null;
     }
 
     public static List<ColorItemViewModel>? GetPaletteColors(string paletteName)
     {
+        if (paletteName == "Used Сolours")
+            return _usedColors ?? new List<ColorItemViewModel>();
+
         return _allPalettes.TryGetValue(paletteName, out var colors) ? colors : null;
     }
 
     public static PaletteBitmap GeneratePaletteBitmap(
-            List<ColorItemViewModel> colors,
-            int columns = 5,
-            int totalWidth = 300,
-            int margin = 5,
-            int cornerRadius = 5)
+        List<ColorItemViewModel> colors,
+        int columns = 5,
+        int totalWidth = 300,
+        int margin = 5,
+        int cornerRadius = 5)
     {
         int cellSize = (totalWidth - (columns + 1) * margin) / columns;
         int rows = (int)Math.Ceiling(colors.Count / (double)columns);
@@ -60,25 +99,12 @@ public static class ColorPaletteBitmapCache
 
             var rect = new SKRect(left, top, right, bottom);
 
-            // Тінь (імітація)
-            //if (true)
-            //{
-            //    var shadowPaint = new SKPaint
-            //    {
-            //        Color = new SKColor(0, 0, 0, 50),
-            //        IsAntialias = true
-            //    };
-            //    var shadowRect = new SKRect(rect.Left + 2, rect.Top + 2, rect.Right + 2, rect.Bottom + 2);
-            //    canvas.DrawRoundRect(shadowRect, cornerRadius, cornerRadius, shadowPaint);
-            //}
-
-            // Кольоровий фон з заокругленням
             var fillPaint = new SKPaint
             {
                 Color = SKColor.Parse(colorVM.HexColor),
                 IsAntialias = true
             };
-            canvas.DrawRoundRect(rect, cornerRadius, cornerRadius, fillPaint);          
+            canvas.DrawRoundRect(rect, cornerRadius, cornerRadius, fillPaint);
 
             var borderPaint = new SKPaint
             {
@@ -87,10 +113,8 @@ public static class ColorPaletteBitmapCache
                 StrokeWidth = 2,
                 IsAntialias = true
             };
-
             canvas.DrawRoundRect(rect, cornerRadius, cornerRadius, borderPaint);
-       
-            // Центральний Code
+
             if (!string.IsNullOrWhiteSpace(colorVM.Code))
             {
                 var codePaint = new SKPaint
@@ -105,7 +129,6 @@ public static class ColorPaletteBitmapCache
                 canvas.DrawText(colorVM.Code, x, y, codePaint);
             }
 
-            // Sign по кутках
             if (colorVM.Sign.HasValue)
             {
                 var sign = colorVM.Sign.Value.ToString();
@@ -115,19 +138,14 @@ public static class ColorPaletteBitmapCache
                     TextSize = fontSize,
                     IsAntialias = true
                 };
-
                 float sMargin = 3;
-
                 // Top-left
                 canvas.DrawText(sign, rect.Left + sMargin, rect.Top + fontSize + sMargin, signPaint);
-
                 // Top-right
                 float trWidth = signPaint.MeasureText(sign);
                 canvas.DrawText(sign, rect.Right - trWidth - sMargin, rect.Top + fontSize + sMargin, signPaint);
-
                 // Bottom-left
                 canvas.DrawText(sign, rect.Left + sMargin, rect.Bottom - sMargin, signPaint);
-
                 // Bottom-right
                 float brWidth = signPaint.MeasureText(sign);
                 canvas.DrawText(sign, rect.Right - brWidth - sMargin, rect.Bottom - sMargin, signPaint);

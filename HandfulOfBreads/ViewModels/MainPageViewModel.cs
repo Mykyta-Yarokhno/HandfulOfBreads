@@ -77,7 +77,7 @@ namespace HandfulOfBreads.ViewModels
 
             _columns = columns;
             _rows = rows;
-            _image = image;
+            _image = image; 
         }
 
         private IImage LoadImage()

@@ -9,6 +9,7 @@ namespace HandfulOfBreads.Graphics.DrawablePatterns
 
         void InitializeGrid(int rows, int columns, int pixelSize, IImage? fillImage = null, List<List<Color>> grid = null);
         void Draw(ICanvas canvas, RectF dirtyRect);
+        void EraseAt(float x, float y);
         void TogglePixel(float x, float y);
         Task SaveToFileAsync(string filePath);
 

@@ -1,4 +1,6 @@
-﻿using SkiaSharp;
+﻿using HandfulOfBreads.Models;
+using HandfulOfBreads.ViewModels;
+using SkiaSharp;
 using System.ComponentModel.Design;
 using System.Globalization;
 using System.Reflection;
@@ -10,6 +12,12 @@ namespace HandfulOfBreads.Graphics.DrawablePatterns
 {
     internal class LoomPatternDrawable : IPatternDrawable
     {
+        //
+        public int Rows => _rows;
+        public int Columns => _columns;
+
+        public Color GetColorAt(int row, int col) => _grid[row][col];
+        //
         private readonly List<List<Color>> _grid = new();
         private int _rows;
         private int _columns;
@@ -417,6 +425,16 @@ namespace HandfulOfBreads.Graphics.DrawablePatterns
         #endregion
 
         #region Everything else
+        public void EraseAt(float x, float y)
+        {
+            int col = (int)(x / _pixelSize);
+            int row = (int)(y / _pixelSize);
+
+            if (row >= 0 && row < _rows && col >= 0 && col < _columns)
+            {
+                _grid[row][col] = Colors.Transparent;
+            }
+        }
         public void TogglePixel(float x, float y)
         {
             int col = (int)(x / _pixelSize);
@@ -425,6 +443,20 @@ namespace HandfulOfBreads.Graphics.DrawablePatterns
             if (row >= 0 && row < _rows && col >= 0 && col < _columns)
             {
                 _grid[row][col] = _selectedColor;
+
+                //
+
+                var currentUsed = ColorPaletteBitmapCache.GetPaletteColors("Used Сolours");
+
+                string hex = MyToHex(_selectedColor);
+
+                if (!currentUsed.Any(c => c.HexColor == hex))
+                {
+                    var model = new ColorItem { Code = hex, HexColor = hex };
+                    currentUsed.Add(new ColorItemViewModel(model));
+                    ColorPaletteBitmapCache.UpdateUsedColors(currentUsed);
+                }
+                //
             }
         }
 
