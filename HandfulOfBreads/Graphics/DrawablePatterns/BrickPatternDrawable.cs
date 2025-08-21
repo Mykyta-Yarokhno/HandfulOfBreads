@@ -247,6 +247,11 @@ namespace HandfulOfBreads.Graphics.DrawablePatterns
         {
             throw new NotImplementedException();
         }
+
+        public void ReplaceColor(Color oldColor, Color newColor)
+        {
+            throw new NotImplementedException();
+        }
     }
 }
 

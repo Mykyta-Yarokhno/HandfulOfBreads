@@ -102,6 +102,7 @@
                                 <Button Text="🔍" Style="{StaticResource MainButton}" Clicked="OnSearchButtonClicked"/>
                                 <Button Text="P" Style="{StaticResource MainButton}" Clicked="OnPipetteButtonClicked"/>
                                 <Button Text="E" Style="{StaticResource MainButton}" Clicked="OnEraserButtonClicked"/>
+                                <Button Text="RC" Style="{StaticResource MainButton}" Clicked="OnReplaceColourButtonClicked"/>
                                 <Button Text="+" Style="{StaticResource MainButton}" Clicked="OnZoomChanged" />
                                 <Button Text="-" Style="{StaticResource MainButton}" Clicked="OnZoomChanged" />
                                 <Button Text="M" Style="{StaticResource MainButton}" Clicked="OnMinimum" />

@@ -436,6 +436,20 @@ namespace HandfulOfBreads.Graphics.DrawablePatterns
             }
         }
 
+        public void ReplaceColor(Color oldColor, Color newColor)
+        {
+            for (int row = 0; row < _rows; row++)
+            {
+                for (int col = 0; col < _columns; col++)
+                {
+                    if (_grid[row][col].ToHex() == oldColor.ToHex())
+                    {
+                        _grid[row][col] = newColor;
+                    }
+                }
+            }
+        }
+
         public List<List<Color>> GetCurrentGrid()
         {
             return _grid.Select(row => new List<Color>(row)).ToList();

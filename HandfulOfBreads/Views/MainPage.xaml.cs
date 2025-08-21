@@ -1,18 +1,19 @@
-﻿using CommunityToolkit.Maui.Views;
+﻿using CommunityToolkit.Maui;
+using CommunityToolkit.Maui.Views;
+using HandfulOfBreads.Constants;
+using HandfulOfBreads.Graphics;
+using HandfulOfBreads.Graphics.DrawablePatterns;
+using HandfulOfBreads.Models;
 using HandfulOfBreads.Services;
 using HandfulOfBreads.ViewModels;
 using HandfulOfBreads.Views.Popups;
 using Microsoft.Maui.Controls;
-using Microsoft.Maui.Graphics;
-using System.Runtime.CompilerServices;
-using CommunityToolkit.Maui;
-using HandfulOfBreads.Graphics;
-using SkiaSharp.Views.Maui;
-using SkiaSharp;
-using HandfulOfBreads.Graphics.DrawablePatterns;
-using HandfulOfBreads.Models;
 using Microsoft.Maui.Controls.Compatibility;
-using HandfulOfBreads.Constants;
+using Microsoft.Maui.Controls.PlatformConfiguration.iOSSpecific;
+using Microsoft.Maui.Graphics;
+using SkiaSharp;
+using SkiaSharp.Views.Maui;
+using System.Runtime.CompilerServices;
 
 namespace HandfulOfBreads.Views
 {
@@ -218,10 +219,7 @@ namespace HandfulOfBreads.Views
                 OnColorTapped(tappedColor);
             }
         }
-        /// <summary>
-        /// ///
-        /// </summary>
-        /// <param name="color"></param>
+
         private void OnColorTapped(ColorItemViewModel color)
         {
 
@@ -271,6 +269,7 @@ namespace HandfulOfBreads.Views
         private bool _isDragging;
         private bool _isErasing = false;
         private bool _isPipetting = false;
+        private bool _isReplacingColour = false;
 
         private float _initialDistance;
         private double _initialScale;
@@ -469,6 +468,21 @@ namespace HandfulOfBreads.Views
                 }
             }
 
+            if (_isReplacingColour)
+            {
+                var cell = GetCellFromTouchPoint(_onePoint);
+
+                if (!cell.HasValue)
+                    return;
+
+                var oldColor = _viewModel.CurrentPattern.GetColorAt(cell.Value.row, cell.Value.col);
+                var newColor = _viewModel.SelectedColor;
+
+                _viewModel.CurrentPattern.ReplaceColor(oldColor, newColor);
+
+                PixelGraphicsView.Invalidate();
+            }
+
             _previousTouchPoint = null;
             PixelGraphicsView.Invalidate();
         }
@@ -515,13 +529,15 @@ namespace HandfulOfBreads.Views
             Drawing,
             Selecting,
             Erasing,
-            Pipetting
+            Pipetting,
+            ReplacingColour
         }
 
         private Button? _brushButton;
         private Button? _selectButton;
         private Button? _eraseButton;
         private Button? _pipetteButton;
+        private Button? _replaceColourButton;
 
         private ToolMode _currentMode = ToolMode.None;
 
@@ -541,11 +557,13 @@ namespace HandfulOfBreads.Views
             _isSelecting = _currentMode == ToolMode.Selecting;
             _isErasing = _currentMode == ToolMode.Erasing;
             _isPipetting = _currentMode == ToolMode.Pipetting;
+            _isReplacingColour = _currentMode == ToolMode.ReplacingColour;
 
             _brushButton?.SetValue(BackgroundColorProperty, Color.FromArgb("#98694d"));
             _selectButton?.SetValue(BackgroundColorProperty, Color.FromArgb("#98694d"));
             _eraseButton?.SetValue(BackgroundColorProperty, Color.FromArgb("#98694d"));
             _pipetteButton?.SetValue(BackgroundColorProperty, Color.FromArgb("#98694d"));
+            _replaceColourButton?.SetValue(BackgroundColorProperty, Color.FromArgb("#98694d"));
 
             if (_currentMode != ToolMode.None && clickedButton != null)
             {
@@ -608,6 +626,14 @@ namespace HandfulOfBreads.Views
             }
         }
 
+        private void OnReplaceColourButtonClicked(object sender, EventArgs e)
+        {
+            if (sender is Button button)
+            {
+                _eraseButton = button;
+                SetMode(ToolMode.ReplacingColour, button);
+            }
+        }
 
         private void OnCopyClicked(object sender, EventArgs e)
         {
@@ -786,7 +812,7 @@ namespace HandfulOfBreads.Views
                 _viewModel.SelectColorCommand.Execute(selectedColor);
             };
 
-            await Application.Current.MainPage.ShowPopupAsync(popup);
+            //await Application.Current.MainPage.ShowPopupAsync(popup);
 
         }
     }
