@@ -242,6 +242,11 @@ namespace HandfulOfBreads.Graphics.DrawablePatterns
         {
             throw new NotImplementedException();
         }
+
+        public Color GetColorAt(int row, int col)
+        {
+            throw new NotImplementedException();
+        }
     }
 }
 

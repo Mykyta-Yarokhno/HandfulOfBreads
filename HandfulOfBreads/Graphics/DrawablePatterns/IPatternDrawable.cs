@@ -7,6 +7,8 @@ namespace HandfulOfBreads.Graphics.DrawablePatterns
         Color SelectedColor { get; set; }
         bool IsPasting { get;}
 
+        public Color GetColorAt(int row, int col);
+
         void InitializeGrid(int rows, int columns, int pixelSize, IImage? fillImage = null, List<List<Color>> grid = null);
         void Draw(ICanvas canvas, RectF dirtyRect);
         void EraseAt(float x, float y);

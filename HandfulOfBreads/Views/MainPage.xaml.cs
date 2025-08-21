@@ -218,7 +218,10 @@ namespace HandfulOfBreads.Views
                 OnColorTapped(tappedColor);
             }
         }
-
+        /// <summary>
+        /// ///
+        /// </summary>
+        /// <param name="color"></param>
         private void OnColorTapped(ColorItemViewModel color)
         {
 
@@ -266,7 +269,8 @@ namespace HandfulOfBreads.Views
 
         private bool _isDrawing;
         private bool _isDragging;
-        
+        private bool _isErasing = false;
+        private bool _isPipetting = false;
 
         private float _initialDistance;
         private double _initialScale;
@@ -277,7 +281,7 @@ namespace HandfulOfBreads.Views
         private bool _isSelecting = false;
         private bool _isMovingPastePreview;
 
-        private bool _isErasing = false;
+       
 
         private void OnStartInteraction(object sender, TouchEventArgs e)
         {
@@ -426,6 +430,45 @@ namespace HandfulOfBreads.Views
             if (_isErasing)
                 _viewModel.CurrentPattern.EraseAt(_onePoint.X, _onePoint.Y);
 
+            if (_isPipetting)
+            {
+                var cell = GetCellFromTouchPoint(_onePoint);
+                if (cell.HasValue)
+                {
+                    var pickedColor = _viewModel.CurrentPattern.GetColorAt(cell.Value.row, cell.Value.col);
+
+                    foreach (var c in _paletteDrawable.Colors)
+                        c.IsSelected = false;
+
+                    var target = _paletteDrawable.Colors
+                        .FirstOrDefault(c => c.HexColor.Equals(pickedColor.ToHex(), StringComparison.OrdinalIgnoreCase));
+
+                    if (target != null)
+                        target.IsSelected = true;
+
+                    _viewModel.SelectedColor = pickedColor;
+                    _viewModel.CurrentPattern.SelectedColor = pickedColor;
+
+                    PaletteCanvasView.InvalidateSurface();
+
+                    if (target != null)
+                    {
+                        int index = _paletteDrawable.Colors.IndexOf(target);
+
+                        int margin = 5;
+                        int col = index % _paletteDrawable.Columns;
+                        int row = index / _paletteDrawable.Columns;
+
+                        double scrollY = row * (_paletteDrawable.CellSize + margin);
+
+                        MainThread.BeginInvokeOnMainThread(async () =>
+                        {
+                            await PaletteScrollView.ScrollToAsync(0, scrollY, true);
+                        });
+                    }
+                }
+            }
+
             _previousTouchPoint = null;
             PixelGraphicsView.Invalidate();
         }
@@ -471,12 +514,14 @@ namespace HandfulOfBreads.Views
             None,
             Drawing,
             Selecting,
-            Erasing
+            Erasing,
+            Pipetting
         }
 
         private Button? _brushButton;
         private Button? _selectButton;
         private Button? _eraseButton;
+        private Button? _pipetteButton;
 
         private ToolMode _currentMode = ToolMode.None;
 
@@ -495,10 +540,12 @@ namespace HandfulOfBreads.Views
             _isDrawing = _currentMode == ToolMode.Drawing;
             _isSelecting = _currentMode == ToolMode.Selecting;
             _isErasing = _currentMode == ToolMode.Erasing;
+            _isPipetting = _currentMode == ToolMode.Pipetting;
 
             _brushButton?.SetValue(BackgroundColorProperty, Color.FromArgb("#98694d"));
             _selectButton?.SetValue(BackgroundColorProperty, Color.FromArgb("#98694d"));
             _eraseButton?.SetValue(BackgroundColorProperty, Color.FromArgb("#98694d"));
+            _pipetteButton?.SetValue(BackgroundColorProperty, Color.FromArgb("#98694d"));
 
             if (_currentMode != ToolMode.None && clickedButton != null)
             {
@@ -522,6 +569,15 @@ namespace HandfulOfBreads.Views
                 }
 
                 UpdateUIState();
+            }
+        }
+
+        private  void OnPipetteButtonClicked(object sender, EventArgs e)
+        {
+            if (sender is Button button)
+            {
+                _pipetteButton = button;
+                SetMode(ToolMode.Pipetting, button);
             }
         }
 
