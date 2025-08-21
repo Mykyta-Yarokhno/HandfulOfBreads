@@ -25,7 +25,7 @@ namespace HandfulOfBreads.Graphics.DrawablePatterns
 
         private IImage? _fillImage;
 
-        private Color _selectedColor = Colors.White;
+        private Color _selectedColor = Colors.Transparent;
 
         public Color SelectedColor
         {
@@ -442,6 +442,9 @@ namespace HandfulOfBreads.Graphics.DrawablePatterns
         }
         public void TogglePixel(float x, float y)
         {
+            if (_selectedColor == Colors.Transparent)
+                return;
+
             int col = (int)(x / _pixelSize);
             int row = (int)(y / _pixelSize);
 

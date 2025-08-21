@@ -423,6 +423,9 @@ namespace HandfulOfBreads.Views
             if (_isDrawing)
                 _viewModel.CurrentPattern.TogglePixel(_onePoint.X, _onePoint.Y);
 
+            if (_isErasing)
+                _viewModel.CurrentPattern.EraseAt(_onePoint.X, _onePoint.Y);
+
             _previousTouchPoint = null;
             PixelGraphicsView.Invalidate();
         }
@@ -674,6 +677,8 @@ namespace HandfulOfBreads.Views
 
                 LoadPalette(_currentPaletteName);
             };
+
+            _viewModel.ResetSelectedColor();
 
             await this.ShowPopupAsync(popup);
         }

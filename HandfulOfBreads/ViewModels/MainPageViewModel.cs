@@ -141,6 +141,11 @@ namespace HandfulOfBreads.ViewModels
             CurrentPattern.SelectedColor = color;
         }
 
+        public void ResetSelectedColor()
+        {
+            SelectedColor = Colors.Transparent;
+            CurrentPattern.SelectedColor = Colors.Transparent;
+        }
 
 
         [RelayCommand]
