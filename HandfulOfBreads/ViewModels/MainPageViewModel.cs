@@ -2,6 +2,7 @@
 using CommunityToolkit.Mvvm.Input;
 using HandfulOfBreads.Graphics.DrawablePatterns;
 using HandfulOfBreads.Models;
+using HandfulOfBreads.Resources.Localization;
 using HandfulOfBreads.Services;
 using HandfulOfBreads.Services.Interfaces;
 using HandfulOfBreads.Views;
@@ -125,9 +126,16 @@ namespace HandfulOfBreads.ViewModels
         [RelayCommand]
         private async Task Clear()
         {
-            CurrentPattern.InitializeGrid(_rows, _columns, PixelSize, _image);
+            bool answer = await Application.Current.MainPage.DisplayAlert(
+        AppResources.Confirmation,
+        AppResources.ConfirmClearMessage,
+        AppResources.Yes, AppResources.Cancel );
 
-            RequestInvalidate?.Invoke();
+            if (answer)
+            {
+                CurrentPattern.InitializeGrid(_rows, _columns, PixelSize, _image);
+                RequestInvalidate?.Invoke();
+            }
         }
 
         [RelayCommand]  

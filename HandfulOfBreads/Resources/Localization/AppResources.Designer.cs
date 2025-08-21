@@ -79,6 +79,24 @@ namespace HandfulOfBreads.Resources.Localization {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Confirmation.
+        /// </summary>
+        internal static string Confirmation {
+            get {
+                return ResourceManager.GetString("Confirmation", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Do you really want to clear the grid? All changes will be lost..
+        /// </summary>
+        internal static string ConfirmClearMessage {
+            get {
+                return ResourceManager.GetString("ConfirmClearMessage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Convert a photo.
         /// </summary>
         internal static string ConvertAPhoto {
@@ -192,6 +210,15 @@ namespace HandfulOfBreads.Resources.Localization {
         internal static string SwitchLanguageButton {
             get {
                 return ResourceManager.GetString("SwitchLanguageButton", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Yes.
+        /// </summary>
+        internal static string Yes {
+            get {
+                return ResourceManager.GetString("Yes", resourceCulture);
             }
         }
     }

@@ -142,7 +142,7 @@
     <value>Галерея</value>
   </data>
   <data name="Cancel" xml:space="preserve">
-    <value>Відмінити</value>
+    <value>Скасувати</value>
   </data>
   <data name="Open" xml:space="preserve">
     <value>Відкрити</value>
@@ -161,5 +161,14 @@
   </data>
   <data name="Clear" xml:space="preserve">
     <value>Очистити</value>
+  </data>
+  <data name="Confirmation" xml:space="preserve">
+    <value>Підтвердження</value>
+  </data>
+  <data name="Yes" xml:space="preserve">
+    <value>Так</value>
+  </data>
+  <data name="ConfirmClearMessage" xml:space="preserve">
+    <value>Ви дійсно хочете очистити сітку? Всі зміни буде втрачено.</value>
   </data>
 </root>

@@ -162,4 +162,13 @@
   <data name="Clear" xml:space="preserve">
     <value>Clear</value>
   </data>
+  <data name="Confirmation" xml:space="preserve">
+    <value>Confirmation</value>
+  </data>
+  <data name="Yes" xml:space="preserve">
+    <value>Yes</value>
+  </data>
+  <data name="ConfirmClearMessage" xml:space="preserve">
+    <value>Do you really want to clear the grid? All changes will be lost.</value>
+  </data>
 </root>
