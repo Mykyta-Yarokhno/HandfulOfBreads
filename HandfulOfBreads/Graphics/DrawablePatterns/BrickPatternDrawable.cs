@@ -252,6 +252,11 @@ namespace HandfulOfBreads.Graphics.DrawablePatterns
         {
             throw new NotImplementedException();
         }
+
+        public void FloodFill(int startRow, int startCol, Color newColor)
+        {
+            throw new NotImplementedException();
+        }
     }
 }
 

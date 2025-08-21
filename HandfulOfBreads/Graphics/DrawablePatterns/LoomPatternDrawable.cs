@@ -390,9 +390,8 @@ namespace HandfulOfBreads.Graphics.DrawablePatterns
                 }
             }
 
-            // Скидаємо стан вставки
             ResetPasteState();
-            _backupBeforeCut.Clear(); // Очищаємо бекап після успішної вставки
+            _backupBeforeCut.Clear();
         }
 
         public void CancelPaste()
@@ -436,6 +435,49 @@ namespace HandfulOfBreads.Graphics.DrawablePatterns
             }
         }
 
+        public void FloodFill(int startRow, int startCol, Color newColor)
+        {
+            if (startRow < 0 || startRow >= _rows || startCol < 0 || startCol >= _columns)
+                return;
+
+            Color targetColor = _grid[startRow][startCol];
+            if (ColorsEqual(targetColor, newColor)) return;
+
+            var visited = new bool[_rows, _columns];
+            var queue = new Queue<(int row, int col)>();
+            queue.Enqueue((startRow, startCol));
+
+            while (queue.Count > 0)
+            {
+                var (row, col) = queue.Dequeue();
+
+                if (row < 0 || row >= _rows || col < 0 || col >= _columns)
+                    continue;
+
+                if (visited[row, col])
+                    continue;
+
+                if (!ColorsEqual(_grid[row][col], targetColor))
+                    continue;
+
+                _grid[row][col] = newColor;
+                visited[row, col] = true;
+
+                queue.Enqueue((row - 1, col));
+                queue.Enqueue((row + 1, col));
+                queue.Enqueue((row, col - 1));
+                queue.Enqueue((row, col + 1));
+            }
+        }
+
+        private bool ColorsEqual(Color a, Color b)
+        {
+            return Math.Abs(a.Red - b.Red) < 0.001 &&
+               Math.Abs(a.Green - b.Green) < 0.001 &&
+               Math.Abs(a.Blue - b.Blue) < 0.001 &&
+               Math.Abs(a.Alpha - b.Alpha) < 0.001;
+        }
+
         public void ReplaceColor(Color oldColor, Color newColor)
         {
             for (int row = 0; row < _rows; row++)
@@ -466,8 +508,6 @@ namespace HandfulOfBreads.Graphics.DrawablePatterns
             {
                 _grid[row][col] = _selectedColor;
 
-                //
-
                 var currentUsed = ColorPaletteBitmapCache.GetPaletteColors("Used Сolours");
 
                 string hex = MyToHex(_selectedColor);
@@ -478,7 +518,6 @@ namespace HandfulOfBreads.Graphics.DrawablePatterns
                     currentUsed.Add(new ColorItemViewModel(model));
                     ColorPaletteBitmapCache.UpdateUsedColors(currentUsed);
                 }
-                //
             }
         }
 

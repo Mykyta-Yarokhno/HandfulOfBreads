@@ -270,6 +270,7 @@ namespace HandfulOfBreads.Views
         private bool _isErasing = false;
         private bool _isPipetting = false;
         private bool _isReplacingColour = false;
+        private bool _isFilling = false;
 
         private float _initialDistance;
         private double _initialScale;
@@ -429,57 +430,60 @@ namespace HandfulOfBreads.Views
             if (_isErasing)
                 _viewModel.CurrentPattern.EraseAt(_onePoint.X, _onePoint.Y);
 
+            var cell = GetCellFromTouchPoint(_onePoint);
+
+            if (!cell.HasValue)
+                return;
+
             if (_isPipetting)
             {
-                var cell = GetCellFromTouchPoint(_onePoint);
-                if (cell.HasValue)
+
+                var pickedColor = _viewModel.CurrentPattern.GetColorAt(cell.Value.row, cell.Value.col);
+
+                foreach (var c in _paletteDrawable.Colors)
+                    c.IsSelected = false;
+
+                var target = _paletteDrawable.Colors
+                    .FirstOrDefault(c => c.HexColor.Equals(pickedColor.ToHex(), StringComparison.OrdinalIgnoreCase));
+
+                if (target != null)
+                    target.IsSelected = true;
+
+                _viewModel.SelectedColor = pickedColor;
+                _viewModel.CurrentPattern.SelectedColor = pickedColor;
+
+                PaletteCanvasView.InvalidateSurface();
+
+                if (target != null)
                 {
-                    var pickedColor = _viewModel.CurrentPattern.GetColorAt(cell.Value.row, cell.Value.col);
+                    int index = _paletteDrawable.Colors.IndexOf(target);
 
-                    foreach (var c in _paletteDrawable.Colors)
-                        c.IsSelected = false;
+                    int margin = 5;
+                    int col = index % _paletteDrawable.Columns;
+                    int row = index / _paletteDrawable.Columns;
 
-                    var target = _paletteDrawable.Colors
-                        .FirstOrDefault(c => c.HexColor.Equals(pickedColor.ToHex(), StringComparison.OrdinalIgnoreCase));
+                    double scrollY = row * (_paletteDrawable.CellSize + margin);
 
-                    if (target != null)
-                        target.IsSelected = true;
-
-                    _viewModel.SelectedColor = pickedColor;
-                    _viewModel.CurrentPattern.SelectedColor = pickedColor;
-
-                    PaletteCanvasView.InvalidateSurface();
-
-                    if (target != null)
+                    MainThread.BeginInvokeOnMainThread(async () =>
                     {
-                        int index = _paletteDrawable.Colors.IndexOf(target);
-
-                        int margin = 5;
-                        int col = index % _paletteDrawable.Columns;
-                        int row = index / _paletteDrawable.Columns;
-
-                        double scrollY = row * (_paletteDrawable.CellSize + margin);
-
-                        MainThread.BeginInvokeOnMainThread(async () =>
-                        {
-                            await PaletteScrollView.ScrollToAsync(0, scrollY, true);
-                        });
-                    }
+                        await PaletteScrollView.ScrollToAsync(0, scrollY, true);
+                    });
                 }
             }
 
             if (_isReplacingColour)
             {
-                var cell = GetCellFromTouchPoint(_onePoint);
-
-                if (!cell.HasValue)
-                    return;
-
                 var oldColor = _viewModel.CurrentPattern.GetColorAt(cell.Value.row, cell.Value.col);
                 var newColor = _viewModel.SelectedColor;
 
                 _viewModel.CurrentPattern.ReplaceColor(oldColor, newColor);
 
+                PixelGraphicsView.Invalidate();
+            }
+
+            if (_isFilling)
+            {
+                _viewModel.CurrentPattern.FloodFill(cell.Value.row, cell.Value.col, _viewModel.SelectedColor);
                 PixelGraphicsView.Invalidate();
             }
 
@@ -530,7 +534,8 @@ namespace HandfulOfBreads.Views
             Selecting,
             Erasing,
             Pipetting,
-            ReplacingColour
+            ReplacingColour,
+            Filling
         }
 
         private Button? _brushButton;
@@ -538,6 +543,7 @@ namespace HandfulOfBreads.Views
         private Button? _eraseButton;
         private Button? _pipetteButton;
         private Button? _replaceColourButton;
+        private Button? _fillButton;
 
         private ToolMode _currentMode = ToolMode.None;
 
@@ -558,12 +564,14 @@ namespace HandfulOfBreads.Views
             _isErasing = _currentMode == ToolMode.Erasing;
             _isPipetting = _currentMode == ToolMode.Pipetting;
             _isReplacingColour = _currentMode == ToolMode.ReplacingColour;
+            _isFilling = _currentMode == ToolMode.Filling;
 
             _brushButton?.SetValue(BackgroundColorProperty, Color.FromArgb("#98694d"));
             _selectButton?.SetValue(BackgroundColorProperty, Color.FromArgb("#98694d"));
             _eraseButton?.SetValue(BackgroundColorProperty, Color.FromArgb("#98694d"));
             _pipetteButton?.SetValue(BackgroundColorProperty, Color.FromArgb("#98694d"));
             _replaceColourButton?.SetValue(BackgroundColorProperty, Color.FromArgb("#98694d"));
+            _fillButton?.SetValue(BackgroundColorProperty, Color.FromArgb("#98694d"));
 
             if (_currentMode != ToolMode.None && clickedButton != null)
             {
@@ -587,6 +595,15 @@ namespace HandfulOfBreads.Views
                 }
 
                 UpdateUIState();
+            }
+        }
+
+        private void OnFillButtonClicked(object sender, EventArgs e)
+        {
+            if (sender is Button button)
+            {
+                _fillButton = button;
+                SetMode(ToolMode.Filling, button);
             }
         }
 
