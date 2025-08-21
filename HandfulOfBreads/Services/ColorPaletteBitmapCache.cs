@@ -30,12 +30,13 @@ public static class ColorPaletteBitmapCache
     public static List<ColorItem> GetAllPalettesColors()
     {
         return _allPalettes
-            .SelectMany(p => p.Value) 
-            .GroupBy(c => c.HexColor, StringComparer.OrdinalIgnoreCase) 
+            .SelectMany(p => p.Value)
+            .GroupBy(c => c.Code, StringComparer.OrdinalIgnoreCase)
             .Select(g => new ColorItem
             {
-                Code = g.First().Code,
-                HexColor = g.Key
+                Code = g.Key,
+                HexColor = g.First().HexColor,
+                Sign = g.First().Sign
             })
             .ToList();
     }
@@ -44,12 +45,12 @@ public static class ColorPaletteBitmapCache
     public static void UpdateUsedColors(IEnumerable<ColorItemViewModel> usedColors)
     {
         _usedColors = usedColors
-            .GroupBy(c => c.Code)
+            .GroupBy(c => c.Code, StringComparer.OrdinalIgnoreCase)
             .Select(g => g.First())
             .ToList();
 
-        _allPalettes["Used Сolours"] = _usedColors;
-        _paletteBitmaps["Used Сolours"] = GeneratePaletteBitmap(_usedColors);
+        _allPalettes["Used Colours"] = _usedColors;
+        _paletteBitmaps["Used Colours"] = GeneratePaletteBitmap(_usedColors);
     }
 
     public static PaletteBitmap? GetPaletteBitmap(string paletteName)

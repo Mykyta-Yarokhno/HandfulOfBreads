@@ -14,7 +14,7 @@ public partial class ChoosePalettePopup : Popup
         {
             "Preciosa Rocialles",
             "ass we can",
-            "Used Ñolours"
+            "Used Colours"
         };
 
         foreach (var name in paletteNames)

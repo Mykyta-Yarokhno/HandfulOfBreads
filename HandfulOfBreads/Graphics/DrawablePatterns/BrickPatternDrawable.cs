@@ -237,6 +237,11 @@ namespace HandfulOfBreads.Graphics.DrawablePatterns
         {
             throw new NotImplementedException();
         }
+
+        public List<List<Color>> GetCurrentGrid()
+        {
+            throw new NotImplementedException();
+        }
     }
 }
 

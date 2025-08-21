@@ -435,6 +435,11 @@ namespace HandfulOfBreads.Graphics.DrawablePatterns
                 _grid[row][col] = Colors.Transparent;
             }
         }
+
+        public List<List<Color>> GetCurrentGrid()
+        {
+            return _grid.Select(row => new List<Color>(row)).ToList();
+        }
         public void TogglePixel(float x, float y)
         {
             int col = (int)(x / _pixelSize);

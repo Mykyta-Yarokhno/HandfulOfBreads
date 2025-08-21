@@ -11,6 +11,7 @@ using SkiaSharp.Views.Maui;
 using SkiaSharp;
 using HandfulOfBreads.Graphics.DrawablePatterns;
 using HandfulOfBreads.Models;
+using Microsoft.Maui.Controls.Compatibility;
 
 namespace HandfulOfBreads.Views
 {
@@ -72,11 +73,12 @@ namespace HandfulOfBreads.Views
 
             LoadPalette("Preciosa Rocialles");
 
-            if (grid != null)
-            {
-                var usedColors = GetUsedColorsFromGrid(grid);
-                ColorPaletteBitmapCache.UpdateUsedColors(usedColors);
-            }
+            //if (grid != null)
+            //{
+            //    var allGridColors = grid.SelectMany(row => row);
+            //    var usedColors = GetUsedColors(allGridColors);
+            //    ColorPaletteBitmapCache.UpdateUsedColors(usedColors);
+            //}
         }
 
         protected override void OnAppearing()
@@ -121,7 +123,7 @@ namespace HandfulOfBreads.Views
             }
             if (canvasWidth <= 0)
             {
-                canvasWidth = 300; // fallback
+                canvasWidth = 300;
             }
 
             var bitmap = ColorPaletteBitmapCache.GeneratePaletteBitmap(
@@ -626,7 +628,6 @@ namespace HandfulOfBreads.Views
         }
         #endregion
 
-        //private string _currentPaletteName = "Preciosa Rocialles";
         private async void OnPaletteButtonClicked(object sender, EventArgs e)
         {
             string currentPalette = _currentPaletteName;
@@ -635,12 +636,16 @@ namespace HandfulOfBreads.Views
             popup.PaletteSelected += (selectedPalette) =>
             {
                 _currentPaletteName = selectedPalette;
-
-                if (_currentPaletteName == "Used colours")
+                /////////////////////////////////////////
+                if (_currentPaletteName == "Used Colours")
                 {
-                    var colorsFromCanvas = GetUsedColorsFromCanvas();
-
-                    ColorPaletteBitmapCache.UpdateUsedColors(colorsFromCanvas);
+                    var currentGrid = _viewModel.CurrentPattern.GetCurrentGrid();
+                    if (currentGrid != null)
+                    {
+                        var allGridColors = currentGrid.SelectMany(row => row);
+                        var usedColors = GetUsedColors(allGridColors);
+                        ColorPaletteBitmapCache.UpdateUsedColors(usedColors);
+                    }
                 }
 
                 LoadPalette(_currentPaletteName);
@@ -649,65 +654,24 @@ namespace HandfulOfBreads.Views
             await this.ShowPopupAsync(popup);
         }
 
-
-        private LoomPatternDrawable _loomPatternDrawable;
-        //
-        private List<ColorItemViewModel> GetUsedColorsFromCanvas(List<List<Color>>? grid = null)
+        private List<ColorItemViewModel> GetUsedColors(IEnumerable<Color> colors)
         {
             var usedColors = new List<ColorItemViewModel>();
             var allKnownColors = ColorPaletteBitmapCache.GetAllPalettesColors();
 
-            int rows = grid?.Count ?? _loomPatternDrawable.Rows;
-            int cols = grid != null && grid.Count > 0 ? grid[0].Count : _loomPatternDrawable.Columns;
-
-            for (int row = 0; row < rows; row++)
+            foreach (var color in colors)
             {
-                for (int col = 0; col < cols; col++)
+                if (color.Alpha == 0)
+                    continue;
+
+                string hex = ColorToHex(color);
+
+                var existingColor = allKnownColors
+                    .First(c => c.HexColor.Equals(hex, StringComparison.OrdinalIgnoreCase));
+
+                if (!usedColors.Any(c => c.Code == existingColor.Code))
                 {
-                    var color = grid != null ? grid[row][col] : _loomPatternDrawable.GetColorAt(row, col);
-
-                    if (color != Colors.Transparent)
-                    {
-                        string hex = _loomPatternDrawable.MyToHex(color);
-
-                        if (!usedColors.Any(c => c.HexColor.Equals(hex, StringComparison.OrdinalIgnoreCase)))
-                        {
-                            var existingColor = allKnownColors.FirstOrDefault(c =>
-                                c.HexColor.Equals(hex, StringComparison.OrdinalIgnoreCase));
-
-                            var model = existingColor ?? new ColorItem { Code = hex, HexColor = hex };
-                            usedColors.Add(new ColorItemViewModel(model));
-                        }
-                    }
-                }
-            }
-
-            return usedColors;
-        }
-
-        private List<ColorItemViewModel> GetUsedColorsFromGrid(List<List<Color>> grid)
-        {
-            var usedColors = new List<ColorItemViewModel>();
-            var allKnownColors = ColorPaletteBitmapCache.GetAllPalettesColors();
-
-            foreach (var row in grid)
-            {
-                foreach (var color in row)
-                {
-                    if (color.Alpha == 0) 
-                        continue;
-
-                    string hex = ColorToHex(color);
-
-                    if (!usedColors.Any(c =>
-                        c.HexColor.Equals(hex, StringComparison.OrdinalIgnoreCase)))
-                    {
-                        var existingColor = allKnownColors.FirstOrDefault(c =>
-                            c.HexColor.Equals(hex, StringComparison.OrdinalIgnoreCase));
-
-                        var model = existingColor ?? new ColorItem { Code = hex, HexColor = hex };
-                        usedColors.Add(new ColorItemViewModel(model));
-                    }
+                    usedColors.Add(new ColorItemViewModel(existingColor));
                 }
             }
 
@@ -717,22 +681,6 @@ namespace HandfulOfBreads.Views
         private string ColorToHex(Color color)
         {
             return $"#{(int)(color.Red * 255):X2}{(int)(color.Green * 255):X2}{(int)(color.Blue * 255):X2}";
-        }
-
-        private void EnsureUsedColoursUpToDate()
-        {
-            var cached = ColorPaletteBitmapCache.GetPaletteColors("Used Colours")
-                         ?? new List<ColorItemViewModel>();
-
-            var fromCanvas = GetUsedColorsFromCanvas();
-
-            var merged = cached
-                .Concat(fromCanvas)
-                .GroupBy(c => c.HexColor, StringComparer.OrdinalIgnoreCase)
-                .Select(g => g.First())
-                .ToList();
-
-            ColorPaletteBitmapCache.UpdateUsedColors(merged);
         }
         //
         private async void OnSearchButtonClicked(object sender, EventArgs e)
