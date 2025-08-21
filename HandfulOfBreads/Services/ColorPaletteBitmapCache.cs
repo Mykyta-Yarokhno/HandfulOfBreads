@@ -6,6 +6,7 @@ using System.Linq;
 using Microsoft.Maui.Controls;
 using HandfulOfBreads.ViewModels;
 using HandfulOfBreads.Models;
+using HandfulOfBreads.Constants;
 
 public static class ColorPaletteBitmapCache
 {
@@ -49,15 +50,15 @@ public static class ColorPaletteBitmapCache
             .Select(g => g.First())
             .ToList();
 
-        _allPalettes["Used Colours"] = _usedColors;
-        _paletteBitmaps["Used Colours"] = GeneratePaletteBitmap(_usedColors);
+        _allPalettes[PaletteNames.UsedColors] = _usedColors;
+        _paletteBitmaps[PaletteNames.UsedColors] = GeneratePaletteBitmap(_usedColors);
     }
 
     public static PaletteBitmap? GetPaletteBitmap(string paletteName)
     {
-        if (paletteName == "Used Сolours")
+        if (paletteName == PaletteNames.UsedColors)
         {
-            _paletteBitmaps["Used Сolours"] = GeneratePaletteBitmap(_usedColors);
+            _paletteBitmaps[PaletteNames.UsedColors] = GeneratePaletteBitmap(_usedColors);
         }
 
         return _paletteBitmaps.TryGetValue(paletteName, out var bitmap) ? bitmap : null;

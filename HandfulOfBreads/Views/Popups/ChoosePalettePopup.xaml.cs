@@ -1,4 +1,5 @@
 using CommunityToolkit.Maui.Views;
+using HandfulOfBreads.Constants;
 
 namespace HandfulOfBreads.Views.Popups;
 
@@ -14,7 +15,7 @@ public partial class ChoosePalettePopup : Popup
         {
             "Preciosa Rocialles",
             "ass we can",
-            "Used Colours"
+            PaletteNames.UsedColors
         };
 
         foreach (var name in paletteNames)

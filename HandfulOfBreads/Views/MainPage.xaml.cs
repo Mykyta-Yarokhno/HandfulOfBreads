@@ -12,6 +12,7 @@ using SkiaSharp;
 using HandfulOfBreads.Graphics.DrawablePatterns;
 using HandfulOfBreads.Models;
 using Microsoft.Maui.Controls.Compatibility;
+using HandfulOfBreads.Constants;
 
 namespace HandfulOfBreads.Views
 {
@@ -72,13 +73,6 @@ namespace HandfulOfBreads.Views
             AppLogger.Info("InitializeAllPalettes");
 
             LoadPalette("Preciosa Rocialles");
-
-            //if (grid != null)
-            //{
-            //    var allGridColors = grid.SelectMany(row => row);
-            //    var usedColors = GetUsedColors(allGridColors);
-            //    ColorPaletteBitmapCache.UpdateUsedColors(usedColors);
-            //}
         }
 
         protected override void OnAppearing()
@@ -436,28 +430,6 @@ namespace HandfulOfBreads.Views
 
         #region Buttons Interaction 
 
-        private Button _brushButton;
-
-        private void OnStartDrawingClicked(object sender, EventArgs e)
-        {
-            if (_isSelecting)
-                return;
-            if (_isErasing)
-                return;
-
-            _isDrawing = !_isDrawing;
-
-            if (sender is Button button)
-            {
-                _brushButton = button;
-
-                _brushButton.BackgroundColor = _isDrawing
-                    ? Color.FromArgb("#553d3a")
-                    : Color.FromArgb("#98694d");
-            }
-                
-        }
-
         private void OnZoomChanged(object sender, EventArgs e)
         {
             if (sender is not Button button)
@@ -491,38 +463,90 @@ namespace HandfulOfBreads.Views
             //Dispatcher.Dispatch(() => CanvasScroll.ScrollToAsync(PixelCanvas, ScrollToPosition.Center, false));
         }
 
-        private Button _selectButton;
-
-        private void OnSelectClicked(object sender, EventArgs e)
+        public enum ToolMode
         {
-            if (_isDrawing)
-            {
-                _isDrawing = false;
-                _brushButton.BackgroundColor = Color.FromArgb("#98694d");
-            }
+            None,
+            Drawing,
+            Selecting,
+            Erasing
+        }
 
-            if (sender is Button button)
-                _selectButton = button;
+        private Button? _brushButton;
+        private Button? _selectButton;
+        private Button? _eraseButton;
 
-            if (_viewModel.CurrentPattern.IsPasting)
+        private ToolMode _currentMode = ToolMode.None;
+
+        private void SetMode(ToolMode mode, Button? clickedButton = null)
+        {
+
+            if (_currentMode == mode)
             {
-                _viewModel.CurrentPattern.CancelPaste();
-                _viewModel.CurrentPattern.UpdateSelectionCells(null, null);
-                _isMovingPastePreview = false;
-                _isSelecting = false;
+                _currentMode = ToolMode.None;
             }
             else
             {
-                _isSelecting = !_isSelecting;
+                _currentMode = mode;
+            }
 
-                if (!_isSelecting)
+            _isDrawing = _currentMode == ToolMode.Drawing;
+            _isSelecting = _currentMode == ToolMode.Selecting;
+            _isErasing = _currentMode == ToolMode.Erasing;
+
+            _brushButton?.SetValue(BackgroundColorProperty, Color.FromArgb("#98694d"));
+            _selectButton?.SetValue(BackgroundColorProperty, Color.FromArgb("#98694d"));
+            _eraseButton?.SetValue(BackgroundColorProperty, Color.FromArgb("#98694d"));
+
+            if (_currentMode != ToolMode.None && clickedButton != null)
+            {
+                clickedButton.BackgroundColor = Color.FromArgb("#553d3a");
+            }
+
+            if (mode == ToolMode.Selecting)
+            {
+                if (_viewModel.CurrentPattern.IsPasting)
+                {
+                    _viewModel.CurrentPattern.CancelPaste();
+                    _viewModel.CurrentPattern.UpdateSelectionCells(null, null);
+                    _isMovingPastePreview = false;
+                    _isSelecting = false;
+                    _currentMode = ToolMode.None;
+                }
+                else if (!_isSelecting)
                 {
                     _viewModel.CurrentPattern.UpdateSelectionCells(null, null);
                     _isMovingPastePreview = false;
                 }
-            }
 
-            UpdateUIState();
+                UpdateUIState();
+            }
+        }
+
+        private void OnStartDrawingClicked(object sender, EventArgs e)
+        {
+            if (sender is Button button)
+            {
+                _brushButton = button;
+                SetMode(ToolMode.Drawing, button);
+            }
+        }
+
+        private void OnSelectClicked(object sender, EventArgs e)
+        {
+            if (sender is Button button)
+            {
+                _selectButton = button;
+                SetMode(ToolMode.Selecting, button);
+            }
+        }
+
+        private void OnEraserButtonClicked(object sender, EventArgs e)
+        {
+            if (sender is Button button)
+            {
+                _eraseButton = button;
+                SetMode(ToolMode.Erasing, button);
+            }
         }
 
 
@@ -636,8 +660,8 @@ namespace HandfulOfBreads.Views
             popup.PaletteSelected += (selectedPalette) =>
             {
                 _currentPaletteName = selectedPalette;
-                /////////////////////////////////////////
-                if (_currentPaletteName == "Used Colours")
+
+                if (_currentPaletteName == PaletteNames.UsedColors)
                 {
                     var currentGrid = _viewModel.CurrentPattern.GetCurrentGrid();
                     if (currentGrid != null)
@@ -682,7 +706,7 @@ namespace HandfulOfBreads.Views
         {
             return $"#{(int)(color.Red * 255):X2}{(int)(color.Green * 255):X2}{(int)(color.Blue * 255):X2}";
         }
-        //
+
         private async void OnSearchButtonClicked(object sender, EventArgs e)
         {
             var currentPaletteColors = ColorPaletteViewCache.GetPaletteColors(_currentPaletteName);
@@ -704,30 +728,5 @@ namespace HandfulOfBreads.Views
             await Application.Current.MainPage.ShowPopupAsync(popup);
 
         }
-
-        private Button _eraseButton;
-        ///
-        private async void OnEraserButtonClicked(object sender, EventArgs e)
-        {
-
-            if (_isSelecting)
-                return;
-            else if (_isDrawing)
-                return;
-
-            _isErasing = !_isErasing;
-
-            if (sender is Button button)
-            {
-                _eraseButton = button;
-
-                _eraseButton.BackgroundColor = _isErasing
-                    ? Color.FromArgb("#553d3a")
-                    : Color.FromArgb("#98694d");
-            }
-
-        }
-        ///
-
     }
 }
