@@ -108,8 +108,8 @@
                                 <Button Text="-" Style="{StaticResource MainButton}" Clicked="OnZoomChanged" />
                                 <Button Text="M" Style="{StaticResource MainButton}" Clicked="OnMinimum" />
                                 <Button Text="C" Style="{StaticResource MainButton}" Clicked="OnCenter" />
-                                <Button Text="⬚" FontSize="30" Padding="0" Style="{StaticResource MainButton}" Clicked="OnSelectClicked" />
-                                <Button Text="B" Style="{StaticResource MainButton}" Clicked="OnStartDrawingClicked" />
+                            <Button Text="⬚" FontSize="30" Padding="0" Style="{StaticResource MainButton}" Clicked="OnSelectClicked" />
+                            <Button Text="B" Style="{StaticResource MainButton}" Clicked="OnStartDrawingClicked" />
                             </StackLayout>
                         </ScrollView>
 
@@ -142,6 +142,12 @@
                     <VerticalStackLayout x:Name="CutCopyButtonsContainer" IsVisible="False" Spacing="10">
                         <Button Text="Cut" Style="{StaticResource MainButton}" Clicked="OnCutClicked"/>
                         <Button Text="Copy" Style="{StaticResource MainButton}" Clicked="OnCopyClicked"/>
+                    </VerticalStackLayout>
+
+                    <VerticalStackLayout x:Name="FlipRotateButtonsContainer" IsVisible="False" Spacing="10">
+                        <Button Text="Flip H" Style="{StaticResource MainButton}" Clicked="OnFlipHorizontalClicked"/>
+                        <Button Text="Flip V" Style="{StaticResource MainButton}" Clicked="OnFlipVerticalClicked"/>
+                        <Button Text="Rotate 90" Style="{StaticResource MainButton}" Clicked="OnRotate90Clicked"/>
                     </VerticalStackLayout>
 
                     <VerticalStackLayout x:Name="CancelDoneButtonsContainer" IsVisible="False" Spacing="10">

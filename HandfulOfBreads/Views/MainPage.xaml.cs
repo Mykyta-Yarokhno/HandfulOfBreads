@@ -9,7 +9,6 @@ using HandfulOfBreads.ViewModels;
 using HandfulOfBreads.Views.Popups;
 using Microsoft.Maui.Controls;
 using Microsoft.Maui.Controls.Compatibility;
-using Microsoft.Maui.Controls.PlatformConfiguration.iOSSpecific;
 using Microsoft.Maui.Graphics;
 using SkiaSharp;
 using SkiaSharp.Views.Maui;
@@ -625,6 +624,24 @@ namespace HandfulOfBreads.Views
             }
         }
 
+        private void OnFlipHorizontalClicked(object sender, EventArgs e)
+        {
+            _viewModel.CurrentPattern.FlipHorizontal();
+            UpdateUIState();
+        }
+
+        private void OnFlipVerticalClicked(object sender, EventArgs e)
+        {
+            _viewModel.CurrentPattern.FlipVertical();
+            UpdateUIState();
+        }
+
+        private void OnRotate90Clicked(object sender, EventArgs e)
+        {
+            _viewModel.CurrentPattern.Rotate90Degrees();
+            UpdateUIState();
+        }
+
         private void OnSelectClicked(object sender, EventArgs e)
         {
             if (sender is Button button)
@@ -660,9 +677,9 @@ namespace HandfulOfBreads.Views
             {
                 _isSelecting = false;
                 _isMovingPastePreview = true;
+                // Новое:
+                UpdateUIState();
             }
-
-            UpdateUIState();
         }
 
         private void OnCutClicked(object sender, EventArgs e)
@@ -673,9 +690,9 @@ namespace HandfulOfBreads.Views
             {
                 _isSelecting = false;
                 _isMovingPastePreview = true;
+                // Новое:
+                UpdateUIState();
             }
-
-            UpdateUIState();
         }
 
         private void OnDoneClicked(object sender, EventArgs e)
@@ -698,8 +715,14 @@ namespace HandfulOfBreads.Views
 
         private void UpdateUIState()
         {
+            // Кнопки "Cut" и "Copy" видны только в режиме выделения и когда нет вставки.
             CutCopyButtonsContainer.IsVisible = _isSelecting && !_viewModel.CurrentPattern.IsPasting;
+
+            // Кнопки "Done" и "Cancel" видны только в режиме вставки.
             CancelDoneButtonsContainer.IsVisible = _viewModel.CurrentPattern.IsPasting;
+
+            // НОВОЕ: Кнопки "Flip" и "Rotate" видны только в режиме вставки.
+            FlipRotateButtonsContainer.IsVisible = _viewModel.CurrentPattern.IsPasting;
 
             if (_selectButton != null)
             {
@@ -813,24 +836,28 @@ namespace HandfulOfBreads.Views
 
         private async void OnSearchButtonClicked(object sender, EventArgs e)
         {
-            var currentPaletteColors = ColorPaletteViewCache.GetPaletteColors(_currentPaletteName);
-            if (currentPaletteColors is null)
+            if (string.IsNullOrEmpty(_currentPaletteName))
+                return;
+
+            var currentPaletteColors = ColorPaletteBitmapCache.GetPaletteColors(_currentPaletteName);
+
+            if (currentPaletteColors == null || currentPaletteColors.Count == 0)
                 return;
 
             var popup = new SearchColorPopup(currentPaletteColors);
 
-            popup.ColorSelected += async selectedColor =>
+            popup.ColorSelected += selectedColor =>
             {
                 foreach (var c in currentPaletteColors)
                     c.IsSelected = false;
 
                 selectedColor.IsSelected = true;
-
                 _viewModel.SelectColorCommand.Execute(selectedColor);
+
+                PaletteCanvasView?.InvalidateSurface();
             };
 
-            //await Application.Current.MainPage.ShowPopupAsync(popup);
-
+            await Application.Current.MainPage.ShowPopupAsync(popup);
         }
     }
 }

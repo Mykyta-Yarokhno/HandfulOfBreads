@@ -257,6 +257,21 @@ namespace HandfulOfBreads.Graphics.DrawablePatterns
         {
             throw new NotImplementedException();
         }
+
+        public void FlipVertical()
+        {
+            throw new NotImplementedException();
+        }
+
+        public void FlipHorizontal()
+        {
+            throw new NotImplementedException();
+        }
+
+        public void Rotate90Degrees()
+        {
+            throw new NotImplementedException();
+        }
     }
 }
 

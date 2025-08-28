@@ -14,6 +14,10 @@ namespace HandfulOfBreads.Graphics.DrawablePatterns
         void EraseAt(float x, float y);
         void FloodFill(int startRow, int startCol, Color newColor);
 
+        public void FlipVertical();
+        void FlipHorizontal();
+        public void Rotate90Degrees();
+
         public void ReplaceColor(Color oldColor, Color newColor);
         public List<List<Color>> GetCurrentGrid();
         void TogglePixel(float x, float y);
