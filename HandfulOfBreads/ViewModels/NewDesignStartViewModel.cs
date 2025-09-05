@@ -103,7 +103,15 @@ namespace HandfulOfBreads.ViewModels
             int columns = int.Parse(Columns);
             int rows = int.Parse(Rows);
 
-            await Application.Current.MainPage.Navigation.PushAsync(new MainPage(columns, rows, SelectedPattern));
+                    var navigationParameters = new Dictionary<string, object>
+            {
+                { "Columns", columns },
+                { "Rows", rows },
+                { "SelectedPattern", SelectedPattern }
+            };
+
+            // Navigate using the Shell and pass the parameters.
+            await Shell.Current.GoToAsync(nameof(MainPage), navigationParameters);
         }
 
         private async Task OnOpenExisting()
@@ -126,7 +134,17 @@ namespace HandfulOfBreads.ViewModels
                 }
 
                 var (name, rows, columns, pixelSize, grid) = await _imageLoadingService.LoadGridFromFileAsync(filePath);
-                await Application.Current.MainPage.Navigation.PushModalAsync(new MainPage(columns, rows, name, grid));
+
+                var navigationParameters = new Dictionary<string, object>
+                {
+                    { "Columns", columns },
+                    { "Rows", rows },
+                    { "SelectedPattern", name },
+                    { "Grid", grid }
+                };
+
+                // Navigate using the Shell and pass the parameters.
+                await Shell.Current.GoToAsync(nameof(MainPage), navigationParameters);
             }
             catch (Exception ex)
             {

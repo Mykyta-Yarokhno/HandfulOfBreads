@@ -23,25 +23,65 @@ public partial class PatternPreviewPopup : Popup
         PreviewImage.Source = ImageSource.FromFile(filePath);
 
         _imageLoadingService = imageLoadingService;
+
+        Opened += OnPopupOpened;
     }
+
+    private async void OnPopupOpened(object? sender, EventArgs e)
+    {
+        if (PopupFrame != null)
+        {
+            await PopupFrame.TranslateTo(0, 0, 400, Easing.CubicOut);
+        }
+    }
+
+    private void OnTappedOutside(object? sender, TappedEventArgs e)
+    {
+        var tapLocation = e.GetPosition(TapHandlerLayout);
+
+        if (tapLocation.HasValue && !PopupFrame.Bounds.Contains(tapLocation.Value.X, tapLocation.Value.Y))
+        {
+            CloseWithAnimation();
+        }
+    }
+
+    private async void CloseWithAnimation(object? result = null)
+    {
+        if (PopupFrame != null)
+        {
+            await PopupFrame.TranslateTo(0, PopupFrame.Height, 250, Easing.CubicIn);
+        }
+
+        Close(result);
+    }
+
 
     private void OnCancelClicked(object sender, EventArgs e)
     {
-        this.Close();
+        CloseWithAnimation();
     }
 
     private async void OnOpenClicked(object sender, EventArgs e)
     {
         try
         {
-            var (name, rows, columns, pixelSize, grid) = await _imageLoadingService.LoadGridFromFileAsync(_filePath);
             this.Close();
 
-            await Application.Current.MainPage.Navigation.PushAsync(new MainPage(columns, rows, name, grid));
+            var (name, rows, columns, _, grid) = await _imageLoadingService.LoadGridFromFileAsync(_filePath);
+
+            var navigationParameters = new Dictionary<string, object>
+        {
+            { "Rows", rows },
+            { "Columns", columns },
+            { "SelectedPattern", name },
+            { "Grid", grid }
+        };
+
+            await Shell.Current.GoToAsync(nameof(MainPage), navigationParameters);
         }
         catch (Exception ex)
         {
-            await Shell.Current.DisplayAlert("Помилка", ex.Message, "OK");
+            await Shell.Current.DisplayAlert("???????", ex.Message, "OK");
         }
     }
 }

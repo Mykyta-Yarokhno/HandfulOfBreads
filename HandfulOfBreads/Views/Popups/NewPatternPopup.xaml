@@ -1,18 +1,47 @@
-<?xml version="1.0" encoding="utf-8" ?>
-<toolkit:Popup  xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
-                xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-                xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
-                x:Class="HandfulOfBreads.Views.Popups.NewPatternPopup">
-    <VerticalStackLayout Padding="20" Spacing="10" BackgroundColor="Wheat">
-        <Button Text="{Binding LocalizationResourceManager[NewDesign]}" 
-                Style="{StaticResource MainButton}"
-                Clicked="DrawNewDesign_Clicked" 
-                ContentLayout="Left, 20"/>
-        <Button Text="{Binding LocalizationResourceManager[ConvertAPhoto]}" 
-                Style="{StaticResource MainButton}"
-                Clicked="ConvertPhoto_Clicked"  
-                ContentLayout="Left, 20" 
-                IsEnabled="False"/>
-        <Button Text="Import a file" Clicked="ImportFile_Clicked"  ContentLayout="Left, 20" IsEnabled="False"/>
-    </VerticalStackLayout>
+<toolkit:Popup 
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
+    x:Class="HandfulOfBreads.Views.Popups.NewPatternPopup"
+    HorizontalOptions="Fill"
+    VerticalOptions="Fill"
+    Color="Transparent">
+
+    <Grid>
+        <StackLayout x:Name="TapHandlerLayout"
+                     BackgroundColor="Transparent" 
+                     HorizontalOptions="Fill" 
+                     VerticalOptions="Fill">
+            <StackLayout.GestureRecognizers>
+                <TapGestureRecognizer Tapped="OnTappedOutside" />
+            </StackLayout.GestureRecognizers>
+        </StackLayout>
+
+        <Frame 
+            x:Name="PopupFrame"
+            CornerRadius="20"
+            HasShadow="True"
+            BackgroundColor="Wheat"
+            VerticalOptions="Center"
+            HorizontalOptions="Center"
+            HeightRequest="250"
+            WidthRequest="400">
+
+            <VerticalStackLayout Padding="20" Spacing="10">
+                <Button Text="{Binding LocalizationResourceManager[NewDesign]}"  
+                        Style="{StaticResource MainButton}"
+                        Clicked="DrawNewDesign_Clicked"  
+                        ContentLayout="Left, 20"/>
+                <Button Text="{Binding LocalizationResourceManager[ConvertAPhoto]}"  
+                        Style="{StaticResource MainButton}"
+                        Clicked="ConvertPhoto_Clicked"  
+                        ContentLayout="Left, 20"  
+                        IsEnabled="False"/>
+                <Button Text="Import a file"  
+                        Clicked="ImportFile_Clicked"  
+                        ContentLayout="Left, 20"  
+                        IsEnabled="False"/>
+            </VerticalStackLayout>
+        </Frame>
+    </Grid>
 </toolkit:Popup>

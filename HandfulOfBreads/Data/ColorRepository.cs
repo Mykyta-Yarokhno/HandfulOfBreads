@@ -1,22 +1,24 @@
-﻿using HandfulOfBreads.ViewModels;
+﻿// ColorRepository.cs (Исправленный, с поддержкой DI)
+
+using HandfulOfBreads.ViewModels;
 using Microsoft.EntityFrameworkCore;
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace HandfulOfBreads.Data
 {
-    public static class ColorRepository
+    public class ColorRepository
     {
-        private static AppDbContext _context;
-        public static void Initialize(AppDbContext context)
+        private readonly AppDbContext _context;
+
+        // Конструктор для Dependency Injection
+        public ColorRepository(AppDbContext context)
         {
             _context = context;
         }
 
-        public static async Task<Dictionary<string, List<ColorItemViewModel>>> GetAllPalettesAsync()
+        public async Task<Dictionary<string, List<ColorItemViewModel>>> GetAllPalettesAsync()
         {
             var palettes = await _context.Palettes.Include(p => p.Colors).ToListAsync();
 
@@ -25,7 +27,7 @@ namespace HandfulOfBreads.Data
             foreach (var palette in palettes)
             {
                 var colorVMs = palette.Colors
-                    .Select(c => new ColorItemViewModel(c)) 
+                    .Select(c => new ColorItemViewModel(c))
                     .ToList();
 
                 result[palette.Name] = colorVMs;
@@ -34,5 +36,4 @@ namespace HandfulOfBreads.Data
             return result;
         }
     }
-
 }

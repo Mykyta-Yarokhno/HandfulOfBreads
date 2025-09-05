@@ -3,61 +3,77 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:viewModels="clr-namespace:HandfulOfBreads.ViewModels"
              x:Class="HandfulOfBreads.Views.StartPage">
-    <Grid RowDefinitions="Auto,*" BackgroundColor="Wheat">
+    <Grid RowDefinitions="Auto,*" BackgroundColor="#ffa7b4">
+
         <Grid Grid.Row="0"
-          Padding="5"
-          BackgroundColor="#c09061"
-          ColumnDefinitions="*,Auto,*">
+              Padding="10, 5, 10, 5"
+              BackgroundColor="#ffb972"
+              ColumnDefinitions="*,Auto,*">
 
             <Button Text="{Binding LocalizationResourceManager[SwitchLanguageButton]}"
-                Style="{StaticResource MainButton}"
-                WidthRequest="60"
-                HeightRequest="40"
-                Command="{Binding LanguageSwitchCommand}"
-                HorizontalOptions="Start"
-                VerticalOptions="Center"
-                Grid.Column="0"/>
+                    Style="{StaticResource MainButton}"
+                    WidthRequest="60"
+                    HeightRequest="40"
+                    Command="{Binding LanguageSwitchCommand}"
+                    HorizontalOptions="Start"
+                    VerticalOptions="Center"
+                    Grid.Column="0"/>
 
             <Label Text="{Binding LocalizationResourceManager[Gallery]}"
-               TextColor="#553d3a"
-               FontAttributes="Bold"
-               FontSize="20"
-               VerticalOptions="Center"
-               VerticalTextAlignment="Center"
-               Grid.Column="1"/>
+                   TextColor="#553d3a"
+                   FontAttributes="Bold"
+                   FontSize="20"
+                   VerticalOptions="Center"
+                   VerticalTextAlignment="Center"
+                   Grid.Column="1"/>
 
             <Button Text="+"
-                Style="{StaticResource MainButton}"
-                WidthRequest="40"
-                HeightRequest="40"
-                CornerRadius="20"
-                Padding="0"
-                FontSize="30"
-                Command="{Binding AddNewCommand}"
-                HorizontalOptions="End"
-                VerticalOptions="Center"
-                Grid.Column="2"/>
+                    Style="{StaticResource MainButton}"
+                    WidthRequest="40"
+                    HeightRequest="40"
+                    CornerRadius="20"
+                    Padding="0"
+                    FontSize="30"
+                    Command="{Binding AddNewCommand}"
+                    HorizontalOptions="End"
+                    VerticalOptions="Center"
+                    Grid.Column="2"/>
         </Grid>
-        <BoxView Grid.ColumnSpan="2"
-             HeightRequest="1"
-             BackgroundColor="Gray"
-             VerticalOptions="End"
-             HorizontalOptions="FillAndExpand"/>
 
+        <BoxView Grid.Row="0" Grid.ColumnSpan="3"
+                 HeightRequest="1"
+                 BackgroundColor="Gray"
+                 VerticalOptions="End"
+                 HorizontalOptions="FillAndExpand"/>
 
         <RefreshView Grid.Row="1"
-                 x:Name="refreshView"
-                 Refreshing="OnRefreshing">
-            <ScrollView>
-                <FlexLayout x:Name="stackLayout"
-                        Direction="Row"
-                        Wrap="Wrap"
-                        JustifyContent="Start"
-                        AlignItems="Start"
-                        AlignContent="Start"
-                        Margin="10"/>
-            </ScrollView>
+                     x:Name="refreshView"
+                     IsRefreshing="{Binding IsRefreshing}"
+                     Command="{Binding RefreshCommand}">
+
+            <CollectionView x:Name="galleryCollectionView"
+                            ItemsSource="{Binding PixelGrids}"
+                            Margin="15, 0, 15, 0">
+                <CollectionView.ItemTemplate>
+                    <DataTemplate x:DataType="viewModels:PixelGridItem">
+                        <Frame HasShadow="False"
+                               BorderColor="White"
+                               CornerRadius="30"
+                               BackgroundColor="#ffa7b4"
+                               Margin="5,10,10,0">
+                            <Image Source="{Binding ImageSource}"
+                                   Aspect="AspectFit"
+                                   WidthRequest="150"
+                                   HeightRequest="150">
+                                <Image.GestureRecognizers>
+                                    <TapGestureRecognizer Command="{Binding Source={RelativeSource AncestorType={x:Type viewModels:StartPageViewModel}}, Path=ItemTappedCommand}"
+                                                          CommandParameter="{Binding .}"/>
+                                </Image.GestureRecognizers>
+                            </Image>
+                        </Frame>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+            </CollectionView>
         </RefreshView>
     </Grid>
-
 </ContentPage>

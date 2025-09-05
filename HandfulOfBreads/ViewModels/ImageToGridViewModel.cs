@@ -60,7 +60,7 @@ namespace HandfulOfBreads.ViewModels
 
         private async Task GoToMainPage()
         {
-            Application.Current.MainPage.Navigation.PushAsync(new MainPage(150 , 150,"Loom", _colorGrid));
+            //Application.Current.MainPage.Navigation.PushAsync(new MainPage(150 , 150,"Loom", _colorGrid));
         }
 
         private async Task GenerateGrid()

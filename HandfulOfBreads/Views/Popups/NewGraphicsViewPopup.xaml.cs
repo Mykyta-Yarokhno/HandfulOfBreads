@@ -11,24 +11,30 @@ public partial class NewGraphicsViewPopup : Popup
         InitializeComponent();
     }
 
-    private void OnOkClicked(object sender, EventArgs e)
+    private async void OnOkClicked(object sender, EventArgs e)
     {
         if (int.TryParse(FirstNumberEntry.Text, out int firstNumber) &&
             int.TryParse(SecondNumberEntry.Text, out int secondNumber))
         {
-            FirstNumber = firstNumber;
-            SecondNumber = secondNumber;
-
-
-            Application.Current.MainPage.Navigation.PushAsync(new MainPage(FirstNumber, SecondNumber, "Loom"));
-
-
+            // Close the popup first to prevent UI conflicts
             Close();
+
+            // Create a dictionary of parameters to pass to MainPage
+            var navigationParameters = new Dictionary<string, object>
+        {
+            { "Columns", firstNumber },
+            { "Rows", secondNumber },
+            { "SelectedPattern", "Loom" }
+        };
+
+            // Use Shell navigation to go to MainPage with the parameters
+            await Shell.Current.GoToAsync(nameof(MainPage), navigationParameters);
         }
-        //else
-        //{
-        //    DisplayAlert("Error", "Please enter valid numbers.", "OK");
-        //}   
+        else
+        {
+            // It's good practice to provide user feedback
+            //await DisplayAlert("Error", "Please enter valid numbers.", "OK");
+        }
     }
 
     private void OnCancelClicked(object sender, EventArgs e)

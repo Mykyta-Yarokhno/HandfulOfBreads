@@ -8,14 +8,14 @@ using HandfulOfBreads.ViewModels;
 using HandfulOfBreads.Models;
 using HandfulOfBreads.Constants;
 
-public static class ColorPaletteBitmapCache
+public class ColorPaletteBitmapCache
 {
     private static readonly Dictionary<string, PaletteBitmap> _paletteBitmaps = new();
     private static Dictionary<string, List<ColorItemViewModel>> _allPalettes = new();
 
     private static List<ColorItemViewModel> _usedColors = new();
 
-    public static void InitializeAllPalettes(Dictionary<string, List<ColorItemViewModel>> allPalettes)
+    public void InitializeAllPalettes(Dictionary<string, List<ColorItemViewModel>> allPalettes)
     {
         _allPalettes = allPalettes;
 

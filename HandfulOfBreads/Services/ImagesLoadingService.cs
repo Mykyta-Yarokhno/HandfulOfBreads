@@ -9,7 +9,7 @@ namespace HandfulOfBreads.Services
 {
     public class ImagesLoadingService
     {
-        public static async Task<List<GalleryImage>> GetRecentImagesAsync(int count = 20)
+        public async Task<List<GalleryImage>> GetRecentImagesAsync(int count = 20)
         {
 #if ANDROID
             var images = new List<GalleryImage>();

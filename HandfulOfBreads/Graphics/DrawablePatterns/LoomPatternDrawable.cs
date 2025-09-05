@@ -163,8 +163,6 @@ namespace HandfulOfBreads.Graphics.DrawablePatterns
                 }
             }
 
-            // ... (остальной код Draw)
-            // Этот код остаётся без изменений, так как он рисует поверх основной сетки
             if (!_showSelectionOnly)
             {
                 if (_selectionStartCell.HasValue && _selectionEndCell.HasValue)

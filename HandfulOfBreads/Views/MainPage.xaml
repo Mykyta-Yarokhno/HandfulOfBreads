@@ -98,18 +98,67 @@
                             VerticalScrollBarVisibility="Never">
                             <StackLayout Orientation="{OnIdiom Phone=Horizontal, Tablet=Vertical}" Spacing="10">
                                 <Button x:Name="ToggleButton" Text="{OnIdiom Phone='↓', Tablet='→'}" Style="{StaticResource MainButton}" Clicked="OnTogglePanelClicked" />
-                                <Button Text="🎨" Style="{StaticResource MainButton}" Clicked="OnPaletteButtonClicked"/>
+                                <ImageButton Source="palette.png" 
+                                             WidthRequest="40"
+                                            HeightRequest="40"
+                                              HorizontalOptions="Center"
+                                            VerticalOptions="Center"
+                                             BackgroundColor="Transparent"
+                                             Aspect="AspectFit"
+                                             Clicked="OnPaletteButtonClicked"/>
                                 <Button Text="🔍" Style="{StaticResource MainButton}" Clicked="OnSearchButtonClicked"/>
-                                <Button Text="P" Style="{StaticResource MainButton}" Clicked="OnPipetteButtonClicked"/>
-                                <Button Text="E" Style="{StaticResource MainButton}" Clicked="OnEraserButtonClicked"/>
-                                <Button Text="RC" Style="{StaticResource MainButton}" Clicked="OnReplaceColourButtonClicked"/>
-                                <Button Text="F" Style="{StaticResource MainButton}" Clicked="OnFillButtonClicked"/>
+                                <ImageButton Source="pipette.png" 
+                                            WidthRequest="40"
+                                            HeightRequest="40"
+                                            HorizontalOptions="Center"
+                                            VerticalOptions="Center"
+                                            BackgroundColor="Transparent"
+                                            Aspect="AspectFit" 
+                                            Clicked="OnPipetteButtonClicked"/>
+                                <ImageButton Source="eraser.png" 
+                                                 WidthRequest="40"
+                                                HeightRequest="40"
+                                                  HorizontalOptions="Center"
+                                                VerticalOptions="Center"
+                                                 BackgroundColor="Transparent"
+                                                 Aspect="AspectFit"
+                                        Clicked="OnEraserButtonClicked"/>
+                                <ImageButton Source="swap_colors.png" 
+                                         WidthRequest="40"
+                                        HeightRequest="40"
+                                          HorizontalOptions="Center"
+                                        VerticalOptions="Center"
+                                         BackgroundColor="Transparent"
+                                         Aspect="AspectFit" 
+                                         Clicked="OnReplaceColourButtonClicked"/>
+                            <ImageButton Source="fill_bucket.png" 
+                                           WidthRequest="40"
+                                          HeightRequest="40"
+                                            HorizontalOptions="Center"
+                                          VerticalOptions="Center"
+                                           BackgroundColor="Transparent"
+                                           Aspect="AspectFit"  
+                                         Clicked="OnFillButtonClicked"/>  
                                 <Button Text="+" Style="{StaticResource MainButton}" Clicked="OnZoomChanged" />
                                 <Button Text="-" Style="{StaticResource MainButton}" Clicked="OnZoomChanged" />
                                 <Button Text="M" Style="{StaticResource MainButton}" Clicked="OnMinimum" />
                                 <Button Text="C" Style="{StaticResource MainButton}" Clicked="OnCenter" />
-                            <Button Text="⬚" FontSize="30" Padding="0" Style="{StaticResource MainButton}" Clicked="OnSelectClicked" />
-                            <Button Text="B" Style="{StaticResource MainButton}" Clicked="OnStartDrawingClicked" />
+                            <ImageButton Source="copy.png" 
+                                       WidthRequest="40"
+                                      HeightRequest="40"
+                                        HorizontalOptions="Center"
+                                      VerticalOptions="Center"
+                                       BackgroundColor="Transparent"
+                                       Aspect="AspectFit" 
+                                         Clicked="OnSelectClicked" /> 
+                            <ImageButton Source="brush.png" 
+                                       WidthRequest="40"
+                                      HeightRequest="40"
+                                        HorizontalOptions="Center"
+                                      VerticalOptions="Center"
+                                       BackgroundColor="Transparent"
+                                       Aspect="AspectFit" 
+                                         Clicked="OnStartDrawingClicked" />
                             </StackLayout>
                         </ScrollView>
 

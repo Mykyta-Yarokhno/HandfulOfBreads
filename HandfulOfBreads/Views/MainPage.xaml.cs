@@ -16,73 +16,45 @@ using System.Runtime.CompilerServices;
 
 namespace HandfulOfBreads.Views
 {
-    public partial class MainPage : ContentPage
+    public partial class MainPage : ContentPage, IQueryAttributable
     {
-        #region Basic
         private readonly MainPageViewModel _viewModel;
         private const int _pixelSize = 40;
         private double scale;
         private double minScale;
+
         private int _columns;
         private int _rows;
 
-        public MainPage(int columns, int rows, string selectedPattern, List<List<Color>>? grid = null)
+        private string _currentPaletteName = "Preciosa Rocialles";
+
+        public MainPage()
         {
             InitializeComponent();
-
-            Shell.SetNavBarIsVisible(this, false);
-
-            _columns = columns;
-            _rows = rows;
-
-            _viewModel = App.MainViewModel;
-
-            _viewModel.Initialize(columns, rows, selectedPattern, grid);
-
-            //_viewModel = new MainPageViewModel(columns, rows, selectedPattern, grid);
+            _viewModel = App.Services.GetRequiredService<MainPageViewModel>();
             BindingContext = _viewModel;
-            
+            Shell.SetNavBarIsVisible(this, false);
             _viewModel.InvalidateRequested += OnInvalidateRequested;
+        }
 
-            PixelGraphicsView.WidthRequest = columns * _pixelSize;
-            PixelGraphicsView.HeightRequest = selectedPattern == "Brick"
-                ? rows * _pixelSize + 20
-                : rows * _pixelSize;
+        public void ApplyQueryAttributes(IDictionary<string, object> query)
+        {
+            _viewModel.ApplyQueryAttributes(query);
 
-            PixelGraphicsViewContainer.WidthRequest = columns * _pixelSize * 10;
-            PixelGraphicsViewContainer.HeightRequest = rows * _pixelSize * 10;
+            PixelGraphicsView.WidthRequest = _viewModel.Columns * _pixelSize;
+            PixelGraphicsView.HeightRequest = _viewModel.SelectedPattern == "Brick" ? _viewModel.Rows * _pixelSize + 20 : _viewModel.Rows * _pixelSize;
+            PixelGraphicsViewContainer.WidthRequest = _viewModel.Columns * _pixelSize * 10;
+            PixelGraphicsViewContainer.HeightRequest = _viewModel.Rows * _pixelSize * 10;
 
-            _viewModel.RequestInvalidate += () =>
-            {
-                AppLogger.Info(">> RequestInvalidate");
-
-                PixelGraphicsView.Invalidate();
-
-                AppLogger.Info("<< RequestInvalidate");
-            };
-
-            //var paletteView = ColorPaletteViewCache.GetPaletteView("Preciosa Rocialles");
-
-            //if (paletteView != null)
-            //    PaletteScrollView.Content = paletteView;
-
-            //PaletteImage.Source = ColorPaletteBitmapCache.GetPaletteBitmap("Preciosa Rocialles").ToImageSource();
-
-            OnAppearing();
-
-            AppLogger.Info("InitializeAllPalettes");
-
-            LoadPalette("Preciosa Rocialles");
+            _columns = _viewModel.Columns;
+            _rows = _viewModel.Rows;
         }
 
         protected override void OnAppearing()
         {
             base.OnAppearing();
 
-            if (PaletteCanvasView.Width > 0)
-                LoadPalette(_currentPaletteName);
-            else
-                PaletteCanvasView.SizeChanged += PaletteCanvasView_OnInitialSizeChanged;
+             PaletteCanvasView.SizeChanged += PaletteCanvasView_OnInitialSizeChanged;
         }
 
         private void PaletteCanvasView_OnInitialSizeChanged(object? sender, EventArgs e)
@@ -93,14 +65,10 @@ namespace HandfulOfBreads.Views
                 LoadPalette(_currentPaletteName);
         }
 
-        private PaletteBitmap? _currentBitmap;
-
         private PaletteDrawable? _paletteDrawable;
 
         public int BitmapWidth { get; private set; }
         public int BitmapHeight { get; private set; }
-
-        private string _currentPaletteName = "";
 
         private void LoadPalette(string paletteName)
         {
@@ -221,15 +189,13 @@ namespace HandfulOfBreads.Views
 
         private void OnColorTapped(ColorItemViewModel color)
         {
-
             foreach (var c in _paletteDrawable.Colors)
                 c.IsSelected = false;
 
-
             color.IsSelected = true;
 
-            App.MainViewModel.SelectedColor = Color.FromArgb(color.HexColor);
-            App.MainViewModel.CurrentPattern.SelectedColor = App.MainViewModel.SelectedColor;
+            _viewModel.SelectedColor = Color.FromArgb(color.HexColor);
+            _viewModel.CurrentPattern.SelectedColor = _viewModel.SelectedColor;
 
             PaletteCanvasView.InvalidateSurface();
         }
@@ -255,7 +221,6 @@ namespace HandfulOfBreads.Views
 
             AppLogger.Info("OnSizeAllocated");
         }
-        #endregion
 
         #region Canvas Interaction
 
@@ -264,8 +229,8 @@ namespace HandfulOfBreads.Views
         private PointF _onePoint;
         private Point _startPosition1, _startPosition2;
 
-        private bool _isDrawing;
-        private bool _isDragging;
+        private bool _isDrawing = false;
+        private bool _isDragging = false;
         private bool _isErasing = false;
         private bool _isPipetting = false;
         private bool _isReplacingColour = false;
@@ -416,7 +381,6 @@ namespace HandfulOfBreads.Views
             row = Math.Clamp(row, 0, _rows - 1);
 
             _selectionEndCell = (row, col);
-
             _viewModel.CurrentPattern.UpdateSelectionCells(_selectionStartCell, _selectionEndCell);
             PixelGraphicsView.Invalidate();
         }
@@ -505,7 +469,7 @@ namespace HandfulOfBreads.Views
 
             //scale = Math.Max(minScale, Math.Min(scale, 1.0));
 
-            PixelGraphicsViewContainer.Scale = scale;
+            PixelGraphicsView.Scale = scale;
         }
 
         private void OnMinimum(object sender, EventArgs e)
@@ -537,16 +501,16 @@ namespace HandfulOfBreads.Views
             Filling
         }
 
-        private Button? _brushButton;
-        private Button? _selectButton;
-        private Button? _eraseButton;
-        private Button? _pipetteButton;
-        private Button? _replaceColourButton;
-        private Button? _fillButton;
+        private ImageButton? _brushButton;
+        private ImageButton? _selectButton;
+        private ImageButton? _eraseButton;
+        private ImageButton? _pipetteButton;
+        private ImageButton? _replaceColourButton;
+        private ImageButton? _fillButton;
 
         private ToolMode _currentMode = ToolMode.None;
 
-        private void SetMode(ToolMode mode, Button? clickedButton = null)
+        private void SetMode(ToolMode mode, ImageButton? clickedButton = null)
         {
 
             if (_currentMode == mode)
@@ -565,16 +529,16 @@ namespace HandfulOfBreads.Views
             _isReplacingColour = _currentMode == ToolMode.ReplacingColour;
             _isFilling = _currentMode == ToolMode.Filling;
 
-            _brushButton?.SetValue(BackgroundColorProperty, Color.FromArgb("#98694d"));
-            _selectButton?.SetValue(BackgroundColorProperty, Color.FromArgb("#98694d"));
-            _eraseButton?.SetValue(BackgroundColorProperty, Color.FromArgb("#98694d"));
-            _pipetteButton?.SetValue(BackgroundColorProperty, Color.FromArgb("#98694d"));
-            _replaceColourButton?.SetValue(BackgroundColorProperty, Color.FromArgb("#98694d"));
-            _fillButton?.SetValue(BackgroundColorProperty, Color.FromArgb("#98694d"));
+            _brushButton?.SetValue(BackgroundColorProperty, Color.FromArgb("#d3d3d3"));
+            _selectButton?.SetValue(BackgroundColorProperty, Color.FromArgb("#d3d3d3"));
+            _eraseButton?.SetValue(BackgroundColorProperty, Color.FromArgb("#d3d3d3"));
+            _pipetteButton?.SetValue(BackgroundColorProperty, Color.FromArgb("#d3d3d3"));
+            _replaceColourButton?.SetValue(BackgroundColorProperty, Color.FromArgb("#d3d3d3"));
+            _fillButton?.SetValue(BackgroundColorProperty, Color.FromArgb("#d3d3d3"));
 
             if (_currentMode != ToolMode.None && clickedButton != null)
             {
-                clickedButton.BackgroundColor = Color.FromArgb("#553d3a");
+                clickedButton.BackgroundColor = Color.FromArgb("#a26c6c");
             }
 
             if (mode == ToolMode.Selecting)
@@ -599,7 +563,7 @@ namespace HandfulOfBreads.Views
 
         private void OnFillButtonClicked(object sender, EventArgs e)
         {
-            if (sender is Button button)
+            if (sender is ImageButton button)
             {
                 _fillButton = button;
                 SetMode(ToolMode.Filling, button);
@@ -608,7 +572,7 @@ namespace HandfulOfBreads.Views
 
         private  void OnPipetteButtonClicked(object sender, EventArgs e)
         {
-            if (sender is Button button)
+            if (sender is ImageButton button)
             {
                 _pipetteButton = button;
                 SetMode(ToolMode.Pipetting, button);
@@ -617,7 +581,7 @@ namespace HandfulOfBreads.Views
 
         private void OnStartDrawingClicked(object sender, EventArgs e)
         {
-            if (sender is Button button)
+            if (sender is ImageButton button)
             {
                 _brushButton = button;
                 SetMode(ToolMode.Drawing, button);
@@ -644,7 +608,7 @@ namespace HandfulOfBreads.Views
 
         private void OnSelectClicked(object sender, EventArgs e)
         {
-            if (sender is Button button)
+            if (sender is ImageButton button)
             {
                 _selectButton = button;
                 SetMode(ToolMode.Selecting, button);
@@ -653,7 +617,7 @@ namespace HandfulOfBreads.Views
 
         private void OnEraserButtonClicked(object sender, EventArgs e)
         {
-            if (sender is Button button)
+            if (sender is ImageButton button)
             {
                 _eraseButton = button;
                 SetMode(ToolMode.Erasing, button);
@@ -662,9 +626,9 @@ namespace HandfulOfBreads.Views
 
         private void OnReplaceColourButtonClicked(object sender, EventArgs e)
         {
-            if (sender is Button button)
+            if (sender is ImageButton button)
             {
-                _eraseButton = button;
+                _replaceColourButton = button;
                 SetMode(ToolMode.ReplacingColour, button);
             }
         }
@@ -677,7 +641,6 @@ namespace HandfulOfBreads.Views
             {
                 _isSelecting = false;
                 _isMovingPastePreview = true;
-                // Новое:
                 UpdateUIState();
             }
         }
@@ -690,7 +653,7 @@ namespace HandfulOfBreads.Views
             {
                 _isSelecting = false;
                 _isMovingPastePreview = true;
-                // Новое:
+
                 UpdateUIState();
             }
         }
@@ -715,18 +678,15 @@ namespace HandfulOfBreads.Views
 
         private void UpdateUIState()
         {
-            // Кнопки "Cut" и "Copy" видны только в режиме выделения и когда нет вставки.
             CutCopyButtonsContainer.IsVisible = _isSelecting && !_viewModel.CurrentPattern.IsPasting;
 
-            // Кнопки "Done" и "Cancel" видны только в режиме вставки.
             CancelDoneButtonsContainer.IsVisible = _viewModel.CurrentPattern.IsPasting;
 
-            // НОВОЕ: Кнопки "Flip" и "Rotate" видны только в режиме вставки.
             FlipRotateButtonsContainer.IsVisible = _viewModel.CurrentPattern.IsPasting;
 
             if (_selectButton != null)
             {
-                _selectButton.BackgroundColor = _isSelecting ? Color.FromArgb("#553d3a") : Color.FromArgb("#98694d");
+                _selectButton.BackgroundColor = _isSelecting ? Color.FromArgb("#a26c6c") : Color.FromArgb("#d3d3d3");
             }
 
             PixelGraphicsView.Invalidate();
