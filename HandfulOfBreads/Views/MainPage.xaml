@@ -97,7 +97,15 @@
                             HorizontalScrollBarVisibility="Never"
                             VerticalScrollBarVisibility="Never">
                             <StackLayout Orientation="{OnIdiom Phone=Horizontal, Tablet=Vertical}" Spacing="10">
-                                <Button x:Name="ToggleButton" Text="{OnIdiom Phone='↓', Tablet='→'}" Style="{StaticResource MainButton}" Clicked="OnTogglePanelClicked" />
+                                <ImageButton x:Name="ToggleButton"
+                                             Source ="{OnIdiom Phone='arrow_close.png', Tablet='arrow_close_right.png'}"
+                                              WidthRequest="40"
+                                                HeightRequest="40"
+                                                  HorizontalOptions="Center"
+                                                VerticalOptions="Center"
+                                                 BackgroundColor="Transparent"
+                                                 Aspect="AspectFit"
+                                             Clicked="OnTogglePanelClicked" />
                                 <ImageButton Source="palette.png" 
                                              WidthRequest="40"
                                             HeightRequest="40"
@@ -106,7 +114,14 @@
                                              BackgroundColor="Transparent"
                                              Aspect="AspectFit"
                                              Clicked="OnPaletteButtonClicked"/>
-                                <Button Text="🔍" Style="{StaticResource MainButton}" Clicked="OnSearchButtonClicked"/>
+                                <ImageButton Source="search.png" 
+                                              WidthRequest="40"
+                                                HeightRequest="40"
+                                                  HorizontalOptions="Center"
+                                                VerticalOptions="Center"
+                                                 BackgroundColor="Transparent"
+                                                 Aspect="AspectFit"
+                                                Clicked="OnSearchButtonClicked"/>
                                 <ImageButton Source="pipette.png" 
                                             WidthRequest="40"
                                             HeightRequest="40"
@@ -139,10 +154,30 @@
                                            BackgroundColor="Transparent"
                                            Aspect="AspectFit"  
                                          Clicked="OnFillButtonClicked"/>  
-                                <Button Text="+" Style="{StaticResource MainButton}" Clicked="OnZoomChanged" />
-                                <Button Text="-" Style="{StaticResource MainButton}" Clicked="OnZoomChanged" />
-                                <Button Text="M" Style="{StaticResource MainButton}" Clicked="OnMinimum" />
-                                <Button Text="C" Style="{StaticResource MainButton}" Clicked="OnCenter" />
+                                <ImageButton Source="plus.png"
+                                              WidthRequest="40"
+                                            HeightRequest="40"
+                                                HorizontalOptions="Center"
+                                            VerticalOptions="Center"
+                                                BackgroundColor="Transparent"
+                                                Aspect="AspectFit" 
+                                             Clicked="ZoomIn" />
+                            <ImageButton Source="minus.png"   
+                                         WidthRequest="40"
+                                        HeightRequest="40"
+                                            HorizontalOptions="Center"
+                                        VerticalOptions="Center"
+                                            BackgroundColor="Transparent"
+                                            Aspect="AspectFit"
+                                         Clicked="ZoomOut" />
+                            <ImageButton Source="minimum_center.png"   
+                                         WidthRequest="40"
+                                        HeightRequest="40"
+                                            HorizontalOptions="Center"
+                                        VerticalOptions="Center"
+                                            BackgroundColor="Transparent"
+                                            Aspect="AspectFit"
+                                    Clicked="OnMinimumOnCenter" />
                             <ImageButton Source="copy.png" 
                                        WidthRequest="40"
                                       HeightRequest="40"
@@ -178,8 +213,22 @@
 
                 <!-- Move row buttons -->
                 <VerticalStackLayout IsVisible="{Binding IsBeadingActive}" HorizontalOptions="Start" VerticalOptions="Center" Spacing="10" Padding="10">
-                    <Button Text="▲" Style="{StaticResource MainButton}" Command="{Binding MoveRowUpCommand}" />
-                    <Button Text="▼" Style="{StaticResource MainButton}" Command="{Binding MoveRowDownCommand}" />
+                    <ImageButton Source="arrow_move_up.png" 
+                                  WidthRequest="40"
+                                    HeightRequest="40"
+                                        HorizontalOptions="Center"
+                                    VerticalOptions="Center"
+                                        BackgroundColor="Transparent"
+                                        Aspect="AspectFit"
+                                 Command="{Binding MoveRowUpCommand}" />
+                    <ImageButton Source="arrow_move_down.png" 
+                                  WidthRequest="40"
+                                    HeightRequest="40"
+                                        HorizontalOptions="Center"
+                                    VerticalOptions="Center"
+                                        BackgroundColor="Transparent"
+                                        Aspect="AspectFit"
+                                 Command="{Binding MoveRowDownCommand}" />
                 </VerticalStackLayout>
 
                 <VerticalStackLayout
@@ -194,14 +243,49 @@
                     </VerticalStackLayout>
 
                     <VerticalStackLayout x:Name="FlipRotateButtonsContainer" IsVisible="False" Spacing="10">
-                        <Button Text="Flip H" Style="{StaticResource MainButton}" Clicked="OnFlipHorizontalClicked"/>
-                        <Button Text="Flip V" Style="{StaticResource MainButton}" Clicked="OnFlipVerticalClicked"/>
-                        <Button Text="Rotate 90" Style="{StaticResource MainButton}" Clicked="OnRotate90Clicked"/>
+                        <ImageButton Source="flip_horizontal.png" 
+                                     WidthRequest="40"
+                                     HeightRequest="40"
+                                         HorizontalOptions="Center"
+                                     VerticalOptions="Center"
+                                         BackgroundColor="Transparent"
+                                         Aspect="AspectFit"
+                                     Clicked="OnFlipHorizontalClicked"/>
+                        <ImageButton Source="flip_vertical.png" 
+                                     WidthRequest="40"
+                                     HeightRequest="40"
+                                         HorizontalOptions="Center"
+                                     VerticalOptions="Center"
+                                         BackgroundColor="Transparent"
+                                         Aspect="AspectFit"
+                                     Clicked="OnFlipVerticalClicked"/>
+                        <ImageButton Source="rotate90right.png" 
+                                     WidthRequest="40"
+                                      HeightRequest="40"
+                                          HorizontalOptions="Center"
+                                      VerticalOptions="Center"
+                                          BackgroundColor="Transparent"
+                                          Aspect="AspectFit"
+                                     Clicked="OnRotate90Clicked"/>
                     </VerticalStackLayout>
 
                     <VerticalStackLayout x:Name="CancelDoneButtonsContainer" IsVisible="False" Spacing="10">
-                        <Button Text="Done" Style="{StaticResource MainButton}" Clicked="OnDoneClicked"/>
-                        <Button Text="Cancel" Style="{StaticResource MainButton}" Clicked="OnCancelClicked"/>
+                        <ImageButton Source="tick.png" 
+                                     WidthRequest="40"
+                                     HeightRequest="40"
+                                         HorizontalOptions="Center"
+                                     VerticalOptions="Center"
+                                         BackgroundColor="Transparent"
+                                         Aspect="AspectFit" 
+                                     Clicked="OnDoneClicked"/>
+                        <ImageButton Source="cross.png" 
+                                     WidthRequest="40"
+                                     HeightRequest="40"
+                                         HorizontalOptions="Center"
+                                     VerticalOptions="Center"
+                                         BackgroundColor="Transparent"
+                                         Aspect="AspectFit" 
+                                     Clicked="OnCancelClicked"/>
                     </VerticalStackLayout>
 
                 </VerticalStackLayout>

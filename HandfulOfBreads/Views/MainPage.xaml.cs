@@ -457,33 +457,37 @@ namespace HandfulOfBreads.Views
 
         #region Buttons Interaction 
 
-        private void OnZoomChanged(object sender, EventArgs e)
+        private void ZoomOut(object sender, EventArgs e)
         {
-            if (sender is not Button button)
+            if (sender is not ImageButton button)
                 return;
 
-            if (button.Text == "+")
-                scale *= 1.1;
-            else if (button.Text == "-")
-                scale /= 1.1;
+            scale /= 1.1;
 
             //scale = Math.Max(minScale, Math.Min(scale, 1.0));
 
             PixelGraphicsView.Scale = scale;
         }
 
-        private void OnMinimum(object sender, EventArgs e)
+        private void ZoomIn (object sender, EventArgs e)
         {
-            if (sender is not Button button)
+            if (sender is not ImageButton button)
+                return;
+                scale *= 1.1;
+
+            //scale = Math.Max(minScale, Math.Min(scale, 1.0));
+
+            PixelGraphicsView.Scale = scale;
+        }
+
+        private void OnMinimumOnCenter(object sender, EventArgs e)
+        {
+            if (sender is not ImageButton button)
                 return;
 
             scale = minScale;
             PixelGraphicsViewContainer.Scale = minScale;
-        }
 
-
-        private void OnCenter(object sender, EventArgs e)
-        {
             PixelGraphicsView.TranslationX = 0;
             PixelGraphicsView.TranslationY = 0;
 
@@ -538,7 +542,7 @@ namespace HandfulOfBreads.Views
 
             if (_currentMode != ToolMode.None && clickedButton != null)
             {
-                clickedButton.BackgroundColor = Color.FromArgb("#a26c6c");
+                clickedButton.BackgroundColor = Color.FromArgb("#545454");
             }
 
             if (mode == ToolMode.Selecting)
@@ -686,7 +690,7 @@ namespace HandfulOfBreads.Views
 
             if (_selectButton != null)
             {
-                _selectButton.BackgroundColor = _isSelecting ? Color.FromArgb("#a26c6c") : Color.FromArgb("#d3d3d3");
+                _selectButton.BackgroundColor = _isSelecting ? Color.FromArgb("#545454") : Color.FromArgb("#d3d3d3");
             }
 
             PixelGraphicsView.Invalidate();
@@ -710,12 +714,12 @@ namespace HandfulOfBreads.Views
             if (isTablet)
             {
                 ResponsivePanel.WidthRequest = _isCollapsed ? 60 : 400;
-                ToggleButton.Text = _isCollapsed ? "←" : "→";
+                ToggleButton.Source = _isCollapsed ? "arrow_open_left.png" : "arrow_close_right.png";
             }
             else
             {
                 ResponsivePanel.HeightRequest = _isCollapsed ? 60 : 300;
-                ToggleButton.Text = _isCollapsed ? "↑" : "↓";
+                ToggleButton.Source = _isCollapsed ? "arrow_open.png" : "arrow_close.png";
             }
 
             await ResponsivePanel.FadeTo(1.0, 100);
