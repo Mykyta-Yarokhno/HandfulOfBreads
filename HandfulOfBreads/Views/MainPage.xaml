@@ -199,9 +199,9 @@
 
                     <!-- Color palette -->
                     <ScrollView x:Name="PaletteScrollView"
-                            Orientation="Vertical"
-                            Grid.Row="{OnIdiom Phone=1, Tablet=0}"
-                            Grid.Column="{OnIdiom Phone=0, Tablet=1}">
+                                Orientation="Vertical"
+                                Grid.Row="{OnIdiom Phone=1, Tablet=0}"
+                                Grid.Column="{OnIdiom Phone=0, Tablet=1}">
                         <skia:SKCanvasView x:Name="PaletteCanvasView"
                        PaintSurface="OnPaintSurface"
                        EnableTouchEvents="True"
@@ -234,8 +234,9 @@
                 <VerticalStackLayout
                     HorizontalOptions="Start"
                     VerticalOptions="Center"
-                    Padding="10"
-                    Spacing="10">
+                    Padding="5"
+                    Spacing="10"
+                    Margin="0,0,0,120">
 
                     <VerticalStackLayout x:Name="CutCopyButtonsContainer" IsVisible="False" Spacing="10">
                         <Button Text="Cut" Style="{StaticResource MainButton}" Clicked="OnCutClicked"/>

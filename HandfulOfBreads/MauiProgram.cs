@@ -36,7 +36,7 @@ namespace HandfulOfBreads
             builder.Services.AddSingleton<IPopupService, Services.PopupService>();
             builder.Services.AddSingleton<GridLoadingService>();
             builder.Services.AddSingleton<ImagesLoadingService>();
-            builder.Services.AddSingleton<ColorPaletteBitmapCache>();
+            builder.Services.AddSingleton<ColorPaletteSvgCache>();
             builder.Services.AddSingleton<GridSavingService>();
 
             // DbContext and its dependencies must be scoped
@@ -82,7 +82,7 @@ namespace HandfulOfBreads
                 var db = serviceProvider.GetRequiredService<AppDbContext>();
                 var importer = serviceProvider.GetRequiredService<CsvImportService>();
                 var colorRepository = serviceProvider.GetRequiredService<ColorRepository>();
-                var paletteCache = serviceProvider.GetRequiredService<ColorPaletteBitmapCache>();
+                var paletteCache = serviceProvider.GetRequiredService<ColorPaletteSvgCache>();
 
                 // Perform operations
                 db.Database.EnsureCreated();

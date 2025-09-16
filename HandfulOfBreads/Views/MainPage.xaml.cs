@@ -28,6 +28,8 @@ namespace HandfulOfBreads.Views
 
         private string _currentPaletteName = "Preciosa Rocialles";
 
+        private Svg.Skia.SKSvg _currentSvg;
+
         public MainPage()
         {
             InitializeComponent();
@@ -65,8 +67,6 @@ namespace HandfulOfBreads.Views
                 LoadPalette(_currentPaletteName);
         }
 
-        private PaletteDrawable? _paletteDrawable;
-
         public int BitmapWidth { get; private set; }
         public int BitmapHeight { get; private set; }
 
@@ -74,32 +74,43 @@ namespace HandfulOfBreads.Views
         {
             _currentPaletteName = paletteName;
 
-            var colors = ColorPaletteBitmapCache.GetPaletteColors(paletteName);
-            if (colors == null || colors.Count == 0)
-                return;
+            _currentSvg = ColorPaletteSvgCache.GetPaletteSvg(paletteName);
 
-            int canvasWidth = (int)PaletteScrollView.Width;
-            if (canvasWidth <= 0)
+            if (_currentSvg == null)
             {
-                canvasWidth = (int)PaletteCanvasView.Width;
+                var colors = ColorPaletteSvgCache.GetPaletteColors(paletteName);
+                if (colors == null || colors.Count == 0)
+                    return;
+
+                int canvasWidth = (int)PaletteScrollView.Width;
+                if (canvasWidth <= 0)
+                {
+                    canvasWidth = 300;
+                }
+
+                _currentSvg = ColorPaletteSvgCache.GeneratePaletteSvg(
+                    colors,
+                    columns: 5,
+                    totalWidth: canvasWidth);
             }
-            if (canvasWidth <= 0)
+
+            if (_currentSvg != null)
             {
-                canvasWidth = 300;
+                float originalSvgWidth = _currentSvg.Picture.CullRect.Width;
+                float originalSvgHeight = _currentSvg.Picture.CullRect.Height;
+
+                int newCanvasWidth = (int)PaletteScrollView.Width;
+
+                float newCanvasHeight = (newCanvasWidth / originalSvgWidth) * originalSvgHeight;
+
+                PaletteCanvasView.WidthRequest = newCanvasWidth;
+                PaletteCanvasView.HeightRequest = newCanvasHeight;
             }
-
-            var bitmap = ColorPaletteBitmapCache.GeneratePaletteBitmap(
-                colors,
-                columns: 5,
-                totalWidth: canvasWidth);
-
-            _paletteDrawable = new PaletteDrawable(bitmap);
-
-            PaletteCanvasView.WidthRequest = _paletteDrawable.Width;
-            PaletteCanvasView.HeightRequest = _paletteDrawable.Height;
 
             PaletteCanvasView.InvalidateSurface();
         }
+
+
 
         private void OnPaletteCanvasViewSizeChanged(object? sender, EventArgs e)
         {
@@ -117,85 +128,136 @@ namespace HandfulOfBreads.Views
         private void OnPaintSurface(object sender, SKPaintSurfaceEventArgs e)
         {
             var canvas = e.Surface.Canvas;
-            canvas.Clear(SKColors.White);
+            canvas.Clear(SKColors.LightGray);
 
-            if (_paletteDrawable == null)
+            if (_currentSvg == null || _currentSvg.Picture == null)
                 return;
 
             float canvasWidth = e.Info.Width;
             float canvasHeight = e.Info.Height;
 
-            float bitmapWidth = _paletteDrawable.Width;
-            float bitmapHeight = _paletteDrawable.Height;
+            float svgWidth = _currentSvg.Picture.CullRect.Width;
+            float svgHeight = _currentSvg.Picture.CullRect.Height;
 
-            float scaleX = canvasWidth / bitmapWidth;
-            float scaleY = canvasHeight / bitmapHeight;
-
-            _lastScaleX = scaleX;
-            _lastScaleY = scaleY;
+            float scaleX = canvasWidth / svgWidth;
+            float scaleY = canvasHeight / svgHeight;
 
             canvas.Scale(scaleX, scaleY);
-            _paletteDrawable.Draw(canvas);
+            canvas.DrawPicture(_currentSvg.Picture);
+
+            if (_viewModel.SelectedColor != null)
+            {
+                var colors = ColorPaletteSvgCache.GetPaletteColors(_currentPaletteName);
+                if (colors != null)
+                {
+                    var selectedColorItem = colors.FirstOrDefault(c =>
+                             c.HexColor.ToLower() == _viewModel.SelectedColor.ToArgbHex().ToLower());
+
+                    if (selectedColorItem != null)
+                    {
+                        int columns = 5;
+                        int margin = 5;
+                        int cellSize = ((int)svgWidth - (columns + 1) * margin) / columns;
+
+                        int index = colors.IndexOf(selectedColorItem);
+                        int col = index % columns;
+                        int row = index / columns;
+
+                        float left = margin + col * (cellSize + margin);
+                        float top = margin + row * (cellSize + margin);
+
+                        using (var paint = new SKPaint
+                        {
+                            Color = SKColors.Red,
+                            Style = SKPaintStyle.Stroke,
+                            StrokeWidth = 1,
+                            IsAntialias = true
+                        })
+                        {
+                            canvas.DrawRoundRect(new SKRoundRect(new SKRect(left, top, left + cellSize, top + cellSize), 5), paint);
+                        }
+                    }
+                }
+            }
         }
 
 
         private void OnTouch(object sender, SKTouchEventArgs e)
         {
-            if (e.ActionType == SKTouchAction.Released && _paletteDrawable != null)
+            if (e.ActionType == SKTouchAction.Released)
             {
                 var point = e.Location;
                 HandleTap(point.X, point.Y);
             }
-
             e.Handled = true;
         }
 
         private void HandleTap(float x, float y)
         {
-            if (_paletteDrawable == null) return;
+            if (_currentSvg == null || _currentSvg.Picture == null)
+            {
+                return;
+            }
 
             double density = DeviceDisplay.MainDisplayInfo.Density;
 
             float canvasWidth = (float)PaletteCanvasView.Width;
             float canvasHeight = (float)PaletteCanvasView.Height;
 
-            float bitmapWidth = _paletteDrawable.Width;
-            float bitmapHeight = _paletteDrawable.Height;
+            float svgWidth = _currentSvg.Picture.CullRect.Width;
+            float svgHeight = _currentSvg.Picture.CullRect.Height;
 
             float xDips = x / (float)density;
             float yDips = y / (float)density;
 
-            float scaleX = canvasWidth / bitmapWidth;
-            float scaleY = canvasHeight / bitmapHeight;
+            float scaleX = canvasWidth / svgWidth;
+            float scaleY = canvasHeight / svgHeight;
 
             float unscaledX = xDips / scaleX;
             float unscaledY = yDips / scaleY;
 
+            var colors = ColorPaletteSvgCache.GetPaletteColors(_currentPaletteName);
+            if (colors == null || colors.Count == 0)
+            {
+                return;
+            }
+
+            int columns = 5;
             int margin = 5;
+            int cellSize = ((int)svgWidth - (columns + 1) * margin) / columns;
 
-            int col = (int)Math.Floor((unscaledX - margin) / (_paletteDrawable.CellSize + margin));
-            int row = (int)Math.Floor((unscaledY - margin) / (_paletteDrawable.CellSize + margin));
+            int col = (int)Math.Floor((unscaledX - margin) / (cellSize + margin));
+            int row = (int)Math.Floor((unscaledY - margin) / (cellSize + margin));
 
-            int index = row * _paletteDrawable.Columns + col;
+            int index = row * columns + col;
 
             Console.WriteLine($"Tap raw=({x},{y}) dips=({xDips},{yDips}) unscaled=({unscaledX},{unscaledY}) col={col} row={row} index={index}");
 
-            if (index >= 0 && index < _paletteDrawable.Colors.Count)
+            if (index >= 0 && index < colors.Count)
             {
-                var tappedColor = _paletteDrawable.Colors[index];
+                var tappedColor = colors[index];
                 OnColorTapped(tappedColor);
             }
         }
 
         private void OnColorTapped(ColorItemViewModel color)
         {
-            foreach (var c in _paletteDrawable.Colors)
-                c.IsSelected = false;
+            var currentPaletteColors = ColorPaletteSvgCache.GetPaletteColors(_currentPaletteName);
 
-            color.IsSelected = true;
-
-            _viewModel.SelectedColor = Color.FromArgb(color.HexColor);
-            _viewModel.CurrentPattern.SelectedColor = _viewModel.SelectedColor;
+            if (currentPaletteColors != null)
+            {
+                foreach (var c in currentPaletteColors)
+                {
+                    c.IsSelected = false;
+                }
+                var selected = currentPaletteColors.FirstOrDefault(c => c.Code == color.Code);
+                if (selected != null)
+                {
+                    selected.IsSelected = true;
+                }
+                _viewModel.SelectedColor = Color.FromArgb(color.HexColor);
+                _viewModel.CurrentPattern.SelectedColor = _viewModel.SelectedColor;
+            }
 
             PaletteCanvasView.InvalidateSurface();
         }
@@ -400,17 +462,10 @@ namespace HandfulOfBreads.Views
 
             if (_isPipetting)
             {
-
                 var pickedColor = _viewModel.CurrentPattern.GetColorAt(cell.Value.row, cell.Value.col);
 
-                foreach (var c in _paletteDrawable.Colors)
-                    c.IsSelected = false;
-
-                var target = _paletteDrawable.Colors
-                    .FirstOrDefault(c => c.HexColor.Equals(pickedColor.ToHex(), StringComparison.OrdinalIgnoreCase));
-
-                if (target != null)
-                    target.IsSelected = true;
+                var target = ColorPaletteSvgCache.GetPaletteColors(_currentPaletteName)
+                    ?.FirstOrDefault(c => c.HexColor.Equals(pickedColor.ToHex(), StringComparison.OrdinalIgnoreCase));
 
                 _viewModel.SelectedColor = pickedColor;
                 _viewModel.CurrentPattern.SelectedColor = pickedColor;
@@ -419,13 +474,14 @@ namespace HandfulOfBreads.Views
 
                 if (target != null)
                 {
-                    int index = _paletteDrawable.Colors.IndexOf(target);
+                    int index = ColorPaletteSvgCache.GetPaletteColors(_currentPaletteName).IndexOf(target);
 
+                    int columns = 5;
                     int margin = 5;
-                    int col = index % _paletteDrawable.Columns;
-                    int row = index / _paletteDrawable.Columns;
+                    int cellSize = ((int)PaletteCanvasView.WidthRequest - (columns + 1) * margin) / columns;
 
-                    double scrollY = row * (_paletteDrawable.CellSize + margin);
+                    int row = index / columns;
+                    double scrollY = row * (cellSize + margin);
 
                     MainThread.BeginInvokeOnMainThread(async () =>
                     {
@@ -757,7 +813,7 @@ namespace HandfulOfBreads.Views
                     {
                         var allGridColors = currentGrid.SelectMany(row => row);
                         var usedColors = GetUsedColors(allGridColors);
-                        ColorPaletteBitmapCache.UpdateUsedColors(usedColors);
+                        ColorPaletteSvgCache.UpdateUsedColors(usedColors);
                     }
                 }
 
@@ -772,7 +828,7 @@ namespace HandfulOfBreads.Views
         private List<ColorItemViewModel> GetUsedColors(IEnumerable<Color> colors)
         {
             var usedColors = new List<ColorItemViewModel>();
-            var allKnownColors = ColorPaletteBitmapCache.GetAllPalettesColors();
+            var allKnownColors = ColorPaletteSvgCache.GetAllPalettesColors();
 
             foreach (var color in colors)
             {
@@ -803,7 +859,7 @@ namespace HandfulOfBreads.Views
             if (string.IsNullOrEmpty(_currentPaletteName))
                 return;
 
-            var currentPaletteColors = ColorPaletteBitmapCache.GetPaletteColors(_currentPaletteName);
+            var currentPaletteColors = ColorPaletteSvgCache.GetPaletteColors(_currentPaletteName);
 
             if (currentPaletteColors == null || currentPaletteColors.Count == 0)
                 return;

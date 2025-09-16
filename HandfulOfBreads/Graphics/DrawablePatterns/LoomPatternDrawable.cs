@@ -580,7 +580,7 @@ namespace HandfulOfBreads.Graphics.DrawablePatterns
             {
                 _grid[row][col] = _selectedColor;
 
-                var currentUsed = ColorPaletteBitmapCache.GetPaletteColors("Used Сolours");
+                var currentUsed = ColorPaletteSvgCache.GetPaletteColors("Used Сolours");
 
                 string hex = MyToHex(_selectedColor);
 
@@ -588,7 +588,7 @@ namespace HandfulOfBreads.Graphics.DrawablePatterns
                 {
                     var model = new ColorItem { Code = hex, HexColor = hex };
                     currentUsed.Add(new ColorItemViewModel(model));
-                    ColorPaletteBitmapCache.UpdateUsedColors(currentUsed);
+                    ColorPaletteSvgCache.UpdateUsedColors(currentUsed);
                 }
             }
         }
