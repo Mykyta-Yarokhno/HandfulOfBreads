@@ -4,6 +4,8 @@ using HandfulOfBreads.Graphics.DrawablePatterns;
 using HandfulOfBreads.Services;
 using HandfulOfBreads.Services.Interfaces;
 using HandfulOfBreads.Views;
+using HandfulOfBreads.Views.Popups;
+using Microsoft.Maui.Graphics;
 using Microsoft.Maui.Graphics.Platform;
 using MvvmHelpers;
 using System.Reflection;
@@ -55,11 +57,11 @@ namespace HandfulOfBreads.ViewModels
         public MainPageViewModel(
             IPopupService popupService,
             AppDbContext context,
-            GridSavingService imageSavingService) // Додано GridSavingService
+            GridSavingService imageSavingService)
         {
             _popupService = popupService;
             _context = context;
-            _imageSavingService = imageSavingService; // Присвоєння залежності
+            _imageSavingService = imageSavingService;
         }
 
         public void ApplyQueryAttributes(IDictionary<string, object> query)
@@ -85,7 +87,6 @@ namespace HandfulOfBreads.ViewModels
                 grid = gridList;
             }
 
-            // Use the newly populated properties to initialize the pattern
             CurrentPattern = SelectedPattern switch
             {
                 "Loom" => new LoomPatternDrawable(),
@@ -131,7 +132,7 @@ namespace HandfulOfBreads.ViewModels
             return PlatformImage.FromStream(stream);
         }
 
-        public event Action? RequestInvalidate;
+        public event Action InvalidateRequested;
 
         [RelayCommand]
         private async Task Clear()
@@ -145,7 +146,7 @@ namespace HandfulOfBreads.ViewModels
             if (answer)
             {
                 CurrentPattern.InitializeGrid(_rows, _columns, PixelSize, _image);
-                RequestInvalidate?.Invoke();
+                InvalidateRequested?.Invoke();
             }
         }
 
@@ -169,8 +170,25 @@ namespace HandfulOfBreads.ViewModels
         [RelayCommand]
         private async Task NewDesignAsync()
         {
-            var newPage = App.Services.GetRequiredService<NewDesignStartPage>();
-            await Application.Current.MainPage.Navigation.PushAsync(newPage);
+            //await _popupService.ShowPopupAsync(new NewGraphicsViewPopup(new GridLoadingService()));
+
+            var popup = new NewGraphicsViewPopup();
+
+            popup.ResultReady += OnPopupResultForUpdate;
+
+            _popupService.ShowPopupAsync(popup);
+        }
+
+        private void OnPopupResultForUpdate(object sender, NewGraphicsViewPopup.StartPopupResultEventArgs e)
+        {
+            ((NewGraphicsViewPopup)sender).ResultReady -= OnPopupResultForUpdate;
+
+            CurrentPattern.InitializeGrid(e.Rows, e.Columns, PixelSize, _image);
+
+            Columns = e.Columns;
+            Rows = e.Rows;
+
+            InvalidateRequested?.Invoke();
         }
 
         [RelayCommand]
@@ -179,7 +197,7 @@ namespace HandfulOfBreads.ViewModels
             await _imageSavingService.SaveImageToGalleryAsync(CurrentPattern);
         }
 
-        public event Action InvalidateRequested;
+        
 
         [RelayCommand]
         public void StartBeading()

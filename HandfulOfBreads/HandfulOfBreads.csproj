@@ -128,9 +128,6 @@
 	  <MauiXaml Update="Views\ImageToGridPage.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
-	  <MauiXaml Update="Views\NewDesignStartPage.xaml">
-	    <Generator>MSBuild:Compile</Generator>
-	  </MauiXaml>
 	  <MauiXaml Update="Views\Popups\ChoosePalettePopup.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>

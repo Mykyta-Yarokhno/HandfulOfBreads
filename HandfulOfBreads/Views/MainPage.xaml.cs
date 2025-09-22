@@ -43,6 +43,19 @@ namespace HandfulOfBreads.Views
         {
             _viewModel.ApplyQueryAttributes(query);
 
+            //PixelGraphicsView.WidthRequest = _viewModel.Columns * _pixelSize;
+            //PixelGraphicsView.HeightRequest = _viewModel.SelectedPattern == "Brick" ? _viewModel.Rows * _pixelSize + 20 : _viewModel.Rows * _pixelSize;
+            //PixelGraphicsViewContainer.WidthRequest = _viewModel.Columns * _pixelSize * 10;
+            //PixelGraphicsViewContainer.HeightRequest = _viewModel.Rows * _pixelSize * 10;
+
+            UpdateGraphicsViewDimensions();
+
+            //_columns = _viewModel.Columns;
+            //_rows = _viewModel.Rows;
+        }
+
+        private void UpdateGraphicsViewDimensions()
+        {
             PixelGraphicsView.WidthRequest = _viewModel.Columns * _pixelSize;
             PixelGraphicsView.HeightRequest = _viewModel.SelectedPattern == "Brick" ? _viewModel.Rows * _pixelSize + 20 : _viewModel.Rows * _pixelSize;
             PixelGraphicsViewContainer.WidthRequest = _viewModel.Columns * _pixelSize * 10;
@@ -263,9 +276,9 @@ namespace HandfulOfBreads.Views
         }
 
         private void OnInvalidateRequested()
-        {
+        {;
             PixelGraphicsView.Invalidate();
-
+            UpdateGraphicsViewDimensions();
             AppLogger.Info("OnInvalidateRequested");
         }
 

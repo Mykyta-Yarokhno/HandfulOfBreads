@@ -54,10 +54,10 @@ public partial class NewPatternPopup : Popup
         CloseWithAnimation("ConvertPhoto");
     }
 
-    private async void DrawNewDesign_Clicked(object sender, EventArgs e)
+    private void DrawNewDesign_Clicked(object sender, EventArgs e)
     {
-        await Shell.Current.GoToAsync(nameof(NewDesignStartPage));
-        CloseWithAnimation();
+        //await Shell.Current.GoToAsync(nameof(NewDesignStartPage));
+        CloseWithAnimation("DrawNewDeisgn");
     }
 
     private void ImportFile_Clicked(object sender, EventArgs e)

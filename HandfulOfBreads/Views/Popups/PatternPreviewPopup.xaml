@@ -22,9 +22,7 @@
                HasShadow="True"
                BackgroundColor="Wheat"
                VerticalOptions="Center"
-               HorizontalOptions="Center"
-               HeightRequest="500"
-               WidthRequest="260">
+               HorizontalOptions="Center">
 
             <VerticalStackLayout Spacing="20"
                                  Padding="10">

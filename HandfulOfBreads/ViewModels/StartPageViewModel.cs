@@ -7,6 +7,7 @@ using System.Globalization;
 using System.Windows.Input;
 using CommunityToolkit.Mvvm.Input;
 using HandfulOfBreads.Models;
+using HandfulOfBreads.Views;
 
 namespace HandfulOfBreads.ViewModels;
 
@@ -39,7 +40,7 @@ public class StartPageViewModel : BaseViewModel
     {
         _popupService = popupService;
         _imageLoadingService = imageLoadingService;
-        _imagesLoadingService = imagesLoadingService; // Assign ImagesLoadingService
+        _imagesLoadingService = imagesLoadingService;
 
         AddNewCommand = new AsyncRelayCommand(ChooseNewAsync);
         LanguageSwitchCommand = new AsyncRelayCommand(OnLanguageSwitch);
@@ -60,6 +61,30 @@ public class StartPageViewModel : BaseViewModel
             var images = await _imagesLoadingService.GetRecentImagesAsync();
             await _popupService.ShowPopupAsync(new ChoosePhotoPopup(images));
         }
+
+        if(result == "DrawNewDeisgn")
+        {
+            var newGraphicsViewPopup = new NewGraphicsViewPopup();
+
+            newGraphicsViewPopup.ResultReady += OnPopupResultForNewPage;
+
+            await _popupService.ShowPopupAsync(newGraphicsViewPopup);
+            //await _popupService.ShowPopupAsync(new NewGraphicsViewPopup(new GridLoadingService()));
+        }
+    }
+
+    private async void OnPopupResultForNewPage(object sender, NewGraphicsViewPopup.StartPopupResultEventArgs e)
+    {
+        ((NewGraphicsViewPopup)sender).ResultReady -= OnPopupResultForNewPage;
+
+        var navigationParameters = new Dictionary<string, object>
+        {
+            { "Columns", e.Columns },
+            { "Rows", e.Rows },
+            { "SelectedPattern", e.SelectedPattern }
+        };
+
+        await Shell.Current.GoToAsync(nameof(MainPage), navigationParameters);
     }
 
     private async Task OnLanguageSwitch()
