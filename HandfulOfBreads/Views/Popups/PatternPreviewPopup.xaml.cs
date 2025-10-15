@@ -67,14 +67,15 @@ public partial class PatternPreviewPopup : Popup
         {
             this.Close();
 
-            var (name, rows, columns, _, grid) = await _imageLoadingService.LoadGridFromFileAsync(_filePath);
+            var (name, rows, columns, _, drop, grid) = await _imageLoadingService.LoadGridFromFileAsync(_filePath);
 
             var navigationParameters = new Dictionary<string, object>
         {
             { "Rows", rows },
             { "Columns", columns },
             { "SelectedPattern", name },
-            { "Grid", grid }
+            { "Grid", grid },
+            { "Drop", drop }
         };
 
             await Shell.Current.GoToAsync(nameof(MainPage), navigationParameters);

@@ -9,7 +9,7 @@ namespace HandfulOfBreads.Services
 {
     public class GridLoadingService
     {
-        public async Task<(string name, int rows, int columns, int pixelSize, List<List<Color>> grid)> LoadGridFromFileAsync(string filePath)
+        public async Task<(string name, int rows, int columns, int pixelSize, int drop,List<List<Color>> grid)> LoadGridFromFileAsync(string filePath)
         {
             byte[] fileBytes = await File.ReadAllBytesAsync(filePath);
             string fileText = Encoding.UTF8.GetString(fileBytes);
@@ -30,7 +30,7 @@ namespace HandfulOfBreads.Services
                 .Select(row => row.Select(hex => FromHex(hex)).ToList())
                 .ToList();
 
-            return (meta.name, meta.rows, meta.columns, meta.pixelSize, grid);
+            return (meta.name, meta.rows, meta.columns, meta.pixelSize, meta.drop,grid);
         }
 
         private Color FromHex(string hex)
@@ -63,6 +63,7 @@ namespace HandfulOfBreads.Services
             public int rows { get; set; }
             public int columns { get; set; }
             public int pixelSize { get; set; }
+            public int drop { get; set; }
             public List<List<string>> grid { get; set; }
         }
     }

@@ -3,11 +3,11 @@ using HandfulOfBreads.Services;
 
 namespace HandfulOfBreads.Views.Popups;
 
-public partial class NewPatternPopup : Popup
+public partial class ChooseNewPopup : Popup
 {
     public LocalizationResourceManager LocalizationResourceManager => LocalizationResourceManager.Instance;
 
-    public NewPatternPopup()
+    public ChooseNewPopup()
     {
         InitializeComponent();
         Opened += OnPopupOpened;
@@ -58,10 +58,5 @@ public partial class NewPatternPopup : Popup
     {
         //await Shell.Current.GoToAsync(nameof(NewDesignStartPage));
         CloseWithAnimation("DrawNewDeisgn");
-    }
-
-    private void ImportFile_Clicked(object sender, EventArgs e)
-    {
-        CloseWithAnimation();
     }
 }

@@ -54,7 +54,7 @@
 
     <Grid>
         <!-- Main drawing area -->
-        <Grid x:Name="PixelGraphicsViewContainer" BackgroundColor="Wheat">
+        <Grid x:Name="PixelGraphicsViewContainer" BackgroundColor="White">
             <GraphicsView 
                 x:Name="PixelGraphicsView"
                 Drawable="{Binding Drawable}"

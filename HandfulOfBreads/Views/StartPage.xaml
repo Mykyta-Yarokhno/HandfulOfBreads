@@ -19,14 +19,6 @@
                     VerticalOptions="Center"
                     Grid.Column="0"/>
 
-            <Label Text="{Binding LocalizationResourceManager[Gallery]}"
-                   TextColor="#553d3a"
-                   FontAttributes="Bold"
-                   FontSize="20"
-                   VerticalOptions="Center"
-                   VerticalTextAlignment="Center"
-                   Grid.Column="1"/>
-
             <Button Text="+"
                     Style="{StaticResource MainButton}"
                     WidthRequest="40"
@@ -57,9 +49,9 @@
                 <CollectionView.ItemTemplate>
                     <DataTemplate x:DataType="viewModels:PixelGridItem">
                         <Frame HasShadow="False"
-                               BorderColor="White"
+                               BorderColor="Yellow"
                                CornerRadius="30"
-                               BackgroundColor="#ffa7b4"
+                               BackgroundColor="White"
                                Margin="5,10,10,0">
                             <Image Source="{Binding ImageSource}"
                                    Aspect="AspectFit"

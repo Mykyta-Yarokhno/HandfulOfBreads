@@ -52,7 +52,7 @@ public class StartPageViewModel : BaseViewModel
 
     private async Task ChooseNewAsync()
     {
-        var popup = App.Services.GetRequiredService<NewPatternPopup>();
+        var popup = App.Services.GetRequiredService<ChooseNewPopup>();
 
         var result = await _popupService.ShowPopupAsync<string>(popup);
 
@@ -81,7 +81,8 @@ public class StartPageViewModel : BaseViewModel
         {
             { "Columns", e.Columns },
             { "Rows", e.Rows },
-            { "SelectedPattern", e.SelectedPattern }
+            { "SelectedPattern", e.SelectedPattern },
+            {"Drop" , e.Drop }
         };
 
         await Shell.Current.GoToAsync(nameof(MainPage), navigationParameters);

@@ -9,7 +9,7 @@ namespace HandfulOfBreads.Graphics.DrawablePatterns
 
         public Color GetColorAt(int row, int col);
 
-        void InitializeGrid(int rows, int columns, int pixelSize, IImage? fillImage = null, List<List<Color>> grid = null);
+        void InitializeGrid(int rows, int columns, int pixelSize, IImage? fillImage = null, List<List<Color>> grid = null, int drop = 1);
         void Draw(ICanvas canvas, RectF dirtyRect);
         void EraseAt(float x, float y);
         void FloodFill(int startRow, int startCol, Color newColor);

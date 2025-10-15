@@ -57,7 +57,7 @@ namespace HandfulOfBreads
             builder.Services.AddTransient<StartPage>();
             builder.Services.AddTransient<ImageToGridViewModel>();
             builder.Services.AddTransient<ImageToGridPage>();
-            builder.Services.AddTransient<NewPatternPopup>();
+            builder.Services.AddTransient<ChooseNewPopup>();
             builder.Services.AddTransient<ChoosePalettePopup>();
 
             var app = builder.Build();

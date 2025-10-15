@@ -20,6 +20,16 @@
                     TextColor="#98694d"
                     SelectedIndexChanged="PatternsPicker_SelectedIndexChanged" />
 
+            <Label x:Name="DropLabel"
+                   Text="Enter Drop Number (1-5)"
+                   TextColor="#553d3a"
+                   IsVisible="False"/>
+            <Picker x:Name="DropPicker"
+                    Title="Choose drop size"
+                    TextColor="#98694d"
+                    IsVisible="False"
+                     SelectedIndexChanged="DropPicker_SelectedIndexChanged"/>
+            
             <Label x:Name="RowsLabel"
                    Text="Enter Rows Number"
                    TextColor="#553d3a"/>

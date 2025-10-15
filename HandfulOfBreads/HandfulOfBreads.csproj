@@ -109,6 +109,9 @@
 	    <AutoGen>True</AutoGen>
 	    <DependentUpon>AppResources.resx</DependentUpon>
 	  </Compile>
+	  <Compile Update="Views\Popups\ChooseNewPoup.xaml.cs">
+	    <DependentUpon>ChooseNewPoup.xaml</DependentUpon>
+	  </Compile>
 	  <Compile Update="Views\StartPage.xaml.cs">
 	    <DependentUpon>StartPage.xaml</DependentUpon>
 	  </Compile>
@@ -134,7 +137,7 @@
 	  <MauiXaml Update="Views\Popups\ChoosePhotoPopup.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
-	  <MauiXaml Update="Views\Popups\NewPatternPopup.xaml">
+	  <MauiXaml Update="Views\Popups\ChooseNewPoup.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
 	  <MauiXaml Update="Views\Popups\PatternPreviewPopup.xaml">

@@ -53,6 +53,8 @@ namespace HandfulOfBreads.ViewModels
         private int _rows;
         [ObservableProperty]
         private string? _selectedPattern;
+        [ObservableProperty]
+        private int _drop;
 
         public MainPageViewModel(
             IPopupService popupService,
@@ -87,42 +89,47 @@ namespace HandfulOfBreads.ViewModels
                 grid = gridList;
             }
 
+            if(query.TryGetValue("Drop",out var dropObject))
+            {
+                Drop = (int)dropObject;
+            }
             CurrentPattern = SelectedPattern switch
             {
                 "Loom" => new LoomPatternDrawable(),
                 "Brick" => new BrickPatternDrawable(),
-                _ => new LoomPatternDrawable(),
+                "Peyote" => new PeyotePatternDrawable(),
             };
 
             var image = LoadImage();
             Drawable = CurrentPattern;
 
             if (grid != null)
-                CurrentPattern.InitializeGrid(Rows, Columns, PixelSize, image, grid);
+                CurrentPattern.InitializeGrid(Rows, Columns, PixelSize, image, grid, Drop);
             else
-                CurrentPattern.InitializeGrid(Rows, Columns, PixelSize, image);
+                CurrentPattern.InitializeGrid(Rows, Columns, PixelSize, image,drop: Drop);
         }
 
-        public void Initialize(int columns, int rows, string selectedPattern, List<List<Color>>? grid = null)
+        public void Initialize(int columns, int rows, string selectedPattern, List<List<Color>>? grid = null , int drop = 1)
         {
             CurrentPattern = selectedPattern switch
             {
                 "Loom" => new LoomPatternDrawable(),
                 "Brick" => new BrickPatternDrawable(),
-                _ => new LoomPatternDrawable(),
+                "Peyote" => new PeyotePatternDrawable(),
             };
 
             var image = LoadImage();
             Drawable = CurrentPattern;
 
             if (grid != null)
-                CurrentPattern.InitializeGrid(rows, columns, PixelSize, image, grid);
+                CurrentPattern.InitializeGrid(rows, columns, PixelSize, image, grid, drop);
             else
-                CurrentPattern.InitializeGrid(rows, columns, PixelSize, image);
+                CurrentPattern.InitializeGrid(rows, columns, PixelSize, image, drop:drop);
 
             _columns = columns;
             _rows = rows;
             _image = image;
+            _drop = drop;
         }
 
         private IImage LoadImage()
@@ -145,7 +152,7 @@ namespace HandfulOfBreads.ViewModels
 
             if (answer)
             {
-                CurrentPattern.InitializeGrid(_rows, _columns, PixelSize, _image);
+                CurrentPattern.InitializeGrid(_rows, _columns, PixelSize, _image,drop: _drop);
                 InvalidateRequested?.Invoke();
             }
         }
@@ -183,7 +190,7 @@ namespace HandfulOfBreads.ViewModels
         {
             ((NewGraphicsViewPopup)sender).ResultReady -= OnPopupResultForUpdate;
 
-            CurrentPattern.InitializeGrid(e.Rows, e.Columns, PixelSize, _image);
+            CurrentPattern.InitializeGrid(e.Rows, e.Columns, PixelSize, _image, drop: e.Drop);
 
             Columns = e.Columns;
             Rows = e.Rows;
